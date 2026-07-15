@@ -1,0 +1,3360 @@
+--- PAGE 1 ---
+CALOUCH
+Yapay Zekâ Destekli Beslenme, Kalori, Aktivite ve Fitness
+Platformu
+Birleştirilmiş Ürün Gereksinimleri Dokümanı — PRD v3.0
+Doküman tarihi: 15 Temmuz 2026
+Ürün adı: Calouch
+Resmî telaffuz: Ka-loç
+Marka anlamı: Calorie + Coach
+Alan adı: calouch.com
+Platformlar: iOS ve Android
+Uygulama kategorisi: Health & Fitness
+Mobil teknoloji: React Native + Expo Development Build
+Yapay zekâ sağlayıcısı: Google Gemini API
+Backend ve veritabanı: Supabase
+Web ve yönetim paneli: Next.js + Vercel
+Kaynak kod yönetimi: GitHub
+Mobil dağıtım: EAS Build, TestFlight, Google Play Testing
+Gelir modeli: Freemium, abonelik, AI kredisi ve Lifetime Core
+1. Ürün Özeti
+Calouch; kullanıcının beslenme, günlük aktivite, vücut ölçüsü ve antrenman verilerini tek uygulamada
+takip etmesini sağlayan yapay zekâ destekli bir sağlık ve fitness platformudur .
+Uygulamanın merkezindeki özellik, yemeğin fotoğrafını çekerek:
+Tabaktaki yiyecekleri tanıma
+Yiyecekleri birbirinden ayırma
+Porsiyon tahmini
+Yaklaşık gramaj belirleme
+Pişirme yöntemini tahmin etme
+Kalori ve makro değerlerini hesaplama
+Kullanıcı onayından sonra öğün günlüğüne kaydetme
+işlemlerini gerçekleştirmektir .
+Calouch yalnızca kalori sayan bir uygulama olmayacaktır . Aşağıdaki sistemleri aynı kullanıcı deneyiminde
+birleştirecektir:
+Fotoğraftan yemek analizi
+Manuel besin ve öğün girişi
+Barkod ve besin etiketi tarama
+Kalori ve makro takibi
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+1
+
+--- PAGE 2 ---
+Su takibi
+Adım ve aktivite takibi
+Vücut ölçüsü ve kilo takibi
+İlerleme fotoğrafları
+Egzersiz kütüphanesi
+Antrenman programları
+Set, tekrar , ağırlık ve dinlenme takibi
+Canlı hareket formu analizi
+Yazılı ve sesli AI hoca
+AI beslenme programı
+AI antrenman programı
+Başarımlar ve challenge’lar
+Apple Health ve Health Connect entegrasyonu
+Açık ve koyu tema
+Çoklu dil
+Widget’lar
+Premium abonelik ve Lifetime Core
+2. Ürün Vizyonu
+Calouch’un uzun vadeli vizyonu:
+Kullanıcının ne yediğini, ne kadar hareket ettiğini, nasıl antrenman yaptığını ve nasıl
+geliştiğini mümkün olan en az manuel işlemle anlayan kişisel yapay zekâ sağlık ve fitness
+koçu olmak.
+Calouch kullanıcıya yalnızca veri göstermeyecek; kullanıcının kendi verilerini anlamasına yardımcı
+olacaktır .
+Kullanıcı uygulamayı açtığında şu sorulara hızlı cevap alabilmelidir:
+Bugün kaç kalori tükettim?
+Kalori hedefimin ne kadarını doldurdum?
+Protein hedefime ulaştım mı?
+Ne kadar su içtim?
+Kaç adım attım?
+Ne kadar aktif enerji harcadım?
+Bugünkü antrenmanım ne?
+Geçen antrenmana göre ilerledim mi?
+Kilo ve ölçülerimde nasıl bir değişim var?
+Antrenman formumda hangi noktaları geliştirmeliyim?
+Hedefime ulaşmak için bugün neye dikkat etmeliyim?
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+2
+
+--- PAGE 3 ---
+3. Marka Konumlandırması
+3.1 Marka adı
+Calouch, “calorie” ve “coach” kelimelerinin birleşimidir .
+İsim ürünün iki temel yönünü temsil eder:
+Beslenme ve kalori analizi
+Kişisel yapay zekâ koçluğu
+Marka yalnızca kalori sayımıyla sınırlandırılmayacaktır . Antrenman, aktivite, ölçü, form takibi ve AI hoca
+özelliklerinin tamamını kapsayacaktır .
+3.2 Mağaza isimleri
+Türkçe:
+Calouch: Yapay Zekâ Fitness Koçu
+İngilizce:
+Calouch: AI Nutrition & Fitness
+Daha kısa alternatif:
+Calouch – AI Body Coach
+3.3 Slogan
+Ana slogan:
+Beslenmeni Gör. Gelişimini Yönet.
+Alternatif sloganlar:
+Fotoğrafını Çek, Hedefine İlerle
+Yapay Zekâ Destekli Kişisel Koçun
+Daha Akıllı Beslen. Daha İyi Antrenman Yap.
+Eat Smarter . Train Better .
+See Your Food. Shape Your Progress.
+3.4 Marka tescili
+Alan adının satın alınabilir olması, marka tescilinin de boş olduğu anlamına gelmez.
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+3
+
+--- PAGE 4 ---
+Kodlama ve tasarım yatırımı büyümeden önce aşağıdaki kontroller yapılmalıdır:
+TÜRKPATENT benzer marka araştırması
+EUIPO araştırması
+WIPO Global Brand Database araştırması
+App Store exact-name araştırması
+Google Play exact-name araştırması
+Sosyal medya kullanıcı adları
+Benzer telaffuzlu sağlık ve fitness markaları
+İlgili Nice sınıfları için hukukçu görüşü
+Muhtemel marka sınıfları yazılım, sağlık ve fitness hizmetleri, eğitim ve çevrim içi abonelik hizmetlerini
+kapsayacak şekilde değerlendirilmelidir .
+4. Temel Ürün İlkeleri
+4.1 Fotoğraf merkezli deneyim
+Calouch’un en görünür aksiyonu “Fotoğrafla Öğün Ekle” olacaktır .
+Kullanıcı ana sayfadan en fazla tek dokunuşla kameraya ulaşmalıdır .
+4.2 Yapay zekâ tahmin sunar
+Tek bir fotoğraftan gerçek gramajı, kullanılan yağı ve görünmeyen malzemeleri kesin olarak bilmek
+mümkün değildir .
+Bu nedenle sonuç şu şekilde sunulacaktır:
+Tahmini toplam: 640 kcal
+Muhtemel aralık: 560–730 kcal
+Analiz güveni: Orta
+“Bu yemek kesinlikle 640 kaloridir” gibi ifadeler kullanılmayacaktır .
+4.3 Kullanıcı onayı zorunludur
+AI tarafından hazırlanan öğün sonucu önce taslak olacaktır .
+Kullanıcı şu işlemlerden birini seçebilir:
+Onayla ve kaydet
+Yiyecekleri düzenle
+Porsiyonu değiştir
+Eksik yiyecek ekle
+Yeniden analiz et
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+4
+
+--- PAGE 5 ---
+Fotoğrafı sil
+Kullanıcı onayı olmadan kalıcı öğün kaydı oluşturulmayacaktır .
+4.4 Gizlilik varsayılan davranıştır
+Aşağıdaki veriler varsayılan olarak özel olacaktır:
+Beslenme kayıtları
+Yemek fotoğrafları
+Kilo
+Vücut ölçüleri
+İlerleme fotoğrafları
+Sağlık platformu verileri
+Antrenman kayıtları
+Form analizleri
+AI sohbetleri
+Ses kayıtları
+4.5 Sağlık uygulaması, tıbbi uygulama değil
+Calouch:
+Hastalık teşhisi koymayacak
+İlaç veya doz önermeyecek
+Tedavi planı hazırlamayacak
+Doktor , diyetisyen veya fizyoterapist gibi davranmayacak
+Kullanıcıya sakatlanmayacağına dair güvence vermeyecek
+Tehlikeli kalori hedefleri önermeyecek
+Ürün sağlık ve fitness takibi kategorisinde konumlandırılacaktır .
+4.6 Kullanıcı izin vermese de temel uygulama çalışmalı
+Kullanıcı:
+HealthKit izni vermese
+Health Connect bağlamasa
+Bildirimleri reddetse
+Fotoğrafların saklanmasına izin vermese
+Analitik kullanımına izin vermese
+bile manuel beslenme, su, ölçü ve antrenman özelliklerini kullanabilmelidir .
+4.7 Sağlık verileri reklam için kullanılmaz
+Kullanıcının sağlık ve fitness verileri:
+Reklam hedefleme
+Veri brokerlarına satış
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+5
+
+--- PAGE 6 ---
+Kullanıcı profilleme
+Üçüncü taraf reklam optimizasyonu
+için kullanılmayacaktır .
+5. Hedef Kullanıcılar
+5.1 Kilo vermek isteyen kullanıcı
+Kalori açığını takip etmek ister .
+Her yemeği tartmak istemez.
+Fotoğrafla hızlı kayıt yapmak ister .
+Su ve adım hedeflerini izler .
+Haftalık kilo ve ölçü değişimini görmek ister .
+5.2 Kas geliştirmek isteyen kullanıcı
+Protein ve makro hedeflerini takip eder .
+Set, tekrar ve ağırlık kaydı tutar .
+Dinlenme sayacına ihtiyaç duyar .
+Antrenman hacmini ve kişisel rekorlarını izler .
+AI antrenman koçundan öneri almak ister .
+5.3 Sağlıklı yaşam kullanıcısı
+Katı diyet uygulamak istemez.
+Beslenme düzenini iyileştirmek ister .
+Su, adım, uyku ve aktivite bilgilerini birlikte görmek ister .
+Challenge ve başarımlarla motive olur .
+5.4 Evde spor yapan kullanıcı
+Hareketleri doğru yapıp yapmadığını merak eder .
+Telefon kamerasıyla tekrar ve form takibi ister .
+Ekipmanına göre alternatif hareket arar .
+Sesli komutlarla antrenman kaydı yapmak ister .
+5.5 İleri seviye sporcu
+RPE ve RIR
+Tahmini 1RM
+Haftalık set sayısı
+Toplam antrenman hacmi
+Kas grubu başına yük
+Tempo ve hareket mesafesi
+Vücut ölçüsü trendi
+gibi gelişmiş verileri takip eder .
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+6
+
+--- PAGE 7 ---
+6. Platform ve 2026 Teknik Temeli
+6.1 Mobil teknoloji kararı
+Calouch tek React Native kod tabanıyla geliştirilecektir .
+Temel teknoloji düzeni:
+React Native
+Expo SDK
+Expo Router
+Expo Development Build
+React Native New Architecture
+Hermes
+TypeScript
+EAS Build
+EAS Update
+Proje başlangıcında o tarihteki güncel kararlı Expo SDK sürümü kullanılacaktır . 15 Temmuz 2026 teknik
+tabanı için Expo SDK 57 ve React Native 0.86 esas alınabilir . SDK 55 ve sonrası New Architecture’ın
+kapatılmasını desteklemediği için bütün native bağımlılıklar New Architecture uyumlu seçilmelidir . 
+6.2 Expo Go kullanılmayacak
+Calouch yalnızca Expo Go içinde çalışan bir proje olmayacaktır .
+Ana geliştirme ortamı:
+expo-dev-client
++
+Development Build
++
+EAS Build
+olacaktır .
+Böylece uygulamaya şu native yetenekler eklenebilir:
+HealthKit
+Health Connect
+StoreKit
+Google Play Billing
+Native kamera işlemcisi
+MediaPipe
+iOS widget
+Android widget
+Live Activity
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+7
+
+--- PAGE 8 ---
+Background task
+Swift modülü
+Kotlin modülü
+SecureStore
+Biyometrik kilit
+6.3 Native geliştirme yöntemi
+Calouch şu yaklaşımı kullanacaktır:
+Expo Managed Workflow
++
+Continuous Native Generation
++
+Expo Prebuild
++
+Config Plugins
++
+Expo Modules API
+Native tarafta zorunlu özel modül gerektiğinde:
+iOS için Swift
+Android için Kotlin
+Ortak bağlantı için Expo Modules API
+kullanılacaktır .
+6.4 Uygulama mimarisi
+Mobil uygulama
+├── Kullanıcı arayüzü
+├── Yerel cache ve offline kuyruk
+├── Kamera ve cihaz içi ML
+├── HealthKit / Health Connect
+├── Abonelik istemcisi
+└── Push bildirimleri
+Supabase
+├── Auth
+├── PostgreSQL
+├── Storage
+├── Edge Functions
+├── Cron
+├── Realtime
+└── RLS
+Google
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+8
+
+--- PAGE 9 ---
+├── Gemini multimodal modelleri
+├── Gemini Live API
+└── MediaPipe on-device modelleri
+Vercel
+├── Calouch web sitesi
+├── Yönetim paneli
+├── Hukuki sayfalar
+└── Gerektiğinde server-side API
+7. Tasarım Sistemi
+7.1 Genel tasarım yaklaşımı
+Calouch tasarımı:
+Modern
+Premium
+Sade
+Veri yoğunluğunu kontrol eden
+Fotoğraf merkezli
+Tek elle kullanılabilir
+Platform davranışlarına uyumlu
+Erişilebilir
+Açık ve koyu moda uygun
+olacaktır .
+7.2 Platform uyumu
+iOS ve Android aynı marka dilini kullanacak ancak her kontrol birebir aynı görünmeyecektir .
+Platforma göre uyarlanabilecek bileşenler:
+Tarih ve saat seçici
+Switch
+Alert
+Context menu
+Share sheet
+Bottom sheet
+Navigasyon başlığı
+Haptic feedback
+İzin ekranları
+Geri hareketleri
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+9
+
+--- PAGE 10 ---
+7.3 Ana navigasyon
+Alt menü:
+Bugün
+Günlük
+AI Kamera
+Antrenman
+Profil
+Ortadaki AI Kamera butonu diğer sekmelerden ayrışacaktır .
+AI Kamera butonu:
+Fotoğrafla öğün ekleme
+Etiket tarama
+Barkod tarama
+Hareket formu başlatma
+İlerleme fotoğrafı çekme
+işlemlerine açılabilir .
+7.4 Tasarım tokenları
+Kod içerisinde doğrudan renk, radius veya spacing değeri kullanılmayacaktır .
+color.background.primary
+color.background.secondary
+color.surface.primary
+color.surface.elevated
+color.text.primary
+color.text.secondary
+color.brand.primary
+color.brand.secondary
+color.success
+color.warning
+color.danger
+color.border.subtle
+spacing.1
+spacing.2
+spacing.3
+spacing.4
+spacing.6
+spacing.8
+radius.small
+radius.medium
+radius.large
+radius.full
+1. 
+2. 
+3. 
+4. 
+5. 
+• 
+• 
+• 
+• 
+• 
+10
+
+--- PAGE 11 ---
+shadow.small
+shadow.medium
+shadow.large
+7.5 Renk sistemi
+Önerilen marka yaklaşımı:
+Ana renk: lime ve zümrüt arasında modern yeşil
+İkincil vurgu: turkuaz
+Açık tema: kırık beyaz ve nötr gri
+Koyu tema: grafit ve OLED siyah
+Uyarı: amber
+Hata: kontrollü kırmızı
+Başarı: yeşil
+Makrolar yalnızca renklerle anlatılmayacaktır . Renklerin yanında metin ve ikon bulunacaktır .
+7.6 Tema seçenekleri
+Sistem
+Açık
+Koyu
+OLED siyah
+Tema geçişi uygulamayı yeniden başlatmadan yapılacaktır .
+7.7 Tipografi
+display.large
+display.medium
+heading.large
+heading.medium
+heading.small
+body.large
+body.medium
+body.small
+label.large
+label.medium
+caption
+numeric.hero
+numeric.large
+numeric.medium
+Kalori, kilo ve antrenman değerlerinde tabular number kullanılmalıdır .
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+11
+
+--- PAGE 12 ---
+7.8 Boşluk sistemi
+4, 8, 12, 16, 20, 24, 32, 40, 48, 64
+Telefon ekranlarında varsayılan kenar boşluğu 16–20 birim arasında olacaktır .
+7.9 Edge-to-edge
+İçerik, güncel Android ve iOS sistem alanlarına uyum sağlayacak edge-to-edge düzende hazırlanacaktır .
+Safe area, klavye ve sistem bar inset’leri ortak layout katmanından yönetilecektir .
+7.10 Erişilebilirlik
+Minimum 44×44 dokunma alanı
+Dinamik yazı boyutu
+Screen reader etiketleri
+Renk körlüğüne uygun göstergeler
+Yüksek kontrast
+Reduce Motion
+Haptic kapatma
+Grafiklerin metin özeti
+RTL desteği
+Tablet uyumu
+Yalnızca renkle bilgi aktarmama
+7.11 Animasyon
+Animasyonlar şu noktalarda kullanılabilir:
+AI analiz süreci
+Kalori halkasının dolması
+Öğün ekleme
+Set tamamlama
+Dinlenme sayacı
+Kişisel rekor
+Challenge başarımı
+Sayfa geçişleri
+Her animasyon Reduce Motion ayarına saygı göstermelidir .
+8. Kullanıcı Hesabı ve Onboarding
+8.1 Giriş yöntemleri
+E-posta ve şifre
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+12
+
+--- PAGE 13 ---
+Google ile giriş
+Apple ile giriş
+Şifremi unuttum
+Magic link
+İsteğe bağlı biyometrik uygulama kilidi
+8.2 Onboarding alanları
+Ad veya rumuz
+Doğum yılı
+Boy
+Kilo
+Hedef kilo
+Aktivite seviyesi
+Ana hedef
+Beslenme tercihi
+İsteğe bağlı alerji bilgisi
+Haftalık hedef değişim
+Günlük öğün düzeni
+Birim sistemi
+Dil
+Bildirim tercihleri
+HealthKit veya Health Connect bağlantısı
+Bilgiler tek uzun form yerine adım adım alınacaktır .
+8.3 Hedefler
+Kilo vermek
+Kilo almak
+Kiloyu korumak
+Kas geliştirmek
+Sağlıklı beslenmek
+Aktiviteyi artırmak
+Antrenman düzeni oluşturmak
+Vücut ölçülerini geliştirmek
+8.4 Günlük hedef hesabı
+Bazal metabolizma tahmini
+Günlük enerji ihtiyacı
+Hedef kalori
+Protein
+Karbonhidrat
+Yağ
+Lif
+Su
+Kullanıcı hesaplanan bütün değerleri manuel değiştirebilir .
+Riskli derecede düşük hedeflerde kullanıcı uyarılır ve profesyonel destek önerilir .
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+13
+
+--- PAGE 14 ---
+9. Bugün Ekranı
+Ana dashboard kullanıcı tarafından özelleştirilebilir kartlardan oluşacaktır .
+Kartlar:
+Kalan kalori
+Tüketilen kalori
+Yakılan aktif enerji
+Protein ilerlemesi
+Karbonhidrat ilerlemesi
+Yağ ilerlemesi
+Su
+Adım
+Son öğün
+Bugünkü antrenman
+Vücut ölçüsü trendi
+Günlük seri
+Challenge ilerlemesi
+AI kısa değerlendirme
+Kullanıcı:
+Kart sırasını değiştirebilir .
+Kartları gizleyebilir .
+Kart boyutlarını seçebilir .
+Günlük odak kartını belirleyebilir .
+10. Fotoğraftan Yemek Analizi
+10.1 Temel kullanıcı akışı
+Kullanıcı AI Kamera’ya dokunur .
+Yemeğin fotoğrafını çeker veya galeriden seçer .
+Fotoğraf cihazda yeniden boyutlandırılır .
+EXIF ve konum bilgisi temizlenir .
+Geçici private Storage alanına yüklenir .
+AI analiz işi oluşturulur .
+Gemini fotoğraftaki yiyecekleri tespit eder .
+Yiyecekler Calouch besin veri tabanıyla eşleştirilir .
+Kalori ve makrolar hesap motoru tarafından hesaplanır .
+Kullanıcı doğrulama ekranını görür .
+Kullanıcı sonucu düzenler veya onaylar .
+Öğün kaydedilir .
+Kullanıcı saklamayı seçmediyse fotoğraf belirlenen sürede silinir .
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+1. 
+2. 
+3. 
+4. 
+5. 
+6. 
+7. 
+8. 
+9. 
+10. 
+11. 
+12. 
+13. 
+14
+
+--- PAGE 15 ---
+10.2 Analiz sonucu
+Her yiyecek için:
+Yiyecek adı
+Alternatif olası adlar
+Tahmini gram
+Minimum ve maksimum gram
+Porsiyon türü
+Pişirme yöntemi
+Görünen malzemeler
+Muhtemel gizli malzemeler
+Kalori
+Protein
+Karbonhidrat
+Yağ
+Lif
+Güven skoru
+Veri kaynağı
+gösterilir .
+10.3 Porsiyon doğruluğunu artırma
+Kullanıcıya isteğe bağlı olarak:
+Üstten ikinci fotoğraf çek
+Yan açıdan fotoğraf çek
+Tabak çapını seç
+Küçük, orta veya büyük porsiyon seç
+Kullanılan yağ miktarını belirt
+Sos ekle
+Tüketilen oranı seç
+Gramı manuel gir
+seçenekleri sunulabilir .
+10.4 AI mimarisi
+Gemini tek başına nihai kalori değeri üretmeyecektir .
+Gemini görüntü analizi
+→ Yiyecek ve porsiyon adayları
+→ Besin veri tabanı eşleştirmesi
+→ Porsiyon dönüşümü
+→ Deterministik besin hesap motoru
+→ Kalori ve makrolar
+Bu yaklaşım tutarlılık, denetlenebilirlik ve kaynak gösterimi sağlar .
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+15
+
+--- PAGE 16 ---
+10.5 Yapılandırılmış çıktı
+Gemini yanıtları JSON Schema ile doğrulanacaktır . Gemini’nin yapılandırılmış çıktı özelliği, yanıtların
+belirlenen JSON şemasına uymasını desteklemektedir . 
+Örnek:
+{
+"analysisVersion": "1.0",
+"mealTitle": "Izgara tavuk, pilav ve salata",
+"items": [
+{
+"candidateFoodNames": [
+"ızgara tavuk göğsü",
+"tavuk fileto"
+],
+"estimatedGrams": 170,
+"minimumGrams": 140,
+"maximumGrams": 210,
+"cookingMethod": "grilled",
+"confidence": 0.91,
+"possibleHiddenIngredients": [
+"zeytinyağı"
+]
+}
+],
+"overallConfidence": 0.82,
+"requiresUserConfirmation": true
+}
+Şema doğrulamasından geçmeyen yanıtlar doğrudan kullanıcıya gösterilmeyecektir .
+11. Google Gemini Mimarisi
+11.1 Ana AI sağlayıcısı
+Calouch’un ana yapay zekâ sağlayıcısı Google Gemini API olacaktır .
+Kullanım alanları:
+Yemek fotoğrafı
+Besin etiketi
+Serbest metinden öğün
+Tarif analizi
+Yazılı AI sohbet
+Sesli AI hoca
+Günlük özet
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+16
+
+--- PAGE 17 ---
+Haftalık özet
+Antrenman programı
+Beslenme programı
+Form analizi açıklaması
+11.2 API key güvenliği
+Gemini API anahtarı hiçbir zaman:
+React Native bundle’a
+EXPO_PUBLIC_* değişkenine
+Mobil uygulamaya
+GitHub reposuna
+Kullanıcının cihazına
+eklenmeyecektir .
+Anahtar sunucu tarafında:
+Supabase Edge Function secrets
+Vercel environment variables
+Google Secret Manager
+alanlarından birinde tutulacaktır .
+11.3 Model yönlendirme
+Tek bir model bütün görevler için kullanılmamalıdır .
+Hızlı multimodal model
+→ Standart yemek analizi
+Güçlü multimodal model
+→ Karmaşık veya düşük güvenli tabak
+Metin modeli
+→ Plan ve haftalık özet
+Live model
+→ Sesli AI hoca
+Model adları kod içine sabitlenmeyecek, server-side remote config üzerinden yönetilecektir .
+11.4 AI sağlayıcı soyutlaması
+İlk üretim sistemi Gemini kullanacaktır . Ancak uygulama mimarisi tek sağlayıcıya kalıcı olarak
+kilitlenmeyecektir .
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+17
+
+--- PAGE 18 ---
+interfaceAIProvider{
+analyzeMealImage(): Promise<MealAnalysis>;
+analyzeNutritionLabel(): Promise<NutritionLabel>;
+parseMealText(): Promise<MealDraft>;
+generateMealPlan(): Promise<MealPlanDraft>;
+generateWorkoutPlan(): Promise<WorkoutPlanDraft>;
+createWeeklySummary(): Promise<WeeklySummary>;
+}
+11.5 Maliyet kontrolü
+Gemini kullanımı input, output ve modele göre ücret üretir; bu nedenle her istek için token ve maliyet
+kaydı tutulacaktır . 
+Kontroller:
+Kullanıcı kotası
+Plan kotası
+Günlük harcama limiti
+Global AI kill switch
+Model fallback
+Rate limiting
+Aynı fotoğrafı yeniden kullanma kontrolü
+Cache
+Başarısız işlemde kredi iadesi
+Model bazlı maliyet dashboard’u
+12. Manuel Beslenme ve Tarifler
+12.1 Öğün ekleme yöntemleri
+Besin arama
+Son kullanılanlar
+Sık kullanılanlar
+Barkod
+Besin etiketi
+Fotoğraf
+Serbest metin
+Tarif
+Önceki öğünü kopyalama
+Önceki günü kopyalama
+Özel besin oluşturma
+12.2 Öğün türleri
+Kahvaltı
+Ara öğün
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+18
+
+--- PAGE 19 ---
+Öğle
+Akşam
+Antrenman öncesi
+Antrenman sonrası
+Gece öğünü
+Kullanıcı tanımlı öğün
+12.3 Serbest metin
+Örnek:
+Üç yumurta, 60 gram yulaf, bir muz ve bir ölçek whey yedim.
+Gemini metni yapılandırılmış öğün taslağına dönüştürür . Kullanıcı onayından sonra kayıt yapılır .
+12.4 Tarif sistemi
+Kullanıcı:
+Tarif oluşturabilir .
+Malzeme ekleyebilir .
+Malzeme gramlarını girebilir .
+Porsiyon sayısını belirleyebilir .
+Bir porsiyon değerini görebilir .
+Tarifi kopyalayabilir .
+Tarifi özel tutabilir .
+Öğüne ekleyebilir .
+13. Besin Veri Tabanı
+13.1 Veri katmanları
+Calouch doğrulanmış temel besinleri
+Türk yemekleri
+Uluslararası besin kaynakları
+Markalı ürünler
+Barkodlu ürünler
+Kullanıcı özel besinleri
+Kullanıcı tarifleri
+İleride restoran ürünleri
+13.2 Besin alanları
+Besin adı
+Yerelleştirilmiş adlar
+Alternatif adlar
+Marka
+Barkod
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+1. 
+2. 
+3. 
+4. 
+5. 
+6. 
+7. 
+8. 
+• 
+• 
+• 
+• 
+• 
+19
+
+--- PAGE 20 ---
+Kategori
+Ülke
+Porsiyonlar
+100 gram için enerji
+Protein
+Karbonhidrat
+Şeker
+Yağ
+Doymuş yağ
+Lif
+Sodyum
+Vitamin ve mineraller
+Kaynak
+Kaynak sürümü
+Doğrulama durumu
+Kalite skoru
+13.3 Besin sürümleme
+Besin değerleri sonradan değişse bile geçmiş öğünler değişmemelidir .
+Öğün oluşturulurken kullanılan değerlerin snapshot’ı kaydedilecektir .
+14. Su Takibi
+Günlük su hedefi
+Tek dokunuşla ekleme
+Özel bardak boyutu
+Son kullanılan miktarlar
+Günlük grafik
+Haftalık grafik
+Akıllı hatırlatma
+Widget
+Sesli komutla su ekleme
+Apple Watch ve Wear OS hızlı giriş
+Bildirim motoru:
+Kullanıcının uyanma saatini
+Sessiz saatleri
+Günlük kalan hedefi
+Önceki su girişlerini
+dikkate alacaktır .
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+20
+
+--- PAGE 21 ---
+15. Vücut Ölçüsü ve İlerleme Takibi
+15.1 Ölçüler
+Kilo
+Boy
+Vücut yağ oranı
+Kas kütlesi
+Boyun
+Omuz
+Göğüs
+Bel
+Kalça
+Sağ ve sol kol
+Sağ ve sol ön kol
+Sağ ve sol üst bacak
+Sağ ve sol baldır
+15.2 Veri kaynakları
+Manuel
+Apple Health
+Health Connect
+Akıllı tartı
+Profesyonel ölçüm
+Deneysel fotoğraf tahmini
+Her ölçüm kaydında kaynak gösterilecektir .
+15.3 İlerleme fotoğrafları
+Kullanıcı ön, yan ve arka fotoğraf ekleyebilir .
+Fotoğraflar:
+Private bucket’ta tutulur .
+Public URL almaz.
+Signed URL ile görüntülenir .
+İsteğe bağlı biyometrik kilitle korunur .
+Analitik platformlarına gönderilmez.
+Kullanıcının açık işlemi olmadan AI’ye gönderilmez.
+15.4 Fotoğraftan ölçü tahmini
+Bu özellik deneysel olarak sunulur .
+Kullanıcıdan:
+Boy
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+21
+
+--- PAGE 22 ---
+Kamera mesafesi
+Standart duruş
+Ön ve yan görüntü
+Çekim kılavuzu
+istenebilir .
+Sonuç:
+Tahmini bel ölçüsü: 86–90 cm
+Bu sonuç kamera açısı, kıyafet ve duruştan etkilenebilir.
+şeklinde aralıkla gösterilir .
+16. Apple Health ve Health Connect
+16.1 Apple HealthKit
+iOS tarafında HealthKit kullanılacaktır .
+İlk aşamada:
+Adım
+Aktif enerji
+Yürüme ve koşma mesafesi
+Antrenman
+Kilo
+Boy
+verileri desteklenecektir .
+HealthKit, veri türleri için ayrı ve ayrıntılı kullanıcı izni ister; bütün izinler uygulama açılır açılmaz topluca
+istenmemelidir . 
+16.2 Android Health Connect
+Android tarafında Health Connect kullanılacaktır .
+Health Connect izinleri Android manifestinde gerçek kullanılan veri türleriyle uyumlu şekilde
+tanımlanmalı ve Play Console beyanlarıyla eşleşmelidir . 
+16.3 İzin akışı
+Kullanıcı ilgili kartı açar .
+Calouch faydayı açıklar .
+Kullanıcı “Bağla” seçeneğine dokunur .
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+1. 
+2. 
+3. 
+22
+
+--- PAGE 23 ---
+İşletim sistemi izin ekranı açılır .
+Yalnızca gerekli veri türleri istenir .
+Ayarlarda “Erişimi Yönet” bağlantısı sunulur .
+16.4 Çift kayıt önleme
+Her sağlık kaydında:
+Platform record ID
+Kaynak uygulama
+Kaynak cihaz
+Başlangıç
+Bitiş
+Veri türü
+Senkronizasyon zamanı
+Hash veya deduplication key
+tutulacaktır .
+17. Aktivite ve Yakılan Kalori
+Aktiviteler:
+Yürüme
+Koşu
+Yüzme
+Bisiklet
+Futbol
+Basketbol
+Tenis
+Kürek
+İp atlama
+Yoga
+Pilates
+HIIT
+Ağırlık antrenmanı
+Dans
+Bahçe işleri
+Kullanıcı tanımlı aktivite
+Yakılan kalori hesabında:
+Kilo
+Süre
+Mesafe
+Tempo
+Yoğunluk
+MET
+Varsa nabız
+4. 
+5. 
+6. 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+23
+
+--- PAGE 24 ---
+Varsa sağlık platformundan aktif enerji
+kullanılacaktır .
+Sonuçlar “tahmini yakılan enerji” olarak sunulacaktır .
+18. Egzersiz Kütüphanesi
+18.1 Kas grupları
+Göğüs
+Sırt
+Omuz
+Biceps
+Triceps
+Ön kol
+Karın
+Core
+Bel
+Quadriceps
+Hamstring
+Kalça
+Baldır
+Tüm vücut
+Kardiyo
+Mobilite
+Esneme
+18.2 Ekipmanlar
+Ekipmansız
+Dumbbell
+Barbell
+Kettlebell
+Cable
+Smith machine
+Makine
+Resistance band
+TRX
+Bench
+Pull-up bar
+Koşu bandı
+Bisiklet
+Kürek makinesi
+Havuz
+18.3 Egzersiz içeriği
+Egzersiz adı
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+24
+
+--- PAGE 25 ---
+Yerelleştirilmiş ad
+Ana kas
+Yardımcı kaslar
+Ekipman
+Zorluk
+Açıklama
+Uygulama adımları
+Sık yapılan hatalar
+Güvenlik uyarıları
+Video veya animasyon
+Kapak görseli
+Form takip desteği
+Moderasyon durumu
+İçerikler lisanslı veya Calouch tarafından üretilmiş olmalıdır .
+19. Antrenman Programları
+Kullanıcı:
+Hazır program seçebilir .
+Kendi programını oluşturabilir .
+AI program taslağı oluşturabilir .
+Egzersizleri günlere atayabilir .
+Set, tekrar ve ağırlık belirleyebilir .
+Dinlenme süresi ekleyebilir .
+Superset oluşturabilir .
+Dropset oluşturabilir .
+Isınma seti ekleyebilir .
+Programı kopyalayabilir .
+Haftalara bölebilir .
+Deload haftası planlayabilir .
+AI programı kullanıcı onayı olmadan aktif edilmez.
+20. Canlı Antrenman Modu
+Antrenman ekranı:
+Aktif egzersiz
+Set numarası
+Hedef tekrar
+Tamamlanan tekrar
+Ağırlık
+RPE
+RIR
+Önceki antrenman değeri
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+25
+
+--- PAGE 26 ---
+Kişisel rekor
+Dinlenme sayacı
+Sonraki egzersiz
+Toplam süre
+Toplam hacim
+Not
+alanlarını içerir .
+20.1 Dinlenme sayacı
+Arka planda çalışır .
+Uygulama kilitlenince kaybolmaz.
+Bildirim ve titreşim üretebilir .
+15 saniye artırılabilir .
+15 saniye azaltılabilir .
+Atlanabilir .
+Egzersiz bazlı varsayılan süre kullanabilir .
+20.2 Oturum kurtarma
+Aktif antrenman:
+Yerel SQLite
+Uygulama belleği
+Periyodik server snapshot
+ile korunacaktır .
+Uygulama çökerse kullanıcı antrenmana kaldığı yerden devam edebilmelidir .
+21. Yazılı ve Sesli AI Hoca
+21.1 AI hoca görevleri
+Günlük beslenme özeti
+Haftalık ilerleme değerlendirmesi
+Protein ve makro açıklamaları
+Antrenman programı taslağı
+Beslenme planı taslağı
+Egzersiz alternatifi
+Ekipmana göre hareket değiştirme
+Set ve dinlenme yönetimi
+Ölçü trendlerini açıklama
+Kullanıcının sorularına yanıt verme
+Alışveriş listesi hazırlama
+Tarif önerme
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+26
+
+--- PAGE 27 ---
+21.2 Sesli kullanım örnekleri
+“Kaçıncı setteyim?”
+“80 kilo, 8 tekrar kaydet.”
+“Dinlenmeyi 30 saniye uzat.”
+“Son antrenmanda kaç kilo kaldırdım?”
+“Bir sonraki hareket ne?”
+“Bu set RPE 8’di.”
+“Bugünkü protein hedefim ne durumda?”
+“Antrenmanı bitir .”
+21.3 Gemini Live API
+Gerçek zamanlı sesli AI hoca için Gemini Live API kullanılacaktır .
+Gemini Live düşük gecikmeli ses, görüntü ve metin etkileşimini desteklemektedir; ancak 15 Temmuz
+2026 itibarıyla Live API hâlâ Preview olarak belgelenmektedir . Bu nedenle üretim sisteminde yedek ses
+mimarisi bulunmalıdır . 
+21.4 Yedek ses mimarisi
+Kullanıcı sesi
+→ Speech-to-text
+→ Gemini metin modeli
+→ Function calling
+→ Text-to-speech
+→ Sesli cevap
+21.5 Güvenli bağlantı
+Mobil uygulamaya ana Gemini API key verilmez.
+Mobil uygulama
+→ Calouch backend
+→ Kısa ömürlü ephemeral token
+→ Gemini Live WebSocket
+Gemini, istemciden doğrudan Live API bağlantılarında kısa ömürlü ephemeral token kullanımını
+desteklemektedir . 
+21.6 Function calling
+AI hoca uygulama içindeki güvenli araçları çağırabilir:
+getCurrentWorkout
+getPreviousExercisePerformance
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+27
+
+--- PAGE 28 ---
+logWorkoutSet
+updateWorkoutSet
+startRestTimer
+extendRestTimer
+skipExercise
+replaceExercise
+getDailyNutritionSummary
+logWater
+createMealDraft
+getBodyMeasurementTrend
+finishWorkout
+Gemini function calling, modelin önceden tanımlı fonksiyonlara yapılandırılmış parametrelerle çağrı
+önermesine olanak sağlar . 
+Veri değiştiren kritik işlemlerde kullanıcı onayı alınacaktır .
+21.7 Ses verisi gizliliği
+Varsayılan olarak:
+Ham ses kaydı saklanmaz.
+Kalıcı ses dosyası oluşturulmaz.
+Yalnızca yapılandırılmış işlem özeti tutulur .
+Tam konuşma geçmişi isteğe bağlıdır .
+Kullanıcı geçmişi silebilir .
+Sessizlik zaman aşımı uygulanır .
+22. Canlı Hareket Formu Takibi
+22.1 Amaç
+Telefon kamerası kullanıcının egzersizini analiz ederek:
+Tekrar sayısı
+Eklem açıları
+Hareket mesafesi
+Tempo
+Sağ-sol simetri
+Başlangıç ve bitiş pozisyonu
+Belirgin form sapmaları
+hakkında geri bildirim verebilir .
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+28
+
+--- PAGE 29 ---
+22.2 Teknik mimari
+Kamera
+→ Native frame processor
+→ MediaPipe Pose Landmarker
+→ Vücut landmark’ları
+→ Egzersize özel state machine
+→ Açı ve tekrar analizi
+→ Yerel geri bildirim
+MediaPipe Pose Landmarker görüntü ve videolardaki vücut noktalarını hem görüntü koordinatlarında
+hem de üç boyutlu dünya koordinatlarında üretebilmektedir . 
+22.3 On-device işleme
+Canlı kamera görüntüsü varsayılan olarak sunucuya gönderilmez.
+Sunucuya yalnızca:
+Tekrar sayısı
+Açı özeti
+Tempo
+Form skoru
+Hata kodları
+Güven seviyesi
+gönderilebilir .
+Ham landmark kareleri varsayılan olarak cihazda geçici tutulmalı ve oturum sonunda silinmelidir .
+22.4 İlk desteklenecek hareketler
+Squat
+Lunge
+Push-up
+Plank
+Shoulder press
+Biceps curl
+Lateral raise
+Romanian deadlift
+Jumping jack
+Sit-up
+22.5 Egzersiz state machine örneği
+Squat:
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+29
+
+--- PAGE 30 ---
+Ayakta
+→ İniş başladı
+→ Alt pozisyon
+→ Çıkış
+→ Tam tekrar
+22.6 Form geri bildirimleri
+Biraz daha aşağı in.
+Dizlerini ayak yönünde tut.
+Hareketi daha kontrollü yap.
+Gövdeni daha dengeli tut.
+Telefon seni tam göremiyor .
+Kamerayı biraz daha alçalt.
+Son tekrarda hareket mesafesi azaldı.
+Aynı anda çok sayıda komut verilmemelidir .
+22.7 Güvenlik sınırları
+Calouch:
+“Formun kusursuz” dememeli.
+“Sakatlanmazsın” dememeli.
+Görünmeyen eklemler için değerlendirme yapmamalı.
+Düşük güvenli sonucu kesin sunmamalı.
+Kullanıcı ağrı bildirdiğinde devam etmeye zorlamamalı.
+23. Video Form Analizi
+Kullanıcı isteğe bağlı kısa video yükleyebilir .
+Akış:
+Egzersiz seçilir .
+Çekim açısı yönergesi gösterilir .
+Kısa video kaydedilir .
+Pose analizi cihazda yapılır .
+Kullanıcı isterse yalnızca landmark verileri gönderilir .
+Form motoru ve Gemini açıklama üretir .
+Zaman damgalı rapor sunulur .
+Örnek:
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+1. 
+2. 
+3. 
+4. 
+5. 
+6. 
+7. 
+30
+
+--- PAGE 31 ---
+00:04 — İniş sırasında gövde açısı arttı.
+00:07 — Sağ diz içe doğru hareket etti.
+00:12 — Son tekrarda hareket mesafesi azaldı.
+Orijinal video varsayılan olarak kalıcı saklanmayacaktır .
+24. Beslenme ve Antrenman Programları
+24.1 AI beslenme planı girdileri
+Kalori hedefi
+Makro hedefi
+Beslenme tercihi
+Alerjiler
+Sevilen besinler
+Sevilmeyen besinler
+Öğün sayısı
+Bütçe
+Yemek hazırlama süresi
+Yerel mutfak
+Antrenman günleri
+24.2 AI antrenman planı girdileri
+Ana hedef
+Deneyim seviyesi
+Haftalık gün sayısı
+Antrenman süresi
+Ekipman
+Kullanıcının bildirdiği kısıtlamalar
+Tercih edilen egzersizler
+Önceki performans
+Dinlenme günleri
+Her iki plan da taslak olarak oluşturulur ve kullanıcı onayından sonra aktif edilir .
+25. Başarımlar ve Challenge’lar
+25.1 Başarımlar
+İlk öğün
+İlk AI analizi
+İlk antrenman
+İlk kişisel rekor
+İlk form analizi
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+31
+
+--- PAGE 32 ---
+Yedi günlük seri
+Otuz günlük seri
+Su hedefi
+Adım hedefi
+On antrenman
+Yüz öğün kaydı
+25.2 Challenge örnekleri
+7 Gün Su
+Haftalık 70.000 Adım
+Ayda 12 Antrenman
+Protein Hedefi Serisi
+Sebze Tüketim Haftası
+Günlük Öğün Kaydı
+Form Kalitesi Haftası
+25.3 Yasak challenge türleri
+En az kalori tüketme
+En hızlı kilo verme
+Öğün atlama
+Susuz kalma
+Aşırı egzersiz
+Sağlıksız vücut karşılaştırması
+26. Bildirimler ve Widget’lar
+26.1 Bildirimler
+Öğün hatırlatma
+Su hatırlatma
+Antrenman hatırlatma
+Dinlenme sayacı
+Challenge ilerlemesi
+Seri uyarısı
+Haftalık özet
+Abonelik bildirimi
+Güvenlik bildirimi
+İşlevsel ve pazarlama bildirimleri ayrı tercihler olmalıdır .
+26.2 Widget’lar
+Kalan kalori
+Makro özeti
+Su
+Adım
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+32
+
+--- PAGE 33 ---
+Bugünkü antrenman
+Seri
+Hızlı fotoğraf
+Hızlı öğün
+Widget üzerinde hassas veri gösterimi kullanıcı ayarına bağlı olacaktır .
+27. Paket ve Fiyatlandırma
+Fiyatlar lansman önerisidir . Gerçek fiyatlar:
+Gemini maliyeti
+Dönüşüm oranı
+Kullanıcı başına aylık kullanım
+App Store ve Google Play fiyat kademeleri
+Vergiler
+Rakip değişiklikleri
+ölçüldükten sonra güncellenebilir .
+27.1 Free
+Fiyat: Ücretsiz
+Manuel öğün
+Haftada 3 AI yemek analizi
+Su takibi
+Adım
+Temel ölçü takibi
+Temel antrenman günlüğü
+Sınırlı egzersiz kütüphanesi
+Üç harekette form analizi
+Yedi günlük rapor
+27.2 Calouch Plus
+Aylık: ₺249,99
+Yıllık: ₺1.499,99
+Ayda 150 yemek fotoğrafı analizi
+Sınırsız manuel öğün
+Barkod ve etiket
+Tarifler
+Gelişmiş makro takibi
+Ölçü ve ilerleme fotoğrafları
+Tüm desteklenen hareketlerde cihaz içi form takibi
+Antrenman programları
+Canlı antrenman
+Dinlenme sayacı
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+33
+
+--- PAGE 34 ---
+Gelişmiş rapor
+Widget
+Veri dışa aktarma
+Reklamsız kullanım
+27.3 Calouch AI Coach
+Aylık: ₺499,99
+Yıllık: ₺2.999,99
+Plus özelliklerinin tamamı
+Ayda 500 yemek analizi
+Ayda 120 dakika sesli AI hoca
+AI beslenme planı
+AI antrenman planı
+Adaptif antrenman önerileri
+Haftalık AI değerlendirme
+Belirli sayıda video form raporu
+Öncelikli AI işlem sırası
+Daha yüksek AI kredi kotası
+27.4 Lifetime Core
+Lansman: ₺3.999
+Normal: ₺5.999
+Lifetime Core:
+AI dışındaki Plus özelliklerini ömür boyu açar .
+Cihaz içi form analizini açar .
+Manuel beslenme ve antrenman özelliklerini açar .
+Ölçü ve ilerleme takibini açar .
+Başlangıçta 500 AI kredisi verir .
+Lifetime Core şunları sınırsız içermez:
+Gemini Live
+Bulut tabanlı yemek analizi
+Bulut tabanlı video analizi
+Gelecekte maliyet oluşturan üçüncü taraf servisler
+Lifetime, Apple tarafında non-consumable In-App Purchase; Google Play tarafında non-consumable
+one-time product şeklinde uygulanabilir . Bu ürün türleri bir kez satın alınır ve kalıcı fayda sağlar . 
+27.5 AI kredi paketleri
+100 kredi: ₺99,99
+500 kredi: ₺349,99
+1.500 kredi: ₺799,99
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+34
+
+--- PAGE 35 ---
+Örnek tüketim:
+Yemek fotoğrafı: 1 kredi
+Etiket analizi: 1 kredi
+Serbest metin öğün: 1 kredi
+Haftalık AI raporu: 3 kredi
+Program oluşturma: 5 kredi
+Bir dakika sesli AI hoca: 2 kredi
+Video form raporu: 20 kredi
+Cihaz içi form takibi: 0 kredi
+AI kredi paketleri mağazalarda consumable ürün olarak uygulanacaktır .
+27.6 Satın alma altyapısı
+iOS: StoreKit 2
+Android: Google Play Billing
+Ortak entitlement: RevenueCat veya özel backend
+Sunucu doğrulaması
+Webhook takibi
+Restore Purchases
+İptal ve iade yönetimi
+Grace period
+Apple aboneliklerde yenileme fiyatının açıkça gösterilmesini ve satın alımları geri yükleme seçeneği
+sunulmasını ister . Google da satın alma durumunun güvenli backend ile doğrulanmasını önerir . 
+28. Veri Mimarisi
+28.1 Temel prensipler
+Veri mimarisi:
+Domain bazlı
+Kullanıcı sahipliği açık
+Sürümlemeli
+Denetlenebilir
+Offline uyumlu
+Silinebilir
+Dışa aktarılabilir
+AI sağlayıcısından bağımsız
+En az veri toplama ilkesine uygun
+olacaktır .
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+35
+
+--- PAGE 36 ---
+28.2 PostgreSQL şemaları
+public
+→ RLS korumalı kullanıcı tabloları
+private
+→ Yalnızca server-side tablolar
+audit
+→ Güvenlik ve işlem kayıtları
+catalog
+→ Besin ve egzersiz katalogları
+billing
+→ Satın alma ve entitlement kayıtları
+28.3 Kimlik tabloları
+profiles
+user_preferences
+user_goals
+user_units
+user_devices
+user_consents
+legal_document_versions
+account_deletion_requests
+data_export_requests
+28.4 Beslenme tabloları
+foods
+food_translations
+food_aliases
+food_nutrients
+food_portions
+food_sources
+food_versions
+brands
+barcodes
+recipes
+recipe_versions
+recipe_items
+meal_entries
+meal_entry_items
+36
+
+--- PAGE 37 ---
+meal_entry_snapshots
+favorite_foods
+28.5 AI tabloları
+ai_analysis_jobs
+ai_analysis_attempts
+ai_analysis_results
+ai_analysis_items
+ai_model_configs
+ai_usage_ledger
+ai_feedback
+ai_corrections
+ai_cost_daily
+ai_conversations
+ai_conversation_messages
+ai_tool_calls
+ai_voice_usage
+ai_safety_events
+28.6 Sağlık tabloları
+health_connections
+health_permissions
+health_sync_cursors
+health_source_records
+daily_health_summaries
+step_summaries
+active_energy_summaries
+body_measurements
+body_progress_photos
+water_entries
+28.7 Antrenman tabloları
+exercises
+exercise_translations
+exercise_muscles
+exercise_media
+workout_programs
+workout_program_days
+workout_program_exercises
+workout_sessions
+workout_session_exercises
+workout_sets
+37
+
+--- PAGE 38 ---
+personal_records
+workout_notes
+28.8 Form analiz tabloları
+pose_analysis_sessions
+pose_exercise_events
+pose_form_metrics
+pose_form_feedback
+pose_model_versions
+Her kamera karesinin landmark verisi varsayılan olarak sunucuda tutulmamalıdır .
+Yalnızca hata analizi için açık izin verilen sınırlı test oturumlarında kısa süreli saklama uygulanabilir .
+28.9 Oyunlaştırma tabloları
+achievements
+achievement_rules
+user_achievements
+challenges
+challenge_tasks
+challenge_participants
+challenge_progress
+user_streaks
+28.10 Abonelik tabloları
+subscription_plans
+store_products
+subscriptions
+entitlements
+purchase_events
+billing_webhooks
+ai_credit_balances
+ai_credit_transactions
+28.11 Standart alanlar
+Kullanıcı verisi içeren ana tablolarda:
+id
+user_id
+created_at
+updated_at
+38
+
+--- PAGE 39 ---
+deleted_at
+version
+alanları bulunacaktır .
+29. Supabase Güvenlik Mimarisi
+29.1 Ortamlar
+Development
+Staging
+Production
+Production verileri development ortamına kopyalanmayacaktır .
+29.2 Row Level Security
+İstemciden erişilebilen bütün kullanıcı tablolarında RLS aktif olacaktır .
+Temel sahiplik:
+auth.uid()= user_id
+Ancak SELECT, INSERT, UPDATE ve DELETE politikaları ayrı ayrı tanımlanacaktır .
+29.3 Service role
+Service role key:
+Mobil uygulamaya
+Web istemcisine
+Public GitHub değişkenlerine
+eklenmeyecektir .
+29.4 Storage
+meal-images-private
+profile-images-private
+body-progress-private
+form-videos-private
+exports-private
+exercise-media-public
+admin-imports-private
+legal-documents-public
+• 
+• 
+• 
+• 
+• 
+• 
+39
+
+--- PAGE 40 ---
+Hassas görseller private bucket’larda tutulacaktır .
+29.5 Transaction gerektiren işlemler
+Öğün ve öğün kalemleri
+Antrenman tamamlama
+Challenge ilerlemesi
+AI kredi düşme
+AI kredi iadesi
+Abonelik entitlement
+Hesap silme durum geçişleri
+30. Offline ve Senkronizasyon
+30.1 Offline destek
+Manuel öğün taslağı
+Su ekleme
+Set ve tekrar kaydı
+Antrenman tamamlama
+Ölçü girişi
+Son kullanılan besinler
+Günlük hedef görüntüleme
+30.2 Yerel depolama
+SecureStore: token ve küçük sırlar
+SQLite: offline veri ve kuyruk
+Dosya sistemi: geçici fotoğraf ve video
+TanStack Query persistence: server cache
+30.3 Outbox kuyruğu
+operation_id
+entity_type
+entity_id
+operation_type
+payload
+created_at
+attempt_count
+last_error
+status
+Her sunucu isteği idempotent olmalıdır .
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+40
+
+--- PAGE 41 ---
+30.4 Çakışma çözümü
+Ayarlarda son yazan kazanır .
+Öğün ve antrenmanda version kontrolü yapılır .
+Kritik çakışmada iki sürüm kullanıcıya gösterilir .
+Sessiz veri kaybı yapılmaz.
+31. Güvenlik
+31.1 Katmanlar
+TLS
+Platform disk şifrelemesi
+RLS
+RBAC
+Private Storage
+Signed URL
+SecureStore
+Rate limiting
+Input validation
+Audit log
+Secret management
+Dependency scanning
+Log maskeleme
+Yedekleme
+Veri saklama politikası
+31.2 Alan bazlı ek şifreleme
+Bütün veri tabanını uygulama seviyesinde şifrelemek yerine yalnızca seçili hassas alanlarda envelope
+encryption değerlendirilecektir .
+Örnek:
+Özel sağlık notları
+Alerji açıklamaları
+Kullanıcı özel notları
+AI özel konuşma geçmişi
+31.3 Log güvenliği
+Loglara yazılmaması gerekenler:
+Yemek fotoğrafı
+İlerleme fotoğrafı
+Form videosu
+Access token
+Refresh token
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+41
+
+--- PAGE 42 ---
+API key
+Tam sağlık kaydı
+Tam AI konuşması
+Kullanıcı parolası
+31.4 Yönetici paneli
+Çok faktörlü doğrulama
+Rol bazlı erişim
+Oturum süresi
+Hassas işlem yeniden doğrulaması
+Audit trail
+Toplu veri dışa aktarma sınırı
+IP ve cihaz kaydı
+32. KVKK ve Gizlilik
+Bu bölüm hukuki görüşün yerine geçmez. Yayından önce KVKK, tüketici hukuku, abonelik ve yurt dışına
+veri aktarımı konusunda uzman hukukçu incelemesi yapılmalıdır .
+32.1 Veri kategorileri
+Hesap
+İletişim
+Cihaz
+Beslenme
+Yemek fotoğrafı
+Kilo
+Vücut ölçüsü
+İlerleme fotoğrafı
+Aktivite
+Adım
+Antrenman
+Form analizi
+AI sohbet
+Abonelik
+Teknik log
+Rıza kayıtları
+Sağlıkla ilişkilendirilebilen veriler özel nitelikli kişisel veri hassasiyetinde ele alınmalıdır . KVKK, özel
+nitelikli kişisel verilerin diğer kişisel verilere göre daha sıkı korunması gerektiğini belirtmektedir . 
+32.2 Gerekli belgeler
+KVKK aydınlatma metni
+Açık rıza metni
+Gizlilik politikası
+Kullanım koşulları
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+42
+
+--- PAGE 43 ---
+Üyelik sözleşmesi
+Abonelik koşulları
+Otomatik yenileme açıklaması
+Veri saklama ve imha politikası
+İlgili kişi başvuru formu
+Veri ihlali planı
+Alt işleyenler listesi
+Yurt dışı veri aktarımı açıklaması
+AI kullanım açıklaması
+Sağlık sorumluluk reddi
+Hesap silme sayfası
+Veri dışa aktarma prosedürü
+Çerez politikası
+32.3 Aydınlatma ve açık rıza
+Aydınlatma ile açık rıza tek metin içinde birleştirilmeyecektir .
+KVKK’nın 18 Şubat 2026 tarihli ilke kararı, aydınlatma ve açık rıza metinlerinin ayrı düzenlenmesi
+gerektiğini belirtmektedir . 
+Her rıza kaydında:
+Rıza türü
+Belge sürümü
+Dil
+Tarih
+Uygulama sürümü
+Verildi, reddedildi veya geri çekildi
+Geri çekilme tarihi
+saklanacaktır .
+32.4 Yurt dışı veri aktarımı
+Supabase, Google, Vercel, Sentry ve RevenueCat gibi servisler yurt dışında veri işleyebilir .
+Her servis için:
+Gönderilen veri
+İşleme amacı
+Ülke
+Saklama süresi
+Alt işleyenler
+Silme süreci
+Teknik önlemler
+Aktarım hukuki dayanağı
+belgelenmelidir .
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+43
+
+--- PAGE 44 ---
+KVKK standart sözleşmeleri yurt dışı aktarımında uygun güvence yöntemlerinden biridir; sözleşme türü
+veri sorumlusu/veri işleyen ilişkisine göre seçilmelidir . İmzalanan standart sözleşmelerin bildirim süresi
+de takip edilmelidir . 
+32.5 Gizlilik merkezi
+Uygulama içinde:
+Toplanan veriler
+Bağlı servisler
+Health izinleri
+AI veri kullanımı
+Fotoğraf saklama
+Analitik tercihi
+Pazarlama tercihi
+Rızaları geri çek
+Verilerimi indir
+Hesabımı sil
+ekranları bulunacaktır .
+33. Hesap Silme ve Veri Dışa Aktarma
+33.1 Hesap silme
+Profil
+→ Gizlilik ve Güvenlik
+→ Hesabımı Sil
+Apple, hesap oluşturan uygulamaların hesap silmeyi uygulama içinden başlatabilmesini ister . Google
+Play ise uygulama içindeki yola ek olarak herkese açık web silme bağlantısı talep eder . 
+Web sayfası:
+calouch.com/account-deletion
+33.2 Silme akışı
+Kullanıcı yeniden doğrulanır .
+Aktif abonelik hakkında bilgi verilir .
+Talep oluşturulur .
+Oturumlar kapatılır .
+Storage dosyaları silinir .
+Kullanıcı verileri silinir .
+AI geçmişi silinir .
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+1. 
+2. 
+3. 
+4. 
+5. 
+6. 
+7. 
+44
+
+--- PAGE 45 ---
+Analitik kimliği anonimleştirilir .
+Auth hesabı silinir .
+Tamamlanma kaydı oluşturulur .
+33.3 Veri dışa aktarma
+JSON
+CSV
+PDF özet
+Dosya private bucket’a oluşturulur , kısa süreli signed URL ile sunulur ve belirlenen sürede otomatik
+silinir .
+34. Mağaza Uyumu
+34.1 App Store
+App Privacy bilgileri
+Privacy manifest kontrolü
+HealthKit izinleri
+Kamera ve fotoğraf izin açıklamaları
+Apple ile giriş
+Hesap silme
+Restore Purchases
+Abonelik koşulları
+Gizlilik politikası
+Kullanım koşulları
+İnceleme hesabı
+AI demo akışı
+Sağlık ve tıbbi sorumluluk reddi
+Apple, uygulamanın ve entegre üçüncü taraf SDK’ların topladığı verilerin App Store Connect’te doğru
+açıklanmasını ister . 
+34.2 Google Play
+Data Safety formu
+Health Apps Declaration
+Health Connect izin gerekçeleri
+Uygulama içi hesap silme
+Web hesap silme
+Gizlilik politikası
+Play Billing
+Test hesabı
+İçerik derecelendirmesi
+Veri saklama açıklaması
+Google Play sağlık uygulamalarında Health Apps Declaration ve herkese açık gizlilik politikası ister . 
+8. 
+9. 
+10. 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+45
+
+--- PAGE 46 ---
+35. Yönetim Paneli
+Next.js ve Vercel ile geliştirilecektir .
+Modüller:
+Dashboard
+Kullanıcılar
+Besinler
+Barkodlar
+Tarifler
+Egzersizler
+Programlar
+Challenge’lar
+Başarımlar
+AI analizleri
+AI düzeltmeleri
+AI maliyetleri
+Voice usage
+Form analizleri
+Moderasyon
+Abonelikler
+İadeler
+Bildirimler
+Çeviriler
+Feature flags
+KVKK talepleri
+Hesap silme
+Veri dışa aktarma
+Audit log
+Güvenlik olayları
+Roller:
+Super Admin
+İçerik Yöneticisi
+Beslenme Editörü
+Fitness Editörü
+Destek
+Finans
+Gizlilik Sorumlusu
+Analist
+Salt okunur
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+46
+
+--- PAGE 47 ---
+36. API Yapısı
+POST /v1/ai/meals/analyze
+GET  /v1/ai/jobs/:id
+POST /v1/ai/text-to-meal
+POST /v1/ai/nutrition-label
+POST /v1/ai/live/token
+POST /v1/ai/workout-plan
+POST /v1/ai/meal-plan
+GET  /v1/foods/search
+POST /v1/foods/custom
+POST /v1/recipes
+POST /v1/health/sync
+GET  /v1/health/daily-summary
+POST /v1/workouts/sessions
+PATCH /v1/workouts/sessions/:id
+POST /v1/workouts/sessions/:id/complete
+POST /v1/pose/sessions
+POST /v1/pose/sessions/:id/summary
+POST /v1/account/export
+POST /v1/account/delete
+POST /v1/billing/apple/webhook
+POST /v1/billing/google/webhook
+Tüm API’lerde:
+Kimlik doğrulama
+Rate limit
+Zod validation
+Idempotency
+Request size limiti
+Audit log
+Correlation ID
+Güvenli hata mesajı
+bulunmalıdır .
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+47
+
+--- PAGE 48 ---
+37. State Management
+Server state
+TanStack Query
+Öğünler
+Kullanıcı profili
+Besin arama
+Programlar
+Raporlar
+Abonelikler
+Client state
+Zustand
+Aktif antrenman
+Kamera akışı
+Tema
+Geçici filtreler
+Bottom sheet
+AI Live oturumu
+Form state
+React Hook Form + Zod
+Bütün uygulama tek devasa global store içinde tutulmayacaktır .
+38. Analitik
+Gönderilebilecek olaylar:
+onboarding_completed
+meal_scan_started
+meal_scan_completed
+meal_scan_failed
+meal_scan_corrected
+meal_saved
+water_logged
+workout_started
+workout_completed
+form_session_started
+form_session_completed
+voice_coach_started
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+48
+
+--- PAGE 49 ---
+paywall_viewed
+subscription_started
+lifetime_purchased
+Analitik platformuna gönderilmeyecek bilgiler:
+Yemek fotoğrafı
+Öğün içeriği
+Kalori değeri
+Kilo
+Ölçü
+İlerleme fotoğrafı
+Form videosu
+Sağlık verisi
+AI konuşma metni
+39. Test Stratejisi
+39.1 Birim testleri
+Kalori hesabı
+Makro hesabı
+Porsiyon dönüşümü
+MET hesabı
+Streak
+AI JSON doğrulama
+AI kredi hesabı
+Entitlement
+Form state machine
+RLS yardımcı fonksiyonları
+39.2 Entegrasyon testleri
+Supabase Auth
+Storage
+Gemini
+Gemini Live
+HealthKit
+Health Connect
+StoreKit
+Google Play Billing
+RevenueCat
+Push
+Hesap silme
+Veri dışa aktarma
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+49
+
+--- PAGE 50 ---
+39.3 E2E
+Yeni kullanıcı
+İlk öğün fotoğrafı
+AI sonucu düzenleme
+Manuel öğün
+Su
+Ölçü
+Antrenman
+Sesli set kaydı
+Form analizi
+Abonelik
+Restore Purchases
+Hesap silme
+39.4 AI yemek değerlendirme seti
+Türk kahvaltısı
+Kuru fasulye ve pilav
+Mantı
+Döner
+Kebap
+Çorba
+Zeytinyağlı
+Salata
+Karışık tabak
+Soslu yemek
+Fast food
+Paketli ürün
+Kısmen yenmiş tabak
+Düşük ışık
+Birden fazla tabak
+Yemek olmayan görüntü
+39.5 Form değerlendirme seti
+Farklı boylar
+Farklı vücut tipleri
+Farklı kıyafetler
+Düşük ve yüksek ışık
+Farklı kamera açıları
+Sağ ve sol profil
+Kısmi görünürlük
+Hatalı tekrar
+Doğru tekrar
+Hızlı ve yavaş tempo
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+50
+
+--- PAGE 51 ---
+40. GitHub ve Monorepo
+/apps
+  /mobile
+  /admin
+  /web
+/packages
+  /ui
+  /design-tokens
+  /types
+  /validation
+  /nutrition-engine
+  /activity-engine
+  /pose-engine
+  /ai-client
+  /health-connectors
+  /localization
+  /analytics
+  /config
+/supabase
+  /migrations
+  /functions
+  /seed
+  /tests
+  /policies
+/docs
+  /prd
+  /architecture
+  /database
+  /security
+  /privacy
+  /store-submission
+pnpm workspace ve Turborepo kullanılabilir . Expo monorepo yapısını workspace kullanan paket
+yöneticileriyle desteklemektedir . 
+41. CI/CD
+Pull request sırasında:
+TypeScript
+ESLint
+Unit test
+Integration test
+• 
+• 
+• 
+• 
+51
+
+--- PAGE 52 ---
+Expo Doctor
+Dependency audit
+Secret scanning
+Migration lint
+RLS testleri
+Build kontrolü
+Dağıtım kanalları:
+Development
+Preview
+Staging
+Production
+Mobil dağıtım:
+Development Build
+EAS Build
+TestFlight
+Google Play Internal Testing
+Closed Testing
+Production
+Native modül, izin, entitlement veya widget değişiklikleri yeni mağaza build’i gerektirir .
+42. Ürün Yol Haritası
+Faz 0 — Marka, hukuk ve temel sistem
+calouch.com satın alma
+Marka araştırması
+Şirket ve veri sorumlusu yapısı
+Hukuki danışmanlık
+Veri envanteri
+Supabase ortamları
+Gemini Google Cloud projesi
+Tasarım sistemi
+GitHub monorepo
+Development Build
+CI/CD
+Faz 1 — Mağazaya çıkacak MVP
+Auth
+Onboarding
+Dashboard
+Kalori hedefi
+Fotoğraftan yemek analizi
+Manuel öğün
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+52
+
+--- PAGE 53 ---
+Besin arama
+Tarif
+Su
+Ölçü ve kilo
+Temel adım
+Açık ve koyu tema
+Türkçe ve İngilizce
+Free ve Plus aboneliği
+Hesap silme
+Veri dışa aktarma
+Faz 2 — Antrenman
+Egzersiz kütüphanesi
+Programlar
+Canlı antrenman
+Dinlenme sayacı
+Set, tekrar ve ağırlık
+Kişisel rekor
+Aktivite kayıtları
+Widget
+Faz 3 — Yazılı AI hoca
+AI sohbet
+Function calling
+Beslenme programı
+Antrenman programı
+Haftalık özet
+Adaptif öneriler
+Faz 4 — Sesli AI hoca
+Gemini Live
+Ephemeral token
+Sesli set kaydı
+Dinlenme yönetimi
+Beslenme sorguları
+Dakika kotası
+Yedek STT ve TTS sistemi
+Faz 5 — Cihaz içi form takibi
+Native kamera işlemcisi
+MediaPipe
+İlk on egzersiz
+Tekrar sayma
+Eklem açıları
+Form geri bildirimi
+Güven seviyesi
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+53
+
+--- PAGE 54 ---
+Faz 6 — İleri analiz
+Video form raporu
+Fotoğraftan ölçü tahmini
+Apple Watch
+Wear OS
+Akıllı tartı
+Challenge
+Başarımlar
+Adaptif program
+43. İlk Yayın Kabul Kriterleri
+Development Build kullanılıyor .
+Expo Go bağımlılığı yok.
+New Architecture uyumsuz paket yok.
+Gemini key mobil uygulamada değil.
+Fotoğraf analizi çalışıyor .
+AI sonucu düzenlenebiliyor .
+Onaysız öğün kaydı oluşmuyor .
+Kalori hesapları besin veri tabanından yapılıyor .
+Manuel öğün çalışıyor .
+Su ve ölçü takibi çalışıyor .
+Health izinleri reddedilse de uygulama çalışıyor .
+RLS bütün kullanıcı tablolarında aktif.
+Görseller private bucket’ta.
+Abonelik sunucuda doğrulanıyor .
+Restore Purchases çalışıyor .
+Hesap uygulama içinden silinebiliyor .
+Web hesap silme sayfası mevcut.
+Veri dışa aktarma çalışıyor .
+Aydınlatma ve açık rıza ayrılmış.
+App Privacy doğru doldurulmuş.
+Data Safety doğru doldurulmuş.
+Health Apps Declaration tamamlanmış.
+TestFlight testi tamamlanmış.
+Google Play test süreci tamamlanmış.
+Crash reporting aktif.
+AI maliyet limiti aktif.
+Türkçe ve İngilizce tamamlanmış.
+Açık ve koyu tema tamamlanmış.
+Erişilebilirlik kontrolü yapılmış.
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+54
+
+--- PAGE 55 ---
+44. Ana Başarı Metrikleri
+Ürün
+İlk gün AI öğün analizi tamamlama oranı
+AI analizinden kayda dönüşüm
+Kullanıcı düzeltme oranı
+Haftalık kayıtlı öğün sayısı
+Haftalık antrenman sayısı
+Su takibi kullanımı
+Form analizi kullanımı
+Sesli AI hoca kullanım süresi
+Tutundurma
+gün
+gün
+gün
+gün
+Ticari
+Free → Plus dönüşümü
+Plus → AI Coach dönüşümü
+Yıllık paket oranı
+Lifetime satış oranı
+Abonelik yenileme
+İade oranı
+Kullanıcı başına AI maliyeti
+Brüt kâr marjı
+Teknik
+Crash-free session
+AI hata oranı
+Fotoğraf analiz süresi
+Voice latency
+Sağlık senkronizasyon hata oranı
+Hesap silme başarı oranı
+Billing webhook hata oranı
+45. Nihai Teknik ve Ürün Kararları
+Calouch’un üretim mimarisi:
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 1. 
+• 1. 
+• 1. 
+• 1. 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+55
+
+--- PAGE 56 ---
+React Native
++
+Expo SDK
++
+Development Build
++
+React Native New Architecture
++
+Expo Router
++
+TypeScript
++
+Supabase
++
+Google Gemini API
++
+Gemini Live API
++
+MediaPipe
++
+HealthKit
++
+Health Connect
++
+StoreKit
++
+Google Play Billing
++
+Next.js
++
+Vercel
++
+GitHub
++
+EAS Build
+Ana ürün farklılaştırıcıları:
+Fotoğraftan yemek ve porsiyon analizi
+Güven aralığı ve kullanıcı doğrulaması
+Beslenme ve antrenmanın aynı uygulamada birleşmesi
+Yazılı ve sesli AI hoca
+Cihaz içi hareket formu takibi
+Vücut ölçüsü ve ilerleme analizi
+Gizlilik odaklı sağlık veri mimarisi
+Abonelik ve sürdürülebilir AI kredi sistemi
+Calouch ilk günden bütün modülleri aynı anda yayınlamaya çalışmayacaktır . İlk mağaza sürümünde
+fotoğraftan beslenme analizi, manuel kayıt, su, ölçü, temel aktivite ve abonelik sistemi kusursuz hale
+getirilecektir .
+1. 
+2. 
+3. 
+4. 
+5. 
+6. 
+7. 
+8. 
+56
+
+--- PAGE 57 ---
+Antrenman, sesli AI hoca ve form takibi aynı mimari içinde planlanacak ancak aşamalı olarak
+yayınlanacaktır . Böylece ürün daha erken mağazaya çıkabilir , gelir üretmeye başlayabilir ve gerçek
+kullanıcı verilerine göre güvenli biçimde büyüyebilir .
+57

@@ -1,0 +1,68 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+build/
+.turbo/
+*.tsbuildinfo
+
+# Expo
+.expo/
+.expo-shared/
+web-build/
+
+# Continuous Native Generation — android/ ve ios/ prebuild ile üretilir.
+# Bir native klasör commit edilecekse (§01 native entegrasyon kapısı) bu karar
+# 14-open-decisions.md'ye yazılır ve buradan çıkarılır.
+apps/mobile/android/
+apps/mobile/ios/
+
+# Native credentials — asla commit edilmez
+*.keystore
+*.jks
+*.p8
+*.p12
+*.mobileprovision
+*.cer
+google-services.json
+GoogleService-Info.plist
+
+# Env — §01: secret istemci/public ayrımı
+.env
+.env.*
+!.env.example
+
+# Supabase local stack
+supabase/.temp/
+supabase/.branches/
+
+# CI bundle doğrulaması
+.bundle-check/
+.bundle-check-ios/
+
+# Test / coverage
+coverage/
+
+# Ajan skill'leri: skills-lock.json içerikleri hash ile sabitler ve
+# `npx skills add` ile geri kurulur. Vendor'lanmış kopyayı commit etmek
+# üçüncü taraf dokümanını iki klasörde birden çoğaltır.
+.agents/skills/
+.claude/skills/
+
+# Makineye özel ayarlar (.local sözleşmesi)
+.claude/settings.local.json
+
+# Editor & OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*

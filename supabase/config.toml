@@ -1,0 +1,38 @@
+# Supabase local development config.
+# Belirtilmeyen her ayar CLI varsayılanını kullanır.
+#
+# NOT: `supabase start` ve `supabase test db` Docker Desktop ister. Geliştirme
+# makinesinde Docker yoksa RLS testleri yalnız CI'da çalışır — bu durum
+# 14-open-decisions.md'de kayıtlıdır.
+
+project_id = "calouch"
+
+[db]
+port = 54322
+# Uzak proje Postgres 17 kullanıyor; yerel stack aynı ana sürümde olmalı,
+# yoksa migration'lar yerelde geçip production'da kırılabilir.
+major_version = 17
+
+[api]
+port = 54321
+# §09: "public: istemciden erişilen, RLS korumalı kullanıcı tabloları."
+# private/audit şemaları Data API'ye AÇILMAZ.
+schemas = ["public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[auth]
+port = 54324
+site_url = "calouch://"
+additional_redirect_urls = ["calouch://"]
+# §02: e-posta/şifre, Google, Apple, magic link.
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+# Yerelde e-posta doğrulaması kapalı: test akışını yavaşlatır.
+# Staging/production'da AÇIK olmalı.
+enable_confirmations = false
+
+[studio]
+port = 54323

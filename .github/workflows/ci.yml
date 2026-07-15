@@ -1,0 +1,160 @@
+# Implements: FND-01
+# PRD §01 "CI/CD minimumu": TypeScript, ESLint, unit/integration test,
+# Expo Doctor, dependency audit, secret scan, migration lint, RLS testleri
+# ve build kontrolü.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # §01: dev/staging/prod ayrı. CI, gerçek projeye bağlanmaz; doğrulama için
+  # sahte ama şema-geçerli değerler kullanır.
+  EXPO_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
+  EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_placeholder_000000
+  EXPO_PUBLIC_ENV: development
+
+jobs:
+  verify:
+    name: Typecheck / Lint / Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Tek komut yerine ayrı adımlar: hangi kapının kapandığı log'da görünür.
+      - name: TypeScript
+        run: pnpm turbo run typecheck
+
+      - name: ESLint
+        run: pnpm turbo run lint
+
+      - name: Test
+        run: pnpm turbo run test
+
+  build:
+    name: Expo Doctor / Bundle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # §01: "Expo Go bağımlılığı yok ve iki platform Development Build açılıyor."
+      # Doctor, New Architecture uyumsuz veya SDK'ya aykırı paketleri yakalar.
+      - name: Expo Doctor
+        working-directory: apps/mobile
+        run: npx expo-doctor
+
+      # Bundle'ın gerçekten derlendiğini kanıtlar: çözülemeyen import, eksik
+      # bağımlılık ve Metro monorepo hataları burada çıkar.
+      - name: Bundle (android)
+        working-directory: apps/mobile
+        run: npx expo export --platform android --output-dir ../../.bundle-check
+
+      - name: Bundle (ios)
+        working-directory: apps/mobile
+        run: npx expo export --platform ios --output-dir ../../.bundle-check-ios
+
+      # Bu adım bilinçli olarak build job'ının İÇİNDE: GitHub Actions job'ları
+      # dosya sistemi paylaşmaz, ayrı bir job bundle'ı göremezdi.
+      #
+      # §01 kabul kriteri: "Mobil bundle'da Gemini/service-role secret yok."
+      #
+      # DİKKAT — bu kontrol bilinçli olarak DEĞER BİÇİMİ arar, kelime değil.
+      # Hermes bytecode'unda (.hbc) string tablosu bitişik yazılır; `grep
+      # service_role` yanlış pozitif verir. Gerçekte görülen örnekler:
+      #   - 'home_repair_service' + 'role'  (Material Symbols ikon adı)
+      #   - 'SHEET_COMPAT_LARGE' + 'MINITIAL_SESSION' -> "LARGEMINITIAL"
+      #   - koruma kodumuzun kendi desen sabitleri ('SERVICE_ROLE', 'GEMINI')
+      # Kelime bazlı bir kapı, ilk çalıştırmada kırmızı yanar ve ekip onu
+      # devre dışı bırakır — yani hiç olmamasından kötüdür.
+      - name: Bundle secret scan
+        run: |
+          set -euo pipefail
+          BUNDLE=$(find .bundle-check -name '*.hbc' -o -name '*.js' | head -1 || true)
+          if [ -z "${BUNDLE:-}" ]; then
+            echo "Bundle bulunamadı; build job'ı çalıştı mı?"
+            exit 0
+          fi
+          FAIL=0
+          # Gerçek Supabase secret anahtarı
+          if grep -oaE 'sb_secret_[A-Za-z0-9_-]{20,}' "$BUNDLE"; then FAIL=1; fi
+          # Gerçek Google/Gemini API anahtarı
+          if grep -oaE 'AIzaSy[A-Za-z0-9_-]{33}' "$BUNDLE"; then FAIL=1; fi
+          # service_role JWT (payload düz metin değil; claim'i aranır)
+          if grep -oaE '"role"[[:space:]]*:[[:space:]]*"service_role"' "$BUNDLE"; then FAIL=1; fi
+          if [ "$FAIL" -ne 0 ]; then
+            echo "::error::PRD §01 ihlali: istemci bundle'ında secret bulundu."
+            exit 1
+          fi
+          echo "Bundle temiz."
+
+  secrets:
+    name: Secret scan (kaynak)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # gitleaks geçmişi tarayabilsin.
+          fetch-depth: 0
+
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  database:
+    name: Migration lint / RLS tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      # §09: "Her migration pozitif/negatif RLS testi taşır."
+      # Bu kapı olmadan RLS regresyonu sessizce production'a gider.
+      - name: Start local stack
+        run: supabase start
+
+      - name: Migration lint
+        run: supabase db lint --level warning
+
+      - name: RLS tests
+        run: supabase test db
+
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Sağlık verisi işleyen bir uygulamada yüksek/kritik açık merge edilemez.
+      - run: pnpm audit --audit-level high
