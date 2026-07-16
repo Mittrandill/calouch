@@ -13,44 +13,61 @@ type Props = {
   onToggleFavorite?: () => void;
 };
 
+/**
+ * NOT: satırın kendisi (onPress) ve favori yıldızı (onToggleFavorite) İKİ
+ * AYRI, KARDEŞ Pressable — biri diğerinin içinde DEĞİL. react-native-web
+ * accessibilityRole="button" olan Pressable'ı gerçek bir <button> DOM
+ * elemanına çevirir; bir <button> başka bir <button>'ı iç içe barındıramaz
+ * (geçersiz HTML — React bunu hydration hatası olarak loglar ve tıklama
+ * olayları web'de dış <button>'a kadar kabarcıklanabilir/bloklanabilir).
+ */
 export function FoodSearchResultRow({ result, onPress, isFavorite, onToggleFavorite }: Props) {
   const theme = useTheme();
 
   return (
-    <Pressable
-      onPress={onPress}
-      accessibilityRole="button"
-      accessibilityLabel={result.matched_name}
-      style={({ pressed }) => [
+    <View
+      style={[
         styles.row,
         {
           minHeight: theme.minTouchTarget,
           paddingHorizontal: theme.spacing.lg,
-          paddingVertical: theme.spacing.sm,
-          backgroundColor: pressed ? theme.colors.surface.pressed : theme.colors.surface.default,
+          backgroundColor: theme.colors.surface.default,
           borderBottomWidth: StyleSheet.hairlineWidth,
           borderBottomColor: theme.colors.border.default,
         },
       ]}
     >
-      <View style={styles.textColumn}>
-        <Text style={[theme.typography.body, { color: theme.colors.text.primary }]}>
-          {result.matched_name}
-        </Text>
-        {result.brand_name !== null && (
-          <Text
-            style={[
-              theme.typography.caption,
-              { color: theme.colors.text.tertiary, marginTop: theme.spacing.xxs },
-            ]}
-          >
-            {result.brand_name}
+      <Pressable
+        onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel={result.matched_name}
+        style={({ pressed }) => [
+          styles.pressableRow,
+          {
+            paddingVertical: theme.spacing.sm,
+            backgroundColor: pressed ? theme.colors.surface.pressed : 'transparent',
+          },
+        ]}
+      >
+        <View style={styles.textColumn}>
+          <Text style={[theme.typography.body, { color: theme.colors.text.primary }]}>
+            {result.matched_name}
           </Text>
-        )}
-      </View>
-      <Text style={[theme.typography.numericSm, { color: theme.colors.text.secondary }]}>
-        {Math.round(result.energy_kcal)} kcal
-      </Text>
+          {result.brand_name !== null && (
+            <Text
+              style={[
+                theme.typography.caption,
+                { color: theme.colors.text.tertiary, marginTop: theme.spacing.xxs },
+              ]}
+            >
+              {result.brand_name}
+            </Text>
+          )}
+        </View>
+        <Text style={[theme.typography.numericSm, { color: theme.colors.text.secondary }]}>
+          {Math.round(result.energy_kcal)} kcal
+        </Text>
+      </Pressable>
       {onToggleFavorite !== undefined && (
         <Pressable
           onPress={onToggleFavorite}
@@ -74,11 +91,12 @@ export function FoodSearchResultRow({ result, onPress, isFavorite, onToggleFavor
           </Text>
         </Pressable>
       )}
-    </Pressable>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  row: { flexDirection: 'row', alignItems: 'center' },
+  pressableRow: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   textColumn: { flex: 1 },
 });
