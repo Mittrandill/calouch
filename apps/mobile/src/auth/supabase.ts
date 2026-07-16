@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { AppState } from 'react-native';
 
 import { env } from '../env';
-import { largeSecureStore } from './secureStorage';
+import { authStorage } from './authStorage';
 
 /**
  * Supabase istemcisi.
@@ -15,8 +15,9 @@ export const supabase = createClient(
   env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   {
     auth: {
-      // §09: token şifreli depoda.
-      storage: largeSecureStore,
+      // §09: mobilde token şifreli depoda. Web dalı yalnız geliştirme içindir
+      // ve production'da yüklenmeyi reddeder — bkz. authStorage.ts.
+      storage: authStorage,
       autoRefreshToken: true,
       persistSession: true,
       // Derin bağlantıyı expo-router yönetir; URL'den oturum çıkarmak

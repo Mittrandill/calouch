@@ -83,12 +83,24 @@ E-posta/şifre, Google, Apple, şifre sıfırlama, magic link, opsiyonel biyomet
 > Bu dalga AI'dan **önce** bitmelidir (§11).
 
 #### MVP-02 — Onboarding ve hedef motoru
-**Durum:** `todo` · **PRD:** §8.2–8.4 · **Bağımlılık:** MVP-01
+**Durum:** `partial` · **PRD:** §8.2–8.4 · **Bağımlılık:** MVP-01
 
 Adımlı onboarding; ad/doğum yılı/boy/kilo/aktivite/hedef/tercih/birim/dil/bildirim. Bazal metabolizma, günlük enerji, kalori/protein/karb/yağ/lif/su hedefi. Formül **sürümlü**.
 
 **Veri sınıfı:** Sağlıkla ilişkilendirilebilir (yüksek).
 **Kabul:** Hedef hesabı unit testli ve sürümlü; manuel override korunur; yarıda kalan onboarding devam eder; izin reddi bloklamaz; riskli düşük hedef uyarılır ve tıbbi tavsiye verilmez.
+
+**Bitti:**
+- `packages/nutrition-engine` — Mifflin-St Jeor v1 hedef motoru, saf TypeScript, 47 unit test. Deterministik ve sürümlü; güvenlik tabanı ve uyarılar dahil.
+- `profiles` onboarding + hedef kolonları, kısıtlar motorun doğrulamasını aynalar, 14 pgTAP testi.
+- §8.2'de olmayan `biological_sex` alanı eklendi — karar ve gerekçe `14-open-decisions.md`'de.
+
+**Kalan:**
+- Adımlı onboarding ekranları ve yarıda kalanı sürdürme.
+- Hedef düzenleme ekranı; `goal_overrides` okuma/yazma (etkin değer = override ?? hesaplanan).
+- Riskli hedef uyarısı ve profesyonel destek önerisinin UI'da gösterimi.
+- Kilo/hedef değişince yeniden hesaplama tetiği.
+- Alerji alanı — `blocked`, envelope encryption kararına bağlı (§09).
 
 #### MVP-03 — Besin şeması ve kataloğu
 **Durum:** `todo` · **PRD:** §12–13 · **Bağımlılık:** FND-04

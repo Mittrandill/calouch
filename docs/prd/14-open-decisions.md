@@ -81,11 +81,6 @@ Google Cloud / Gemini projesi henüz oluşturulmadı (Faz 0 çıktısı).
 
 **Karar gereken:** Hangi alanlar; anahtar rotasyonu; şifreli alanda arama gerekiyor mu (gerekiyorsa tasarım kökten değişir).
 
-### Hedef motoru formülü ve sürümü
-**Etki:** MVP-02 · **PRD:** §8.4
-
-§8.4 "Formül ve sürümü kaydedilir" diyor. Formül seçimi (ör. Mifflin-St Jeor) ve `v1` etiketi MVP-02 başlamadan sabitlenmeli — sonradan değişirse kullanıcıların geçmiş hedefleri yeniden hesaplanmamalı.
-
 ### `13-agent-work-orders.md` türetilmiş kimlikler
 **Etki:** iş takibi
 
@@ -96,6 +91,57 @@ Google Cloud / Gemini projesi henüz oluşturulmadı (Faz 0 çıktısı).
 ---
 
 ## Kapalı
+
+### Onboarding'e biyolojik cinsiyet alanı eklendi
+**Karar tarihi:** 2026-07-16 · **Etki:** MVP-02 · **PRD sapması:** §8.2
+
+**Bulgu:** "Cinsiyet" kelimesi PRD'nin tamamında geçmiyor — ne kaynak PDF'te ne modüler dosyalarda. §8.2 alan listesi doğum yılı, boy, kilo, hedef kilo, aktivite ve hedefi topluyor; cinsiyet yok.
+
+**Sorun:** Her standart bazal metabolizma formülü cinsiyet ister. Mifflin-St Jeor'da sabit farkı **166 kcal/gün** (erkek +5, kadın −161) — aynı yaş/boy/kiloda bazal metabolizmanın ~%10'u. Ortalamaya yuvarlamak her kullanıcıda ±83 kcal sistematik hata demekti: kadınlara fazla, erkeklere az kalori. Kilo verme hedefinde bu haftada ~0.1 kg sapmadır ve ürünün tüm değer önerisi kalori doğruluğu üzerine kurulu.
+
+**Karar:** §8.2'ye **atlanabilir** bir adım eklendi (`biological_sex`, varsayılan `unspecified`).
+
+**Gerekçe:**
+- Atlanabilir olması §00'ın "veri/izin reddedilse de temel kullanım çalışır" ilkesine uyar; zorunlu alan trans/non-binary kullanıcılar için zorlayıcı olurdu.
+- Atlanırsa iki sabitin orta noktası (−78) kullanılır, sonuç `confidence: 'low'` ve `sex_unspecified` uyarısı taşır — §00 "Belirsizlik görünürdür" ilkesi deterministik tahminde de geçerli.
+- Cinsiyet bilinmiyorken **koruyucu** (düşük, 1200 kcal) güvenlik tabanı uygulanır.
+- §8.4 zaten tüm değerlerin elle değiştirilebilmesini istiyor; yanlış tahmin kullanıcıyı kilitlemiyor.
+- Sorulan şey kimlik değil fizyoloji: sabit, ortalama yağsız kütle farkını temsil eder.
+
+**Sonuç:** Health entegrasyonu (MVP-12) biyolojik cinsiyeti otomatik doldurabilir, ama izin reddedilebileceği için bu adım yine de kalır.
+
+### Hedef motoru formülü: Mifflin-St Jeor v1
+**Karar tarihi:** 2026-07-16 · **Etki:** MVP-02 · **PRD:** §8.4
+
+§8.4 **ne** hesaplanacağını sayıyor (bazal metabolizma, enerji ihtiyacı, kalori, protein, karb, yağ, lif, su) ama **formülü vermiyor**. §8.4 "Formül ve sürümü kaydedilir" dediği için bu kayıt zorunlu.
+
+**Karar:** Mifflin-St Jeor (1990). Sürüm etiketi: `mifflin-st-jeor-v1`.
+
+**Gerekçe:** Güncel klinik standart; beslenme uzmanlığı kurulularının önerdiği formül. Harris-Benedict (1984) genel popülasyonda kaloriyi fazla tahmin eder ve kilo verme hedefinde sistematik olarak cömert davranır. Katch-McArdle daha isabetli ama vücut yağ oranı ister — §8.2 onu toplamıyor (Faz 6'daki "fotoğraftan ölçü" ile ileride seçenek olabilir).
+
+**Sonuç:** `GOAL_FORMULA_VERSION` sabiti profile yazılır. `packages/nutrition-engine/src/goals/constants.ts` içindeki **herhangi bir sabit** değişirse sürüm artmalıdır — aksi hâlde iki kullanıcı aynı etiketle farklı hesaptan geçmiş olur. Formül değişince eski hedefler sessizce yeniden hesaplanmaz.
+
+### Makro stratejisi: protein g/kg tabanlı
+**Karar tarihi:** 2026-07-16 · **Etki:** MVP-02 · **PRD:** §8.4
+
+§8.4 protein/karb/yağ/lif istiyor ama oran vermiyor.
+
+**Karar:** Protein hedefe göre g/kg (kas geliştirmede 2.0, kilo vermede 1.8, sağlıklı beslenmede 1.2); yağ, `max(0.8 g/kg tabanı, kalorinin %25'i)`; karbonhidrat kalanı doldurur; lif 1000 kcal başına 14 g; su 35 ml/kg.
+
+**Gerekçe:** Sabit kalori yüzdesi (30/40/30 gibi) kullanılsaydı, kalori açığı büyüdükçe protein hedefi de düşerdi — kilo verirken kas kaybı riskini artıran tam olarak budur. §00'daki "kas geliştiren" ve "ileri sporcu" personaları için doğru olan g/kg'dır.
+
+**İki ince karar kayda geçer:**
+- **Referans ağırlık:** Kilo verirken `min(mevcut, hedef)` kullanılır. 120 kg'lık kullanıcı için 1.8 × 120 = 216 g protein hem gereksiz hem uygulanamaz olurdu; yağ dokusu protein ihtiyacı yaratmaz, ihtiyacı yağsız kütle belirler ve hedef ağırlık ona çok daha yakın bir vekildir. Kilo alırken tersi geçerli değil — hedef ağırlık henüz var olmayan kütledir, mevcut ağırlık kullanılır.
+- **Yağ tabanı:** Karbonhidrat "kalanı" doldurduğu için, taban olmasaydı agresif açıkta yağ sıfıra yaklaşırdı. 0.8 g/kg hormon üretimi ve yağda çözünen vitamin emilimi için tutulur.
+
+### Güvenlik tabanı: motor riskli hedef önermez
+**Karar tarihi:** 2026-07-16 · **Etki:** MVP-02 · **PRD:** §8.4, §00
+
+§8.4: "Riskli derecede düşük hedeflerde kullanıcı uyarılır ve profesyonel destek önerilir."
+
+**Karar:** Motorun **kendi önerisi** klinik tabanın (erkek 1500, kadın/bilinmeyen 1200 kcal) altına inmez: kırpar ve `target_below_safe_minimum` uyarısı üretir. Kullanıcı §8.4 gereği elle daha düşüğe çekebilir.
+
+**Gerekçe:** Kullanıcının haftada 1 kg vermek istemesi, ürünün ona 72 kcal/gün önermesini meşrulaştırmaz. Ürün teşhis/tedavi vermez (§00) — yapabileceği tek şey riski işaret edip uzmana yönlendirmektir. Kırpma sonrası hedef hâlâ bazal metabolizmanın altındaysa ayrıca `target_below_bmr` uyarısı çıkar.
 
 ### Veritabanı bölgesi: eu-central-1 (Frankfurt)
 **Karar tarihi:** 2026-07-15 · **Etki:** FND-04, §09
