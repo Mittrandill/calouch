@@ -7,8 +7,16 @@ export type TextStyleToken = {
   lineHeight: number;
   fontWeight: '400' | '500' | '600' | '700';
   letterSpacing?: number;
-  /** RN fontVariant; yalnız numeric token'larda dolu. */
-  fontVariant?: readonly ['tabular-nums'];
+  /**
+   * RN fontVariant; yalnız numeric token'larda dolu.
+   *
+   * Bilinçli olarak MUTABLE tuple: React Native'in `TextStyle.fontVariant`
+   * tipi `FontVariant[]`dir (readonly değil). `readonly [...]` yazılsaydı,
+   * bu paket RN'e bağımlı olmasa da (§01), token RN `style` prop'una
+   * verildiği an "readonly array, mutable array'e atanamaz" derleme
+   * hatası üretirdi — tüketilene kadar fark edilmeyen bir hata.
+   */
+  fontVariant?: ['tabular-nums'];
 };
 
 /**
@@ -17,8 +25,13 @@ export type TextStyleToken = {
  * tabular-nums olmadan orantılı rakamlar farklı genişlik alır; sayaç her
  * güncellendiğinde metin yatay olarak zıplar. PRD §02 bunu açıkça şart koşar:
  * "Kalori, kilo ve antrenman sayıları tabular number kullanır."
+ *
+ * `as const` KULLANILMAZ: bu değişken aşağıda `typography` nesnesinin
+ * `as const` bloğuna referans olarak giriyor; kendi tipi zaten dar
+ * (`['tabular-nums']`), ayrıca const'lamak onu readonly'e çevirir ve
+ * yukarıdaki sorunu geri getirir.
  */
-const tabular = ['tabular-nums'] as const;
+const tabular: ['tabular-nums'] = ['tabular-nums'];
 
 export const typography = {
   display: { fontSize: 34, lineHeight: 41, fontWeight: '700', letterSpacing: -0.4 },

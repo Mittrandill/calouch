@@ -186,6 +186,21 @@ Serbest biçimli `track(name, props)` yerine tip düzeyinde sayılmış olay kat
 
 **Tuzak (kayda geçirilir):** Sayısal literal için `Literal[value=/regex/]` seçicisi **sessizce hiçbir şey yakalamaz** — esquery number tipinde regex eşleştirmez; `[value>0]` kullanılır. Ayrıca `top`/`bottom`/`left`/`right` anahtarları kural kapsamına alınamaz: JS'te `true > 0` doğru olduğundan `edges={{ top: true }}` yanlış pozitif üretir.
 
+### Yerel migration dosya adları remote sürüm numaralarıyla eşleştirildi
+**Karar tarihi:** 2026-07-16 · **Etki:** FND-04, MVP-03
+
+**Bulgu:** `apply_migration` MCP aracı, geçirdiğim `name` parametresini kullanıyor ama migration'ın `version` (dosya adı zaman damgası) kısmını **kendi anlık saatinden** üretiyor — benim yerel dosya adımdaki zaman damgasını değil. Sonuç: `supabase/migrations/` içindeki dosya adları haftalarca remote'un `supabase_migrations.schema_migrations` tablosundaki gerçek `version` değerleriyle **hiç eşleşmedi**.
+
+**Neden önemli:** `supabase db push` ve `supabase migration list`, yerel dosyanın zaman damgası önekini remote'taki `version` sütunuyla karşılaştırır. Eşleşme yoksa CLI, zaten uygulanmış bir migration'ı "yeni" sanıp tekrar uygulamaya çalışır — bu da "relation already exists" gibi hatalarla sonuçlanır. Bu, gerçek build zamanına kadar fark edilmeyen türden bir hatadır.
+
+**Kök neden:** İki migration (`enable_pgtap_for_tests`, `catalog_missing_fk_indexes`) yalnızca `execute_sql`/`apply_migration` ile remote'a uygulandı, hiç yerel dosyaya yazılmadı.
+
+**Sonuç:**
+- Var olan 4 dosya, remote'taki gerçek `version` değerleriyle yeniden adlandırıldı.
+- `enable_pgtap_for_tests` ve `catalog_missing_fk_indexes` gerçek remote sürüm numaralarıyla yerel dosya olarak eklendi.
+- `catalog_immutable_unaccent_search_path` için AYRI dosya oluşturulmadı: düzeltme zaten `catalog_foods.sql`'in orijinal `CREATE FUNCTION`'ına gömülü (dosya baştan doğru). Sıfırdan çalıştırıldığında aynı doğru son duruma tek adımda ulaşılıyor; iki adımlı geçmişi taklit etmek yanıltıcı olurdu. Bu yüzden yerel klasör remote'tan bir migration eksik görünür — kasıtlı.
+- **Kural:** Bundan sonra her `apply_migration` çağrısından hemen sonra `list_migrations` ile gerçek `version` kontrol edilip yerel dosya o numarayla adlandırılacak.
+
 ### CI secret taraması: kelime değil, değer biçimi
 **Karar tarihi:** 2026-07-15 · **Etki:** FND-01, §01
 

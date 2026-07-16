@@ -64,4 +64,122 @@ export const en: Translations = {
     diary: 'The Diary arrives in wave 1B',
     training: 'Training arrives in phase 2',
   },
+  onboarding: {
+    back: 'Back',
+    next: 'Continue',
+    skip: 'Skip',
+    saving: 'Saving',
+
+    name: {
+      title: 'What should we call you?',
+      subtitle: "You can skip this step if you'd like.",
+      placeholder: 'Name or nickname',
+    },
+
+    unit: {
+      title: 'Unit system',
+      subtitle: 'Which units would you like to use for height and weight?',
+      metric: 'Metric (cm, kg)',
+      imperial: 'Imperial (ft/in, lb)',
+    },
+
+    birthYear: {
+      title: 'What year were you born?',
+      subtitle: 'Needed to estimate your daily energy needs.',
+      placeholder: 'e.g. 1996',
+    },
+
+    height: {
+      title: "What's your height?",
+      placeholderCm: 'cm',
+      placeholderFeet: 'ft',
+      placeholderInches: 'in',
+    },
+
+    weight: {
+      title: 'Your current and target weight',
+      current: 'Current weight',
+      target: 'Target weight',
+      placeholderKg: 'kg',
+      placeholderLb: 'lb',
+    },
+
+    sex: {
+      title: 'Biological sex',
+      subtitle:
+        "Used only for calorie accuracy; if you skip, we'll use an approximate estimate.",
+      male: 'Male',
+      female: 'Female',
+      skip: "I'd rather not say",
+    },
+
+    activity: {
+      title: "What's your activity level?",
+      sedentary: 'Sedentary',
+      sedentaryHint: 'Desk job, no planned exercise',
+      light: 'Lightly active',
+      lightHint: 'Light exercise 1-3 days a week',
+      moderate: 'Moderately active',
+      moderateHint: 'Moderate exercise 3-5 days a week',
+      active: 'Active',
+      activeHint: 'Exercise 6-7 days a week',
+      veryActive: 'Very active',
+      veryActiveHint: 'Two workouts a day, or physical job',
+    },
+
+    goal: {
+      title: "What's your main goal?",
+      loseWeight: 'Lose weight',
+      gainWeight: 'Gain weight',
+      maintainWeight: 'Maintain weight',
+      buildMuscle: 'Build muscle',
+      eatHealthy: 'Eat healthy',
+      increaseActivity: 'Increase activity',
+      trainingRoutine: 'Build a training routine',
+      improveMeasurements: 'Improve body measurements',
+    },
+
+    pace: {
+      title: 'Weekly pace',
+      subtitle: 'How fast would you like to progress?',
+      perWeek: 'kg/week',
+      tooFastWarning: "This pace is above the sustainable range; you can still continue.",
+    },
+
+    diet: {
+      title: 'Dietary preference',
+      subtitle: "You can skip this step if you'd like.",
+      omnivore: 'Omnivore',
+      vegetarian: 'Vegetarian',
+      vegan: 'Vegan',
+      pescatarian: 'Pescatarian',
+      other: 'Other',
+      mealsPerDayLabel: 'How many meals a day?',
+    },
+
+    summary: {
+      title: 'Your daily goals are ready',
+      subtitle: 'You can change any value manually at any time.',
+      calories: 'Calories',
+      protein: 'Protein',
+      carbs: 'Carbs',
+      fat: 'Fat',
+      fiber: 'Fiber',
+      water: 'Water',
+      lowConfidenceNote:
+        "Since biological sex wasn't specified, this estimate is approximate; you can adjust it manually.",
+      warningBelowSafeMinimum:
+        'The calculated target was below the safe minimum; it was raised to the limit.',
+      warningBelowBmr: "This target is below your basal metabolic rate.",
+      warningTooFast: 'The weekly pace you chose is above the sustainable range.',
+      professionalAdviceNotice:
+        "We recommend speaking with a healthcare professional for a target this low. Calouch doesn't provide medical advice.",
+      finish: 'Get started',
+    },
+
+    validation: {
+      required: 'This field is required',
+      outOfRange: 'Value is outside the expected range',
+    },
+  },
 };

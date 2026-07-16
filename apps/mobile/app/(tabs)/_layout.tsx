@@ -4,6 +4,7 @@ import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
 import { useAuth } from '@/auth/AuthProvider';
 import { CameraTabButton } from '@/components/CameraTabButton';
 import { TabBarIcon, type IconName } from '@/components/TabBarIcon';
+import { useProfile } from '@/data/profile';
 import { useTranslations } from '@/i18n/LocaleProvider';
 import { useTheme } from '@/theme/ThemeProvider';
 
@@ -16,10 +17,15 @@ export default function TabsLayout() {
   const theme = useTheme();
   const t = useTranslations();
   const { isAuthenticated, isRestoring } = useAuth();
+  // useProfile, oturum yokken sorguyu içeride erteler (enabled: false);
+  // hook yine de KOŞULSUZ çağrılır (React hook kuralı).
+  const { data: profile, isPending: isProfilePending, isError: isProfileError } = useProfile();
 
   // Oturum diskten okunurken karar verilmez: aksi hâlde giriş yapmış kullanıcı
-  // her açılışta bir an giriş ekranını görür.
-  if (isRestoring) {
+  // her açılışta bir an giriş ekranını görür. Aynı mantık profil sorgusu için
+  // de geçerli — aksi hâlde onboarding tamamlamış kullanıcı bir an
+  // yönlendirilmiş gibi görünebilir.
+  if (isRestoring || (isAuthenticated && isProfilePending)) {
     return (
       <View
         style={[styles.loading, { backgroundColor: theme.colors.background.default }]}
@@ -34,6 +40,13 @@ export default function TabsLayout() {
     return <Redirect href="/(auth)/sign-in" />;
   }
 
+  // §02: "Onboarding yarıda kalınca devam eder." Profil sorgusu başarısız
+  // olursa (ağ hatası) kullanıcı sonsuza dek beklemez — §00 ruhuna uyarak
+  // temel kullanıma izin verilir; onboarding daha sonra tekrar denenebilir.
+  if (!isProfileError && profile?.onboarding_completed_at === null) {
+    return <Redirect href="/onboarding" />;
+  }
+
   return (
     <Tabs
       screenOptions={{
@@ -45,8 +58,10 @@ export default function TabsLayout() {
           borderTopColor: theme.colors.border.default,
         },
         tabBarLabelStyle: theme.typography.caption,
-        // §02: minimum dokunma alanı 44x44.
-        tabBarItemStyle: { minHeight: theme.minTouchTarget },
+        // §02: minimum dokunma alanı 44x44. paddingBottom, ikon/etiketi alt
+        // kenardan (home indicator/nav bar) birkaç piksel yukarı iter —
+        // safe area inset'ine dokunmadan, sadece görsel nefes payı ekler.
+        tabBarItemStyle: { minHeight: theme.minTouchTarget, paddingBottom: theme.spacing.xs },
         tabBarHideOnKeyboard: Platform.OS === 'android',
       }}
     >

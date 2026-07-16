@@ -28,6 +28,9 @@ export {
   requiresProfessionalAdviceNotice,
 } from './goals/goalEngine';
 
+export { cmToFeetInches, feetInchesToCm } from './units/length';
+export { kgToLb, lbToKg } from './units/mass';
+
 export type {
   ActivityLevel,
   BiologicalSex,
@@ -38,3 +41,14 @@ export type {
   MacroTargets,
   PrimaryGoal,
 } from './goals/types';
+
+export {
+  divideNutrients,
+  nutrientsForGrams,
+  nutrientsForRecipe,
+  NutrientCalculationError,
+  roundNutrientsForDisplay,
+  sumNutrients,
+} from './meals/nutrients';
+
+export type { NutrientProfile, WeightedNutrients } from './meals/types';
