@@ -156,11 +156,15 @@ $$;
 comment on function public.food_detail is
   'Bir besinin tam detayı (çeviriler, nutrient, porsiyonlar). RLS çağıranın izniyle uygulanır.';
 
--- İstemci yalnız EXECUTE edebilir; fonksiyon tanımını değiştiremez.
--- anon'a verilmez: arama oturum gerektirir (§00 platformları iOS/Android,
--- katalog tarayıcıdan public erişim şu an ürün gereksinimi değil).
+-- GÜVENLİK NOTU: Postgres yeni fonksiyonlara varsayılan olarak EXECUTE'u
+-- PUBLIC'e (yani örtük olarak anon dahil HERKESE) açar. Yalnız
+-- `revoke ... from anon` YETERSİZDİR — anon rolü PUBLIC'in bir üyesidir ve
+-- PUBLIC grant'i durduğu sürece execute hakkı kalır. Bu, `has_function_
+-- privilege('anon', ..., 'execute')` ile ampirik olarak doğrulanıp
+-- düzeltildi (bkz. 20260717030000_revoke_public_execute_defaults.sql).
+-- Önce PUBLIC'ten alınır, sonra yalnız authenticated'a verilir.
+revoke execute on function public.search_foods(text, text, integer) from public;
+revoke execute on function public.food_detail(uuid) from public;
+
 grant execute on function public.search_foods(text, text, integer) to authenticated;
 grant execute on function public.food_detail(uuid) to authenticated;
-
-revoke execute on function public.search_foods(text, text, integer) from anon;
-revoke execute on function public.food_detail(uuid) from anon;

@@ -103,28 +103,57 @@ Adımlı onboarding; ad/doğum yılı/boy/kilo/aktivite/hedef/tercih/birim/dil/b
 - Alerji alanı — `blocked`, envelope encryption kararına bağlı (§09).
 
 #### MVP-03 — Besin şeması ve kataloğu
-**Durum:** `todo` · **PRD:** §12–13 · **Bağımlılık:** FND-04
+**Durum:** `done` · **PRD:** §12–13 · **Bağımlılık:** FND-04
 
 `catalog` şeması, besin verisi, **sürümleme**, arama, özel besin.
 
-**Kabul:** Kalori/makro sürümlü veriden gelir; arama offline son besinleri kapsar.
+**Kabul:** Kalori/makro sürümlü veriden gelir ✅; arama offline son besinleri kapsar — offline kısmı MVP-05'e ait (henüz yok).
 
-#### MVP-04 — Nutrition engine
-**Durum:** `todo` · **PRD:** §12–14 · **Bağımlılık:** MVP-03
+**Bitti:** foods/food_versions/food_nutrients/food_portions/food_translations/food_aliases/brands/food_sources/barcodes; karma sahiplik RLS (global + kullanıcı özel besini); `public.search_foods`/`public.food_detail` (TR/EN aksan-duyarsız arama, pg_trgm+unaccent); 15 pgTAP testi; 15 besinlik başlangıç seed'i (üretim ölçeği değil — kaynak seçimi `14-open-decisions.md`'de açık karar).
+
+**Mimari not:** `catalog` şeması Data API'ye doğrudan açık değil; istemci yalnız `public` şemasındaki SECURITY INVOKER fonksiyonlar üzerinden erişir (§09 view/security_invoker deseni).
+
+#### MVP-04 — Nutrition engine (öğün hesabı)
+**Durum:** `done` · **PRD:** §12–14 · **Bağımlılık:** MVP-03
 
 Deterministik hesap motoru. Saf TypeScript — RN/veri erişimi importu yasak (ESLint zorlar).
 
-**Kabul:** Değişmez kural: "Kalori ve makrolar AI metninden değil, sürümlü besin verisi ve deterministik hesap motorundan gelir." Unit test kapsamı.
+**Kabul:** Değişmez kural karşılandı ✅. Unit test kapsamı: 21 test (`packages/nutrition-engine/src/meals/`).
+
+**Bitti:** `nutrientsForGrams`, `sumNutrients` (eksik opsiyonel nutrient TOPLAMDA `undefined` kalır, sessizce sıfırlanmaz — test edildi), `divideNutrients`, `nutrientsForRecipe`, `roundNutrientsForDisplay` (yuvarlama yalnız gösterim katmanında).
 
 #### MVP-05 — Manuel öğün
-**Durum:** `todo` · **PRD:** §14 · **Bağımlılık:** MVP-04
+**Durum:** `done` · **PRD:** §14 · **Bağımlılık:** MVP-04
 
 Öğün + kalem/snapshot atomik yazılır. Offline taslak + outbox.
 
-**Kabul:** Öğün+kalem tek transaction; offline retry çift kayıt üretmez.
+**Kabul:** Öğün+kalem tek transaction ✅; offline retry çift kayıt üretmez ✅ (sunucu tarafı idempotency, aşağıda).
+
+**Bitti:** `meal_entries`/`meal_entry_items`/`meal_entry_snapshots` (§03 snapshot ve sürümleme — katalog sonradan değişse de eski öğün donmuş kalır); tek yazma yolu `public.log_meal()` (SECURITY DEFINER, client'a tablolarda INSERT verilmez); `operation_id` ile sunucu tarafı idempotency; `daily_nutrition_summary` (eksik opsiyonel nutrient'ı sessizce sıfırlamayan toplam); arama → miktar/porsiyon → öğün türü → kaydet akışı (`add-meal.tsx`) ve günlük ekranı; 21 pgTAP testi (pozitif akış, idempotency, çapraz kullanıcı izolasyonu, snapshot değişmezliği, RLS/GRANT negatifleri).
+
+**Kalan:** Tam istemci tarafı offline outbox (cihaz kapalıyken kuyruğa alma, SQLite) — ayrı bir mobil mimari altyapı işi, tek MVP'ye ait değil; bkz. `14-open-decisions.md`. Öğün kompozisyonunu düzenleme (kalem ekleme/çıkarma) bu dalgada yok — kullanıcı yanlış öğünü soft-delete edip yeniden kaydeder.
 
 #### MVP-06 — Tarif ve su
-**Durum:** `todo` · **PRD:** §13–14 · **Bağımlılık:** MVP-05 · `türetilmiş`
+**Durum:** `done` · **PRD:** §13–14 · **Bağımlılık:** MVP-05 · `türetilmiş`
+
+Tarif oluşturma/düzenleme/öğüne ekleme, su takibi, favori besin. Kapsam `03-nutrition-core.md`'deki "Tarifler"/"Su takibi" bölümlerinden ve MVP-05'in kapsam-dışı notundan (`favorite_foods`) türetildi.
+
+**Kabul:** Gram/porsiyon/tarif/günlük toplam yuvarlama testleri geçer ✅; geçmiş öğün katalog güncellemesinden etkilenmez ✅ (tarif sürüm pinlemesi + snapshot); özel besin/tarif başkası tarafından okunamaz ✅; öğün+kalem atomik ✅ (tarif kalemi de aynı `log_meal()` yoluyla). Su offline tam outbox'ı `MVP-05`'teki gibi kapsam dışı (aşağıda).
+
+**Bitti:**
+- `recipes`/`recipe_versions`/`recipe_items` — `catalog.foods`'tan bağımsız, versiyonlanmış kullanıcı içeriği (§03 "Tarif sürümlüdür; eski öğün eski tarif snapshot'ını korur"). Tek yazma yolu `public.save_recipe()` (SECURITY DEFINER, düzenleme yeni sürüm oluşturur, eskisi değişmez).
+- `log_meal()` tarif kalemlerini de kabul edecek şekilde genişletildi (`meal_entry_items`'a nullable `recipe_id`/`recipe_version_id`/`recipe_servings`, tam bir kaynak zorunlu kılan CHECK). Tarif toplaması eksik opsiyonel nutrient'ı (`sugar_g` vb.) sessizce sıfırlamaz — `daily_nutrition_summary`'deki aynı sınıf düzeltme burada da uygulandı.
+- `water_logs` + `daily_water_summary` — tek tablo, client doğrudan INSERT (SECURITY DEFINER gerektirmez), `operation_id` UNIQUE ile idempotency.
+- `favorite_foods` + `list_favorite_foods` — basit yıldızlama, `search_foods` ile aynı dönüş şekli.
+- Mobile: tarif oluşturma/düzenleme ekranı (`recipe-builder.tsx`), tarif listesi (`recipes.tsx`), su kartı + tek dokunuş/özel miktar (`diary.tsx`), add-meal akışına tarif/favori seçimi entegre edildi.
+- 21 (recipes) + 17 (water_logs) + 11 (favorite_foods) pgTAP testi — pozitif akış, idempotency, sürüm/snapshot değişmezliği, çapraz kullanıcı izolasyonu (hem tarif hem tarifte kullanılan özel besin), eksik nutrient NULL-güvenliği, anon reddi.
+- Sistemik güvenlik bulgusu: `anon` rolünün `public` şema fonksiyonları için PUBLIC'ten bağımsız kendi varsayılan EXECUTE grant'i olduğu ampirik olarak bulundu ve düzeltildi — bkz. `14-open-decisions.md` "`anon` EXECUTE varsayılanı".
+
+**Kalan:**
+- Tam istemci tarafı offline outbox (su + tarif dahil) — MVP-05 ile aynı gerekçeyle mobil mimarinin geneline ait, ayrı iş.
+- Su hatırlatma bildirimleri, günlük/haftalık grafik — bildirim altyapısı ve chart bileşeni henüz yok.
+- Tarif kalemlerinde mikronutrient toplama (birden çok malzemenin jsonb'sini anahtar bazında birleştirme) — kapsam dışı, `14-open-decisions.md`'de kayıtlı.
+- Widget/ses/wearable su entegrasyonları — §03 "ileri faz adaptörleri".
 
 #### MVP-07 — Ölçü ve kilo
 **Durum:** `todo` · **PRD:** §15–16 · **Bağımlılık:** MVP-02 · `türetilmiş`

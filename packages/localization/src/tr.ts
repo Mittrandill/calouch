@@ -63,8 +63,76 @@ export const tr = {
   placeholder: {
     // Dalga 1A iskelet ekranları. 1B/1C'de gerçek içerikle değişir.
     today: 'Bugün ekranı 1C dalgasında gelecek',
-    diary: 'Günlük 1B dalgasında gelecek',
     training: 'Antrenman Faz 2\'de gelecek',
+  },
+  // §03 manuel öğün kaydı.
+  diary: {
+    title: 'Günlük',
+    addMeal: 'Öğün ekle',
+    empty: 'Bugün henüz öğün kaydetmedin',
+    calories: 'kalori',
+    mealTypes: {
+      breakfast: 'Kahvaltı',
+      snack: 'Ara öğün',
+      lunch: 'Öğle',
+      dinner: 'Akşam',
+      pre_workout: 'Antrenman öncesi',
+      post_workout: 'Antrenman sonrası',
+      night: 'Gece',
+      custom: 'Diğer',
+    },
+    search: {
+      title: 'Ne yedin?',
+      placeholder: 'Besin ara',
+      empty: 'Sonuç bulunamadı',
+      hint: 'Aramak için en az 2 karakter yaz',
+    },
+    quantity: {
+      title: 'Ne kadar?',
+      gramsLabel: 'Gram',
+      mealTypeLabel: 'Öğün türü',
+      save: 'Kaydet',
+      saving: 'Kaydediliyor',
+    },
+    error: {
+      save: 'Öğün kaydedilemedi. Tekrar dene.',
+    },
+    water: {
+      title: 'Su',
+      unit: 'ml',
+      customAmount: 'Özel miktar',
+      customAmountLabel: 'Miktar (ml)',
+      add: 'Ekle',
+      error: 'Su kaydedilemedi. Tekrar dene.',
+    },
+    fromRecipe: {
+      servingsQuestion: 'Kaç porsiyon?',
+    },
+    favorites: {
+      title: 'Favorilerim',
+    },
+  },
+  // §03 tarifler — malzeme+gram+porsiyon, öğüne ekleme.
+  recipes: {
+    title: 'Tariflerim',
+    empty: 'Henüz tarifin yok',
+    newRecipe: 'Yeni tarif',
+    perServing: 'porsiyon başı',
+    builder: {
+      titleNew: 'Yeni tarif',
+      titleEdit: 'Tarifi düzenle',
+      nameLabel: 'Tarif adı',
+      namePlaceholder: 'ör. Tavuklu salata',
+      servingsLabel: 'Porsiyon sayısı',
+      ingredientsTitle: 'Malzemeler',
+      addIngredient: 'Malzeme ekle',
+      searchPlaceholder: 'Malzeme ara',
+      removeIngredient: 'Kaldır',
+      save: 'Tarifi kaydet',
+      error: 'Tarif kaydedilemedi. Tekrar dene.',
+      emptyIngredients: 'Henüz malzeme eklenmedi',
+      gramsLabel: 'Gram',
+    },
   },
   // §8.2 adımlı onboarding. §02: "Onboarding yarıda kalınca devam eder;
   // izin reddi bloklamaz." Adımların çoğu atlanabilir.

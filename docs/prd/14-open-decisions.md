@@ -81,12 +81,23 @@ Google Cloud / Gemini projesi henüz oluşturulmadı (Faz 0 çıktısı).
 
 **Karar gereken:** Hangi alanlar; anahtar rotasyonu; şifreli alanda arama gerekiyor mu (gerekiyorsa tasarım kökten değişir).
 
+### Tam offline outbox kapsam dışı bırakıldı (MVP-05)
+**Etki:** MVP-05, mobil mimarinin geneli
+
+MVP-05 (manuel öğün) yalnız **sunucu tarafı** idempotency'yi teslim etti: `log_meal()` çağrısı client tarafından üretilen `operation_id` taşır, aynı `operation_id` ile ikinci çağrı yeni satır yaratmadan mevcut kaydı döner. Cihaz tamamen offlineyken yazmayı bir kuyruğa alıp bağlantı dönünce otomatik tekrar deneyen istemci tarafı outbox (SQLite tabanlı) **yok**.
+
+**Gerekçe:** Offline outbox tek bir MVP işine değil mobil mimarinin geneline ait bir altyapı çalışması — yalnız öğün için inşa edilirse su/ölçü/tarif (MVP-06/07) her biri kendi ad-hoc kuyruğunu icat eder. Sunucu tarafı idempotency zaten MVP-05'in kendi kabul kriterini ("offline retry çift kayıt üretmez") karşılıyor: kuyruk ne zaman gelirse gelsin, tekrar denemesi güvenli.
+
+**Karar gereken:** Outbox mimarisi ne zaman ve hangi iş kimliği altında ele alınacak — muhtemelen MVP-06/07'den önce, birden fazla domain'in ortak ihtiyacı netleştiğinde.
+
 ### `13-agent-work-orders.md` türetilmiş kimlikler
 **Etki:** iş takibi
 
 `FND-02`, `FND-03`, `MVP-06`, `MVP-07`, `MVP-12`, `MVP-13`, `MVP-18` kimlikleri bağımlılık grafiğinde numarayla geçiyor ama adlandırılmamış; kapsamları dalga tanımlarından türetildi.
 
-**Karar gereken:** Türetilen kapsamlar onaylansın veya düzeltilsin.
+**MVP-06 kapanmıştır:** Tarif/su/favori kapsamı `03-nutrition-core.md`'nin "Tarifler"/"Su takibi" bölümleri ve MVP-05'in kapsam-dışı notuyla (`favorite_foods`) birebir eşleşti; ek yorumlama gerekmedi. Uygulandığı hâliyle onaylanmış sayılır.
+
+**Karar gereken (kalan):** `FND-02`, `FND-03`, `MVP-07`, `MVP-12`, `MVP-13`, `MVP-18` için türetilen kapsamlar onaylansın veya düzeltilsin.
 
 ---
 
@@ -200,6 +211,17 @@ Serbest biçimli `track(name, props)` yerine tip düzeyinde sayılmış olay kat
 - `enable_pgtap_for_tests` ve `catalog_missing_fk_indexes` gerçek remote sürüm numaralarıyla yerel dosya olarak eklendi.
 - `catalog_immutable_unaccent_search_path` için AYRI dosya oluşturulmadı: düzeltme zaten `catalog_foods.sql`'in orijinal `CREATE FUNCTION`'ına gömülü (dosya baştan doğru). Sıfırdan çalıştırıldığında aynı doğru son duruma tek adımda ulaşılıyor; iki adımlı geçmişi taklit etmek yanıltıcı olurdu. Bu yüzden yerel klasör remote'tan bir migration eksik görünür — kasıtlı.
 - **Kural:** Bundan sonra her `apply_migration` çağrısından hemen sonra `list_migrations` ile gerçek `version` kontrol edilip yerel dosya o numarayla adlandırılacak.
+
+### `anon` EXECUTE varsayılanı: her fonksiyon açıkça revoke etmeli, `alter default privileges` güvenilir değil
+**Karar tarihi:** 2026-07-16 · **Etki:** tüm gelecek `public.*` fonksiyonları · **PRD:** §09
+
+**Bulgu:** MVP-06 sırasında `has_function_privilege` ile ampirik test edildi — `revoke_public_execute_defaults.sql`'deki (154323) `alter default privileges in schema public revoke execute on functions from public` kuralı, projede o tarihten SONRA `apply_migration` ile oluşturulan dört yeni fonksiyonun (`daily_water_summary`, `save_recipe`, `recipe_detail`, `list_recipes`) hepsinde `anon`'un EXECUTE alabildiğini engellemedi. `pg_default_acl` sorgusu kanıtladı: `public` şemasında `postgres` rolünün fonksiyon varsayılan ACL'i zaten `anon`'u PUBLIC'ten BAĞIMSIZ, AYRI bir grant olarak içeriyordu — `revoke ... from public` bu ayrı grant'e dokunmadı.
+
+**İkinci bulgu (bu kaydı "Kapalı" değil yarı-açık yapan kısım):** Aynı gün, `alter default privileges in schema public revoke execute on functions from anon;` çalıştırılıp `postgres` rolünün `pg_default_acl` girdisinden `anon` GERÇEKTEN kaldırıldığı doğrulandı — ama hemen sonra oluşturulan YENİ bir test fonksiyonu YİNE `anon=X` için `has_function_privilege` `true` döndürdü çünkü fonksiyonun nihai ACL'inde beklenmeyen bir çıplak `=X` (PUBLIC) girdisi vardı. Yani `postgres` rolünün `pg_default_acl`'ini düzeltmek bile CREATE FUNCTION'ın gerçekte hangi rol/yol üzerinden (`apply_migration` MCP aracı neyi kullanıyor — `postgres`, `supabase_admin` veya bağlantı havuzundan geçen başka bir rol) çalıştığını garanti altına almadı. Kök mekanizma netleştirilmedi.
+
+**Karar (bugün için çalışan, doğrulanmış tek yol):** Her yeni `public.*` fonksiyonu HEM `revoke execute ... from public` HEM `revoke execute ... from anon` içerir — ikisi ayrı satır, ikisi de zorunlu. Bu kalıp `water_logs.sql`, `recipe_functions.sql`, `favorite_foods.sql`'de uygulandı ve `has_function_privilege` ile her seferinde doğrulandı.
+
+**Karar gereken (henüz kapanmadı):** `apply_migration`/CREATE FUNCTION'ın hangi rol altında çalıştığı ve neden `postgres` rolü için düzeltilen `pg_default_acl`'in tutarlı uygulanmadığı — Supabase platform desteğine sorulabilir veya `supabase_admin` rolünün kendi `pg_default_acl` girdisi de aynı şekilde düzeltilip test edilebilir. O ana kadar yukarıdaki "her fonksiyon açıkça revoke eder" kuralı BAĞLAYICI kalır; `alter default privileges`e güvenilmez.
 
 ### CI secret taraması: kelime değil, değer biçimi
 **Karar tarihi:** 2026-07-15 · **Etki:** FND-01, §01

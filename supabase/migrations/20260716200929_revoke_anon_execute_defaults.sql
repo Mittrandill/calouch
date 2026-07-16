@@ -1,0 +1,20 @@
+-- Implements: MVP-06 (sistemik düzeltme, kısmi)
+-- PRD: §09
+--
+-- `revoke_public_execute_defaults.sql`'in (154323) eksik bıraktığı kısım:
+-- `postgres` rolünün `public` şema fonksiyonları için varsayılan ACL'i
+-- (pg_default_acl) `anon`'u PUBLIC'ten BAĞIMSIZ, AYRI bir grant olarak
+-- içeriyordu — "revoke ... from public" bunu kaldırmadı. Bu satır
+-- `postgres` rolünün varsayılanından `anon`'u da kaldırır.
+--
+-- SINIRLILIK (14-open-decisions.md'de tam kayıtlı — "anon EXECUTE
+-- varsayılanı" kararı): bu satır `postgres` rolünün `pg_default_acl`
+-- girdisini doğrulanmış şekilde düzeltir, ama `CREATE FUNCTION`'ın
+-- pratikte hangi rol/yol üzerinden çalıştığı (apply_migration MCP aracı,
+-- bağlantı havuzu vb.) tutarlı biçimde bu role eşlenmeyebiliyor — bir
+-- sonraki test fonksiyonunda `anon` yine EXECUTE alabildi. Kök neden
+-- netleşmedi. Bu yüzden BU SATIR TEK BAŞINA YETERLİ SAYILMAZ: her yeni
+-- fonksiyon hâlâ açıkça hem `revoke ... from public` HEM
+-- `revoke ... from anon` içermelidir (bkz. water_logs.sql,
+-- recipe_functions.sql, favorite_foods.sql'deki GÜVENLİK NOTU'ları).
+alter default privileges in schema public revoke execute on functions from anon;

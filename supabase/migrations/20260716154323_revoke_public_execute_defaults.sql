@@ -1,0 +1,16 @@
+-- Implements: MVP-03, MVP-05 — sistemik güvenlik politikası
+--
+-- Postgres varsayılanı: yeni fonksiyon EXECUTE'u PUBLIC'e (örtük olarak
+-- anon dahil HERKESE) açar. Bu, dört fonksiyonda (search_foods,
+-- food_detail, log_meal, daily_nutrition_summary) `has_function_privilege`
+-- ile ampirik olarak doğrulanan gerçek bir açıktı — `revoke ... from anon`
+-- yazmak yeterli DEĞİLDİ, PUBLIC grant'i ayrıca durmaya devam ediyordu.
+--
+-- Bu dört fonksiyonun kendi düzeltmesi kaynak dosyalarına gömülüdür
+-- (catalog_foods.sql'e referans veren food_search_functions.sql ve
+-- log_meal_function.sql artık baştan `revoke ... from public` içerir) —
+-- burada TEKRAR edilmez. Bu dosyanın tek işi, BUNDAN SONRA `public`
+-- şemasında oluşturulacak her yeni fonksiyonun varsayılan olarak PUBLIC'e
+-- KAPALI başlamasını sağlamaktır — bu satır olmasaydı aynı hata Dalga
+-- 1C/1D'deki her yeni RPC'de tekrarlanabilirdi.
+alter default privileges in schema public revoke execute on functions from public;

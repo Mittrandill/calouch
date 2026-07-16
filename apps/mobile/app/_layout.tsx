@@ -32,6 +32,9 @@ export default function RootLayout() {
                   <Stack.Screen name="(tabs)" />
                   <Stack.Screen name="(auth)" />
                   <Stack.Screen name="onboarding" />
+                  <Stack.Screen name="add-meal" options={{ presentation: 'modal' }} />
+                  <Stack.Screen name="recipes" options={{ presentation: 'modal' }} />
+                  <Stack.Screen name="recipe-builder" options={{ presentation: 'modal' }} />
                 </Stack>
               </AuthProvider>
             </QueryClientProvider>
