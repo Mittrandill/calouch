@@ -1,4 +1,5 @@
 export type { Database, Json } from './database';
+export type { AIProvider, ConfidenceLevel, MealAnalysis, MealAnalysisItem } from './ai';
 
 import type { Database } from './database';
 

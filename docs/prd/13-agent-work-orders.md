@@ -183,11 +183,32 @@ Kilo/ölçü kaydı ve trend. İlerleme fotoğrafı **private** storage.
 ### Dalga 1C — AI ve dashboard
 
 #### MVP-08 — AI kontratları ve private medya
-**Durum:** `todo` · **PRD:** §10–11 · **Bağımlılık:** MVP-04, MVP-05
+**Durum:** `partial` · **PRD:** §10–11 · **Bağımlılık:** MVP-04, MVP-05
 
 Private media upload, provider adapter, request/response şeması, Zod validation, idempotency, rate limit, correlation ID, maliyet/kill switch.
 
 **Kabul:** Gemini anahtarı istemciye girmez; hassas bucket public değil; signed URL expiry testli.
+
+**Kapsam kararı:** Bu iş, Gemini'den doğrulanmış HAM aday listesini (yiyecek adları, porsiyon aralığı, güven) dönen bir dikey dilim olarak sınırlandı. Katalog eşleştirme ve kalori/makro hesabı MVP-09'un işi — bkz. `supabase/functions/analyze-meal-photo/index.ts` üstündeki kapsam notu.
+
+**Bitti:**
+- `private` şeması ilk kez açıldı (`ai_jobs`/`ai_usage_ledger`/`ai_feature_flags`) — yalnız `public.create_ai_job`/`complete_ai_job`/`fail_ai_job` SECURITY DEFINER RPC'leri üzerinden erişilir (`log_meal()`/`catalog` şemasıyla AYNI desen). Data API `private`'ı yayınlamaz.
+- **Sıfır servis rolü mimarisi:** Edge Function kullanıcının kendi JWT'siyle çalışır — storage indirme/silme ve RPC'ler kullanıcının kendi RLS/`auth.uid()` kontrolüyle işler. `GEMINI_API_KEY` tek server secret'tır.
+- `ai-meal-photos` private bucket — `progress-photos` ile birebir aynı RLS deseni (`{user_id}/{uuid}.jpg`).
+- `packages/types/src/ai.ts` — `AIProvider`/`MealAnalysis`/`MealAnalysisItem` (yalnız `analyzeMealImage`, diğer §04 metodları henüz tasarlanmadığı için eklenmedi).
+- `packages/validation` (yeni paket) — Zod şeması, `packages/types` ile `satisfies` üzerinden derleme-zamanı senkron kontrolü, 8 unit test.
+- `supabase/functions/analyze-meal-photo` — deploy edildi (v2, `verify_jwt: true`). İş mantığı sonuçları (kill switch/rate limit/non-food/provider hatası) HTTP 200 + `{ok:false,code,message}` döner (yalnız gerçekten beklenmeyen durumlar non-2xx) — `supabase-js functions.invoke()`'ın non-2xx'te `data`'yı gizleme davranışını basitleştirmek için.
+- Mobile: `camera.tsx` gerçek ekran oldu (placeholder'ın yerine) — fotoğraf çek/seç, `expo-image-manipulator` ile resize+EXIF temizliği, yükleme, sonuç önizleme listesi (kaydet aksiyonu YOK, bilinçli olarak "önizleme" etiketli).
+- Gemini model: `gemini-2.5-flash`. Kota: kullanıcı başına günde 10 (billing sistemi gelene kadar geçici sabit) — bkz. `14-open-decisions.md` "Gemini model, maliyet tavanı ve kill switch" (Kapalı).
+- `ai_jobs_test.sql` — 17 pgTAP testi (pozitif akış, idempotency, sahiplik kontrolü, çapraz kullanıcı izolasyonu, kill switch, rate limit, ledger, anon reddi).
+
+**Kalan:**
+- MVP-09: katalog eşleştirme + deterministik motor (bu iş kasıtlı olarak ham aday listesinde durdu).
+- MVP-10: kullanıcı onay/düzenle/kaydet UI'ı.
+- Gerçek Gemini yanıtıyla E2E doğrulama — bu ortamda kullanıcı kendi API anahtarını Supabase secret olarak eklemeyi kabul etti; edge function deploy edildi ama gerçek bir fotoğrafla uçtan uca çalıştırılıp doğrulanması ayrı bir adım.
+- pgTAP testleri (Docker yok, MVP-07'dekiyle aynı sınırlama) ve `packages/validation`/mobile unit testleri dışında hiçbiri CI'da çalıştırılmadı.
+- `storage.objects` RLS'i (ai-meal-photos) izole pgTAP testine sahip değil — yalnız metadata tablosuna erişim yok zaten (bu bucket'ın hiç metadata tablosu yok, doğrudan job'a bağlı).
+- Fotoğraf saklama tercihi (kullanıcının "AI/fotoğraf kullanımı" tercihi, §09 gizlilik merkezi) yok — varsayılan HER ZAMAN analiz sonrası silme (MVP-16/17 kapsamında gerçek tercih eklenebilir).
 
 #### MVP-09 — AI job pipeline
 **Durum:** `todo` · **PRD:** §10–11 · **Bağımlılık:** MVP-08

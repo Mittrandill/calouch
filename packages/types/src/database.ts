@@ -2,9 +2,14 @@
  * Supabase MCP `generate_typescript_types` ile canlı şemadan üretildi.
  * ELLE DÜZENLENMEZ — migration eklendiğinde yeniden üretilir.
  *
- * Kaynak: proje aaufvndbagvkpbtqefee, migration 20260716211032 sonrası
+ * Kaynak: proje aaufvndbagvkpbtqefee, migration 20260717175427 sonrası
  * (meal_entries/log_meal/water_logs/recipes/favorite_foods/
- * body_measurements/progress_photos dahil).
+ * body_measurements/progress_photos/ai_jobs dahil).
+ *
+ * `private.ai_jobs`/`ai_usage_ledger`/`ai_feature_flags` bilerek burada YOK —
+ * Data API `private` şemasını yayınlamaz (bkz. supabase/config.toml
+ * `api.schemas`), yalnız `create_ai_job`/`complete_ai_job`/`fail_ai_job`
+ * RPC'leri (aşağıda, Functions altında) client'a açıktır.
  */
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
@@ -566,6 +571,26 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      complete_ai_job: {
+        Args: {
+          p_estimated_cost_usd: number;
+          p_input_tokens: number;
+          p_job_id: string;
+          p_model: string;
+          p_output_tokens: number;
+          p_raw_response: Json;
+        };
+        Returns: undefined;
+      };
+      create_ai_job: {
+        Args: { p_operation_id: string; p_storage_path: string };
+        Returns: {
+          is_new: boolean;
+          job_id: string;
+          raw_response: Json;
+          status: string;
+        }[];
+      };
       daily_nutrition_summary: {
         Args: { target_date: string };
         Returns: {
@@ -585,6 +610,17 @@ export type Database = {
           log_count: number;
           total_ml: number;
         }[];
+      };
+      fail_ai_job: {
+        Args: {
+          p_error_message: string;
+          p_estimated_cost_usd: number;
+          p_input_tokens: number;
+          p_job_id: string;
+          p_model: string;
+          p_output_tokens: number;
+        };
+        Returns: undefined;
       };
       food_detail: {
         Args: { target_food_id: string };

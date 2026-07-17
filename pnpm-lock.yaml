@@ -53,6 +53,9 @@ importers:
       '@calouch/types':
         specifier: workspace:*
         version: link:../../packages/types
+      '@calouch/validation':
+        specifier: workspace:*
+        version: link:../../packages/validation
       '@expo/vector-icons':
         specifier: ^15.1.1
         version: 15.1.1(expo-font@57.0.1)(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
@@ -77,6 +80,9 @@ importers:
       expo-dev-client:
         specifier: ~57.0.6
         version: 57.0.6(expo@57.0.6)(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3))
+      expo-image-manipulator:
+        specifier: ~57.0.5
+        version: 57.0.5(expo@57.0.6)
       expo-image-picker:
         specifier: ~57.0.4
         version: 57.0.4(expo@57.0.6)
@@ -177,6 +183,22 @@ importers:
         version: 3.2.7(@types/node@26.1.1)(lightningcss@1.32.0)(terser@5.49.0)(yaml@2.9.0)
 
   packages/types:
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.7(@types/node@26.1.1)(lightningcss@1.32.0)(terser@5.49.0)(yaml@2.9.0)
+
+  packages/validation:
+    dependencies:
+      '@calouch/types':
+        specifier: workspace:*
+        version: link:../types
+      zod:
+        specifier: ^4.1.12
+        version: 4.4.3
     devDependencies:
       typescript:
         specifier: ^5.9.3
@@ -2159,6 +2181,11 @@ packages:
 
   expo-image-loader@57.0.1:
     resolution: {integrity: sha512-uhrZKLT/cTl2mXyR28kPpVkS5O+PK9N1QA/07IFM4f5T4g0lTW1JHT3NEWwEEsGFldPmVX4j7LwUVVZxE+woug==}
+    peerDependencies:
+      expo: '*'
+
+  expo-image-manipulator@57.0.5:
+    resolution: {integrity: sha512-gEZ6tEsLwtz+dRXPC2QDObcQhAW7c9J6WW4W+5qQ4T6DlgkjtunLpHijM79W8fc99ER2X2IQS1ogJ8u9VAF7qA==}
     peerDependencies:
       expo: '*'
 
@@ -5987,6 +6014,11 @@ snapshots:
   expo-image-loader@57.0.1(expo@57.0.6):
     dependencies:
       expo: 57.0.6(@babel/core@7.29.7)(@expo/metro-runtime@57.0.5)(expo-router@57.0.6)(react-dom@19.2.3(react@19.2.3))(react-native-web@0.21.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
+
+  expo-image-manipulator@57.0.5(expo@57.0.6):
+    dependencies:
+      expo: 57.0.6(@babel/core@7.29.7)(@expo/metro-runtime@57.0.5)(expo-router@57.0.6)(react-dom@19.2.3(react@19.2.3))(react-native-web@0.21.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
+      expo-image-loader: 57.0.1(expo@57.0.6)
 
   expo-image-picker@57.0.4(expo@57.0.6):
     dependencies:

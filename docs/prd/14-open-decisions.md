@@ -62,13 +62,6 @@ Consent kaydı **belge sürümü** taşır; metin yoksa sürüm de yoktur, yani 
 
 **Karar gereken:** Ücretli plan (staging + production ayrı proje) ne zaman açılacak? Free tier organizasyon başına proje sayısını sınırlar. En geç MVP-14 (billing) öncesinde gerekir — ödeme webhook'u development projesine bakamaz.
 
-### Gemini model, maliyet tavanı ve kill switch
-**Etki:** MVP-08, MVP-09 · **PRD:** §10–11
-
-**Karar gereken:** Hangi model; görsel başına maliyet tavanı; kullanıcı başına kota; kill switch eşiği. AI kredi sistemi (§26) bu maliyet modeline dayanır.
-
-Google Cloud / Gemini projesi henüz oluşturulmadı (Faz 0 çıktısı).
-
 ### Gemini Live preview durumu
 **Etki:** `VOICE-*` · **PRD:** §11 Faz 4
 
@@ -102,6 +95,15 @@ MVP-05 (manuel öğün) yalnız **sunucu tarafı** idempotency'yi teslim etti: `
 ---
 
 ## Kapalı
+
+### Gemini model, maliyet tavanı ve kill switch
+**Karar tarihi:** 2026-07-17 · **Etki:** MVP-08, MVP-09 · **PRD:** §10–11
+
+**Karar:** Model `gemini-2.5-flash`. Kullanıcı başına günlük kota: 10 fotoğraf analizi (`private.ai_jobs` üzerinden sayılır, `public.create_ai_job()` içinde kontrol edilir). Kill switch: `private.ai_feature_flags` tablosunda tekil bir `meal_photo_analysis` bayrağı (varsayılan açık).
+
+**Gerekçe:** §26'daki hedef kotalar (Free 3/hafta, Plus 150/ay, AI Coach 500/ay) billing/entitlement verisinden okunur (§04: "ticari değerler istemciye gömülmez") — ama entitlement sistemi (MVP-14/15) `blocked` (mağaza hesapları yok). Günde 10 istek/kullanıcı, billing gelene kadar kötüye kullanımı sınırlayan geçici, tek-katmanlı bir taban değerdir; gerçek plan bazlı kotalar MVP-14/15 kapandığında bu sabiti değiştirir/kaldırır. Model seçimi hız/maliyet dengesi içindir — görsel analiz görevinde `flash` katmanı yeterli, `pro` katmanının ek doğruluğu bu aşamada maliyeti haklı çıkarmaz.
+
+**Sonuç:** Maliyet tahmini (`estimated_cost_usd`, `private.ai_usage_ledger`) Edge Function içinde sabit birim fiyatlarla (input/output token başına, gemini-2.5-flash'ın bu yazının tarihindeki yayınlanmış fiyatı) hesaplanır — gerçek billing sistemi kurulunca güncellenmeli. Google Cloud/Gemini projesi kullanıcı tarafından oluşturuldu; `GEMINI_API_KEY` Supabase Edge Function secret'ı olarak kullanıcı tarafından eklendi (Claude asla API anahtarı değerini görmedi/girmedi — güvenlik kuralı).
 
 ### Onboarding'e biyolojik cinsiyet alanı eklendi
 **Karar tarihi:** 2026-07-16 · **Etki:** MVP-02 · **PRD sapması:** §8.2

@@ -186,6 +186,40 @@ export const tr = {
       unavailable: 'Cihazında biyometrik doğrulama kullanılamıyor',
     },
   },
+  // §04/§10-11 AI fotoğraf analizi — MVP-08 dilimi: yalnız ham aday listesi
+  // gösterilir, katalog eşleştirme/kalori hesabı ve kaydet aksiyonu YOK
+  // (MVP-09/10'un işi).
+  camera: {
+    title: 'AI ile yemek analiz et',
+    takePhoto: 'Fotoğraf çek',
+    chooseFromLibrary: 'Galeriden seç',
+    analyzing: 'Analiz ediliyor…',
+    previewNotice:
+      'Bu bir önizleme — kalori/makro hesabı ve kaydetme yakında eklenecek. Aşağıdaki tahminler henüz kataloğa bağlanmadı.',
+    resultTitle: 'Gemini bunları gördü',
+    mealTitleLabel: 'Öğün',
+    gramRangeLabel: 'Porsiyon',
+    cookingMethodLabel: 'Pişirme yöntemi',
+    visibleIngredientsLabel: 'Görünen malzemeler',
+    hiddenIngredientsLabel: 'Muhtemel ek malzemeler',
+    confidence: {
+      low: 'Düşük güven',
+      medium: 'Orta güven',
+      high: 'Yüksek güven',
+    },
+    errors: {
+      kill_switch: 'AI fotoğraf analizi geçici olarak kapalı',
+      rate_limited: 'Günlük AI fotoğraf analizi limitine ulaştın',
+      not_food: 'Fotoğrafta yemek tespit edilemedi',
+      provider_error: 'AI sağlayıcısından yanıt alınamadı. Tekrar dene.',
+      invalid_response: 'AI yanıtı beklenmeyen biçimde geldi. Tekrar dene.',
+      storage_error: 'Fotoğraf işlenemedi. Tekrar dene.',
+      provider_not_configured: 'AI fotoğraf analizi şu an kullanılamıyor',
+      previously_failed: 'Bu istek daha önce başarısız oldu, yeni bir fotoğrafla tekrar dene',
+      job_error: 'Bir şeyler ters gitti. Tekrar dene.',
+      generic: 'Bir şeyler ters gitti. Tekrar dene.',
+    },
+  },
   // §8.2 adımlı onboarding. §02: "Onboarding yarıda kalınca devam eder;
   // izin reddi bloklamaz." Adımların çoğu atlanabilir.
   onboarding: {
