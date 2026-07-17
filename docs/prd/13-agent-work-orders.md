@@ -156,11 +156,29 @@ Tarif oluşturma/düzenleme/öğüne ekleme, su takibi, favori besin. Kapsam `03
 - Widget/ses/wearable su entegrasyonları — §03 "ileri faz adaptörleri".
 
 #### MVP-07 — Ölçü ve kilo
-**Durum:** `todo` · **PRD:** §15–16 · **Bağımlılık:** MVP-02 · `türetilmiş`
+**Durum:** `partial` · **PRD:** §15–16 · **Bağımlılık:** MVP-02 · `türetilmiş`
 
 Kilo/ölçü kaydı ve trend. İlerleme fotoğrafı **private** storage.
 
 **Veri sınıfı:** Sağlık + medya (yüksek).
+
+**Bitti:**
+- `body_measurements` (17 nullable metrik kolonu — EAV değil, geniş tablo; §05 "aynı değerler sessizce birleştirilmez" kabul kriteri satır bazlı kaynak ayrımıyla sağlanır) + `operation_id` idempotency + fiziksel akla yatkınlık CHECK'leri (nutrition-engine'in kendi aralıklarıyla eşleştirilmiş) + `weight_trend()` RPC (SECURITY INVOKER).
+- `progress_photos` — `progress-photos` private bucket + storage.objects RLS (`{user_id}/{photo_id}.ext` yol sözleşmesi, hem storage hem metadata tablosunda çift katman kontrol) + signed URL üretimi (600s TTL). Public URL yok.
+- Mobile: `measurements.tsx` (kilo hızlı giriş + "diğer ölçüler" genişleyen form + geçmiş listesi), `progress-photos.tsx` (açı seçimi, kamera/galeriden yükleme, silme, opsiyonel Face ID/parmak izi kilidi — `useBiometricLockPreference`/`useBiometricGate`). Profil sekmesinden giriş linki.
+- Kilo girildiğinde hedef motorunun yeniden tetiklenmesi (`useLogMeasurement` içinde, onboarding.tsx ile aynı çağrı deseni).
+- 18 (body_measurements) + 12 (progress_photos) pgTAP testi yazıldı — pozitif akış, aralık/has-value CHECK'leri, idempotency, çapraz kullanıcı izolasyonu, soft-delete, anon reddi, DELETE grant'inin yokluğu. **Bu ortamda Docker/yerel Postgres olmadığı için `supabase test db` ile ÇALIŞTIRILAMADI** — merge öncesi CI'da veya yerel Docker ile doğrulanmalı.
+- **E2E doğrulama (Chrome + `expo start --web`, gerçek Supabase projesine karşı, test hesabı `calouch.local.test+uiverify@gmail.com`):** ölçü formu → kaydet → geçmiş listesi → profil `weight_kg` güncellemesi → hedef motoru yeniden hesabı (`target_calories_kcal` değişti) zinciri uçtan uca çalıştı; ilerleme fotoğrafı kilit tercihi (kalıcı, donanımsız cihazda sessiz devre dışı), açı seçimi, galeriden yükleme (storage.objects'e gerçek dosya + doğru `{user_id}/{uuid}` yolu) ve silme (storage'dan gerçek silme + metadata soft-delete) doğrulandı.
+- Bu doğrulama sırasında **gerçek bir hata bulundu ve düzeltildi**: `useBiometricLock.ts` doğrudan `expo-secure-store` çağırıyordu; bu paketin web karşılığı yok (`authStorage.ts`'teki bilinen sınırlama) ve ekranı web'de çökertiyordu. `webDevStorage` deseni uygulanarak düzeltildi (yalnız web dev-browsing dalını etkiler, iOS/Android'de zaten SecureStore kullanılıyordu).
+
+**Kalan:**
+- Ölçü geçmişinde düzenleme/silme aksiyonu yok — kullanıcı yanlış ölçüyü yeni kayıtla düzeltir (MVP-05'teki aynı kapsam-dışı gerekçe).
+- Tam istemci tarafı offline outbox — MVP-05/06 ile aynı gerekçeyle mobil mimarinin geneline ait, ayrı iş.
+- HealthKit/Health Connect/akıllı tartı senkronizasyonu — `source` kolonu bunu kabul edecek şekilde baştan geniş tutuldu, gerçek adaptör MVP-12'de.
+- Fotoğraftan ölçü tahmini — §05 "deneysel ve ileri fazdır", kapsam dışı (bkz. migration yorumu, `14-open-decisions.md`).
+- `storage.objects` RLS politikaları pgTAP ile test edilmedi (gerçek upload/silme akışı yukarıdaki E2E testinde dolaylı olarak doğrulandı, ama izole pozitif/negatif pgTAP testi yok).
+- Kamera ile fotoğraf çekimi (`launchCameraAsync`) test edilmedi — bu ortamda webcam yok; gerçek cihazda denenmeli.
+- pgTAP testleri hâlâ Docker'da çalıştırılıp doğrulanmadı (yukarıdaki E2E, veritabanı davranışını kanıtlıyor ama pgTAP dosyalarının kendisinin sözdizimsel/mantıksal olarak eksiksiz çalıştığını KANITLAMAZ).
 
 ### Dalga 1C — AI ve dashboard
 

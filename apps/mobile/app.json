@@ -15,7 +15,10 @@
       "bundleIdentifier": "com.calouch.app",
       "supportsTablet": true,
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "Calouch, ilerleme fotoğrafı çekmek için kameraya erişir.",
+        "NSPhotoLibraryUsageDescription": "Calouch, ilerleme fotoğrafı seçmek için galerine erişir.",
+        "NSFaceIDUsageDescription": "Calouch, ilerleme fotoğraflarını Face ID ile koruyabilir."
       }
     },
 
@@ -35,7 +38,24 @@
       "favicon": "./assets/favicon.png"
     },
 
-    "plugins": ["expo-router", "expo-secure-store", "expo-localization"],
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-localization",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Calouch, ilerleme fotoğrafı seçmek için galerine erişir.",
+          "cameraPermission": "Calouch, ilerleme fotoğrafı çekmek için kameraya erişir."
+        }
+      ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Calouch, ilerleme fotoğraflarını Face ID ile koruyabilir."
+        }
+      ]
+    ],
 
     "experiments": {
       "typedRoutes": true

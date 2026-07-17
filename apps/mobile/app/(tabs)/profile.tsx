@@ -1,5 +1,6 @@
 import type { ThemePreference } from '@calouch/design-tokens';
 import type { Locale } from '@calouch/localization';
+import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useAuth } from '@/auth/AuthProvider';
@@ -64,6 +65,10 @@ export default function ProfileScreen() {
             onPress={() => setLocale(option)}
           />
         ))}
+      </Section>
+
+      <Section title={t.measurements.title}>
+        <NavigationRow label={t.measurements.title} onPress={() => router.push('/measurements')} />
       </Section>
 
       <Pressable
@@ -158,6 +163,29 @@ function OptionRow({
       {isSelected && (
         <Text style={[theme.typography.body, { color: theme.colors.brand.text }]}>✓</Text>
       )}
+    </Pressable>
+  );
+}
+
+function NavigationRow({ label, onPress }: { label: string; onPress: () => void }) {
+  const theme = useTheme();
+
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      style={({ pressed }) => [
+        styles.row,
+        {
+          minHeight: theme.minTouchTarget,
+          paddingHorizontal: theme.spacing.lg,
+          backgroundColor: pressed ? theme.colors.surface.pressed : 'transparent',
+        },
+      ]}
+    >
+      <Text style={[theme.typography.body, { color: theme.colors.text.primary }]}>{label}</Text>
+      <Text style={[theme.typography.body, { color: theme.colors.text.tertiary }]}>›</Text>
     </Pressable>
   );
 }

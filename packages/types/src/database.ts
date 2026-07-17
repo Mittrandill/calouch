@@ -2,8 +2,9 @@
  * Supabase MCP `generate_typescript_types` ile canlı şemadan üretildi.
  * ELLE DÜZENLENMEZ — migration eklendiğinde yeniden üretilir.
  *
- * Kaynak: proje aaufvndbagvkpbtqefee, migration 20260716200459 sonrası
- * (meal_entries/log_meal/water_logs/recipes/favorite_foods dahil).
+ * Kaynak: proje aaufvndbagvkpbtqefee, migration 20260716211032 sonrası
+ * (meal_entries/log_meal/water_logs/recipes/favorite_foods/
+ * body_measurements/progress_photos dahil).
  */
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
@@ -14,6 +15,96 @@ export type Database = {
   };
   public: {
     Tables: {
+      body_measurements: {
+        Row: {
+          arm_left_cm: number | null;
+          arm_right_cm: number | null;
+          body_fat_pct: number | null;
+          calf_left_cm: number | null;
+          calf_right_cm: number | null;
+          chest_cm: number | null;
+          created_at: string;
+          deleted_at: string | null;
+          forearm_left_cm: number | null;
+          forearm_right_cm: number | null;
+          height_cm: number | null;
+          hip_cm: number | null;
+          id: string;
+          measured_at: string;
+          muscle_mass_kg: number | null;
+          neck_cm: number | null;
+          notes: string | null;
+          operation_id: string;
+          shoulder_cm: number | null;
+          source: string;
+          thigh_left_cm: number | null;
+          thigh_right_cm: number | null;
+          updated_at: string;
+          user_id: string;
+          version: number;
+          waist_cm: number | null;
+          weight_kg: number | null;
+        };
+        Insert: {
+          arm_left_cm?: number | null;
+          arm_right_cm?: number | null;
+          body_fat_pct?: number | null;
+          calf_left_cm?: number | null;
+          calf_right_cm?: number | null;
+          chest_cm?: number | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          forearm_left_cm?: number | null;
+          forearm_right_cm?: number | null;
+          height_cm?: number | null;
+          hip_cm?: number | null;
+          id?: string;
+          measured_at?: string;
+          muscle_mass_kg?: number | null;
+          neck_cm?: number | null;
+          notes?: string | null;
+          operation_id: string;
+          shoulder_cm?: number | null;
+          source?: string;
+          thigh_left_cm?: number | null;
+          thigh_right_cm?: number | null;
+          updated_at?: string;
+          user_id: string;
+          version?: number;
+          waist_cm?: number | null;
+          weight_kg?: number | null;
+        };
+        Update: {
+          arm_left_cm?: number | null;
+          arm_right_cm?: number | null;
+          body_fat_pct?: number | null;
+          calf_left_cm?: number | null;
+          calf_right_cm?: number | null;
+          chest_cm?: number | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          forearm_left_cm?: number | null;
+          forearm_right_cm?: number | null;
+          height_cm?: number | null;
+          hip_cm?: number | null;
+          id?: string;
+          measured_at?: string;
+          muscle_mass_kg?: number | null;
+          neck_cm?: number | null;
+          notes?: string | null;
+          operation_id?: string;
+          shoulder_cm?: number | null;
+          source?: string;
+          thigh_left_cm?: number | null;
+          thigh_right_cm?: number | null;
+          updated_at?: string;
+          user_id?: string;
+          version?: number;
+          waist_cm?: number | null;
+          weight_kg?: number | null;
+        };
+        Relationships: [];
+      };
       favorite_foods: {
         Row: {
           created_at: string;
@@ -296,6 +387,36 @@ export type Database = {
         };
         Relationships: [];
       };
+      progress_photos: {
+        Row: {
+          angle: string;
+          created_at: string;
+          deleted_at: string | null;
+          id: string;
+          storage_path: string;
+          taken_at: string;
+          user_id: string;
+        };
+        Insert: {
+          angle: string;
+          created_at?: string;
+          deleted_at?: string | null;
+          id?: string;
+          storage_path: string;
+          taken_at?: string;
+          user_id: string;
+        };
+        Update: {
+          angle?: string;
+          created_at?: string;
+          deleted_at?: string | null;
+          id?: string;
+          storage_path?: string;
+          taken_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       recipe_items: {
         Row: {
           created_at: string;
@@ -559,6 +680,15 @@ export type Database = {
           matched_locale: string;
           matched_name: string;
           protein_g: number;
+        }[];
+      };
+      weight_trend: {
+        Args: { since_date?: string };
+        Returns: {
+          id: string;
+          measured_at: string;
+          source: string;
+          weight_kg: number;
         }[];
       };
     };
