@@ -36,3 +36,9 @@ enable_confirmations = false
 
 [studio]
 port = 54323
+
+[functions.analyze-meal-photo]
+verify_jwt = true
+
+[functions.ai-jobs]
+verify_jwt = true

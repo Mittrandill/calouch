@@ -10,12 +10,11 @@ import { useTranslations } from '@/i18n/LocaleProvider';
 import { useTheme } from '@/theme/ThemeProvider';
 
 /**
- * AI Kamera — MVP-08 dilimi.
+ * AI Kamera — MVP-09 job pipeline önizlemesi.
  *
  * Ürünün ana farklılaştırıcısı (§00) ama bu ekran BİLİNÇLİ olarak bir
- * önizlemedir: Gemini'nin ham aday listesini gösterir, katalog eşleştirme/
- * kalori hesabı ve kaydet aksiyonu YOK (bkz. supabase/functions/
- * analyze-meal-photo/index.ts üstündeki kapsam notu — MVP-09/10'un işi).
+ * önizlemedir: katalog eşleşmesi ve deterministik kalori/makroları gösterir;
+ * onay/düzenleme/kaydetme aksiyonu MVP-10'a aittir.
  *
  * Kamera izni burada İSTENMEZ; §00 gereği izin bağlamsal olarak, kullanıcı
  * eylemi anında istenir.
@@ -144,7 +143,7 @@ export default function CameraScreen() {
         </Text>
       )}
 
-      {result !== null && result.ok && result.result.isFood && (
+      {result !== null && result.ok && (
         <View style={{ marginTop: theme.spacing.xl }}>
           <Text
             style={[
@@ -173,6 +172,20 @@ export default function CameraScreen() {
           >
             {result.result.mealTitle}
           </Text>
+
+          {result.result.totals !== null && (
+            <Text
+              style={[
+                theme.typography.label,
+                { color: theme.colors.brand.text, marginTop: theme.spacing.sm },
+              ]}
+            >
+              {t.camera.totalEstimateLabel}: {Math.round(result.result.totals.estimated.energyKcal)} kcal ·{' '}
+              {Math.round(result.result.totals.estimated.proteinG * 10) / 10}g {t.camera.proteinLabel} ·{' '}
+              {Math.round(result.result.totals.estimated.carbsG * 10) / 10}g {t.camera.carbsLabel} ·{' '}
+              {Math.round(result.result.totals.estimated.fatG * 10) / 10}g {t.camera.fatLabel}
+            </Text>
+          )}
 
           {result.result.items.map((item, index) => (
             <View
@@ -237,6 +250,41 @@ export default function CameraScreen() {
               >
                 {t.camera.confidence[item.confidence]}
               </Text>
+              {item.catalogMatch === null ? (
+                <Text
+                  style={[
+                    theme.typography.bodySm,
+                    { color: theme.colors.status.warning, marginTop: theme.spacing.xs },
+                  ]}
+                >
+                  {t.camera.catalogNotMatched}
+                </Text>
+              ) : (
+                <>
+                  <Text
+                    style={[
+                      theme.typography.bodySm,
+                      { color: theme.colors.text.secondary, marginTop: theme.spacing.xs },
+                    ]}
+                  >
+                    {t.camera.catalogMatchLabel}: {item.catalogMatch.matchedName} ·{' '}
+                    {item.catalogMatch.source.displayName}
+                  </Text>
+                  {item.nutrients !== null && (
+                    <Text
+                      style={[
+                        theme.typography.label,
+                        { color: theme.colors.brand.text, marginTop: theme.spacing.xs },
+                      ]}
+                    >
+                      {Math.round(item.nutrients.estimated.energyKcal)} kcal ·{' '}
+                      {Math.round(item.nutrients.estimated.proteinG * 10) / 10}g {t.camera.proteinLabel} ·{' '}
+                      {Math.round(item.nutrients.estimated.carbsG * 10) / 10}g {t.camera.carbsLabel} ·{' '}
+                      {Math.round(item.nutrients.estimated.fatG * 10) / 10}g {t.camera.fatLabel}
+                    </Text>
+                  )}
+                </>
+              )}
             </View>
           ))}
         </View>

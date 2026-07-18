@@ -1,4 +1,13 @@
-import type { MealAnalysis, MealAnalysisItem } from '@calouch/types';
+import type {
+  AIJob,
+  CatalogFoodMatch,
+  CatalogNutrientSnapshot,
+  MealAnalysis,
+  MealAnalysisItem,
+  MealDraft,
+  MealDraftItem,
+  NutrientEstimateRange,
+} from '@calouch/types';
 import { z } from 'zod';
 
 /**
@@ -12,7 +21,7 @@ import { z } from 'zod';
 export const confidenceLevelSchema = z.enum(['low', 'medium', 'high']);
 
 export const mealAnalysisItemSchema = z.object({
-  candidateNames: z.array(z.string()).min(1),
+  candidateNames: z.array(z.string().trim().min(1).max(120)).min(1).max(3),
   estimatedGrams: z.number().positive(),
   minGrams: z.number().positive(),
   maxGrams: z.number().positive(),
@@ -21,13 +30,15 @@ export const mealAnalysisItemSchema = z.object({
   visibleIngredients: z.array(z.string()),
   possibleHiddenIngredients: z.array(z.string()),
   confidence: confidenceLevelSchema,
+}).refine((item) => item.minGrams <= item.estimatedGrams && item.estimatedGrams <= item.maxGrams, {
+  message: 'Gram aralığı min <= estimated <= max olmalı',
 }) satisfies z.ZodType<MealAnalysisItem>;
 
 const mealAnalysisFoodSchema = z.object({
   isFood: z.literal(true),
   analysisVersion: z.string(),
   mealTitle: z.string(),
-  items: z.array(mealAnalysisItemSchema).min(1),
+  items: z.array(mealAnalysisItemSchema).min(1).max(12),
   overallConfidence: confidenceLevelSchema,
   requiresUserConfirmation: z.literal(true),
 });
@@ -50,6 +61,72 @@ export const mealAnalysisSchema = z.discriminatedUnion('isFood', [
  * job'lar hangi sürümle doğrulandığını kaybetmez.
  */
 export const MEAL_ANALYSIS_SCHEMA_VERSION = 'meal-analysis-v1';
+export const MEAL_DRAFT_SCHEMA_VERSION = 'meal-draft-v1' as const;
+
+export const catalogNutrientSnapshotSchema = z.object({
+  energyKcal: z.number().nonnegative(),
+  proteinG: z.number().nonnegative(),
+  carbsG: z.number().nonnegative(),
+  sugarG: z.number().nonnegative().nullable(),
+  fatG: z.number().nonnegative(),
+  saturatedFatG: z.number().nonnegative().nullable(),
+  fiberG: z.number().nonnegative().nullable(),
+  sodiumMg: z.number().nonnegative().nullable(),
+}) satisfies z.ZodType<CatalogNutrientSnapshot>;
+
+export const catalogFoodMatchSchema = z.object({
+  foodId: z.string().uuid(),
+  foodVersionId: z.string().uuid(),
+  matchedName: z.string().min(1),
+  matchedCandidate: z.string().min(1),
+  matchedLocale: z.enum(['tr', 'en']),
+  matchScore: z.number().min(0).max(1),
+  source: z.object({ key: z.string().min(1), displayName: z.string().min(1) }),
+  per100g: catalogNutrientSnapshotSchema,
+}) satisfies z.ZodType<CatalogFoodMatch>;
+
+export const nutrientEstimateRangeSchema = z.object({
+  estimated: catalogNutrientSnapshotSchema,
+  minimum: catalogNutrientSnapshotSchema,
+  maximum: catalogNutrientSnapshotSchema,
+}) satisfies z.ZodType<NutrientEstimateRange>;
+
+export const mealDraftItemSchema = mealAnalysisItemSchema.and(
+  z.object({
+    catalogMatch: catalogFoodMatchSchema.nullable(),
+    nutrients: nutrientEstimateRangeSchema.nullable(),
+  }),
+) satisfies z.ZodType<MealDraftItem>;
+
+export const mealDraftSchema = z.object({
+  analysisVersion: z.literal(MEAL_DRAFT_SCHEMA_VERSION),
+  providerAnalysisVersion: z.string().min(1),
+  mealTitle: z.string().min(1),
+  items: z.array(mealDraftItemSchema).min(1).max(12),
+  overallConfidence: confidenceLevelSchema,
+  requiresUserConfirmation: z.literal(true),
+  unmatchedItemCount: z.number().int().min(0),
+  totals: nutrientEstimateRangeSchema.nullable(),
+}) satisfies z.ZodType<MealDraft>;
+
+export const aiJobStatusSchema = z.enum([
+  'created',
+  'processing',
+  'needs_confirmation',
+  'failed',
+  'expired',
+]);
+
+export const aiJobSchema = z.object({
+  jobId: z.string().uuid(),
+  status: aiJobStatusSchema,
+  result: mealDraftSchema.nullable(),
+  errorCode: z.string().nullable(),
+  errorMessage: z.string().nullable(),
+  correlationId: z.string().uuid(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+}) satisfies z.ZodType<AIJob>;
 
 /**
  * Gemini'ye `generationConfig.responseSchema` olarak verilen OpenAPI alt
@@ -75,7 +152,7 @@ export const MEAL_ANALYSIS_GEMINI_RESPONSE_SCHEMA = {
       items: {
         type: 'object',
         properties: {
-          candidateNames: { type: 'array', items: { type: 'string' } },
+          candidateNames: { type: 'array', items: { type: 'string' }, minItems: 1, maxItems: 3 },
           estimatedGrams: { type: 'number' },
           minGrams: { type: 'number' },
           maxGrams: { type: 'number' },
@@ -97,6 +174,7 @@ export const MEAL_ANALYSIS_GEMINI_RESPONSE_SCHEMA = {
           'confidence',
         ],
       },
+      maxItems: 12,
     },
   },
   required: ['isFood', 'analysisVersion'],

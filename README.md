@@ -4,7 +4,7 @@ Yapay zekâ destekli beslenme, kalori, aktivite ve fitness platformu. iOS ve And
 
 Ürün kararlarında tek nihai referans `Calouch PRD v3.0.pdf`'tir. Uygulama odaklı iş paketleri için `docs/prd/` klasörüne bak — ajan okuma protokolü `docs/prd/README.md` içinde.
 
-**Durum:** Faz 0 + Dalga 1A (iskelet). Ürün özelliği henüz yok; öğün, AI analizi, besin arama ve dashboard kartları sırada (`docs/prd/13-agent-work-orders.md`).
+**Durum:** Faz 1, Dalga 1C. Auth/onboarding, besin-öğün-su-tarif, ölçüm/fotoğraf ve AI yemek job pipeline'ı tamamlandı; sıradaki iş MVP-10 kullanıcı doğrulaması (`docs/prd/13-agent-work-orders.md`).
 
 ## Kurulum
 
@@ -30,7 +30,7 @@ iOS build için macOS veya EAS Build gerekir — bkz. `docs/prd/14-open-decision
 
 ```bash
 pnpm verify              # typecheck + lint + test
-pnpm turbo run test      # 88 test
+pnpm turbo run test      # 175 test
 pnpm --filter @calouch/mobile doctor
 ```
 
@@ -50,6 +50,9 @@ packages/design-tokens   Semantik token'lar, 4 tema, WCAG kontrast testi
 packages/localization    TR/EN
 packages/config          Ortam değişkeni şeması ve secret kapısı
 packages/analytics       Kapalı olay kataloğu + redaksiyon
+packages/nutrition-engine Hedef, nutrient ve deterministik AI taslak motoru
+packages/types           Paylaşılan TypeScript kontratları
+packages/validation      Zod çalışma zamanı doğrulaması
 supabase/migrations      Şema ve RLS
 supabase/tests           pgTAP RLS testleri
 ```
@@ -61,7 +64,7 @@ supabase/tests           pgTAP RLS testleri
 Commit/PR açıklaması iş kimliği ve PRD bölümü taşır:
 
 ```text
-Implements: MVP-08
+Implements: MVP-09
 PRD: §10.1-10.5, §11.2, §43
 ```
 

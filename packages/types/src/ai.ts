@@ -64,3 +64,74 @@ export type MealAnalysis =
 export type AIProvider = {
   analyzeMealImage(input: { imageBase64: string; mimeType: string }): Promise<MealAnalysis>;
 };
+
+/**
+ * Katalogdaki tek bir food version'ın 100 g snapshot'ı. Nullable alanlar
+ * gerçekten "bilinmiyor" demektir; deterministik motor bunları sıfıra çevirmez.
+ */
+export type CatalogNutrientSnapshot = {
+  energyKcal: number;
+  proteinG: number;
+  carbsG: number;
+  sugarG: number | null;
+  fatG: number;
+  saturatedFatG: number | null;
+  fiberG: number | null;
+  sodiumMg: number | null;
+};
+
+export type CatalogFoodMatch = {
+  foodId: string;
+  foodVersionId: string;
+  matchedName: string;
+  matchedCandidate: string;
+  matchedLocale: 'tr' | 'en';
+  matchScore: number;
+  source: {
+    key: string;
+    displayName: string;
+  };
+  per100g: CatalogNutrientSnapshot;
+};
+
+export type NutrientEstimateRange = {
+  estimated: CatalogNutrientSnapshot;
+  minimum: CatalogNutrientSnapshot;
+  maximum: CatalogNutrientSnapshot;
+};
+
+/**
+ * Provider adayının katalog eşleştirmesiyle zenginleştirilmiş hali. Eşleşme
+ * yoksa nutrient tahmini de yoktur; AI'dan gelen kalori hiçbir zaman fallback
+ * olarak kullanılmaz.
+ */
+export type MealDraftItem = MealAnalysisItem & {
+  catalogMatch: CatalogFoodMatch | null;
+  nutrients: NutrientEstimateRange | null;
+};
+
+/** MVP-09 çıktısı: yalnız katalog snapshot'ından yeniden üretilebilir taslak. */
+export type MealDraft = {
+  analysisVersion: 'meal-draft-v1';
+  providerAnalysisVersion: string;
+  mealTitle: string;
+  items: MealDraftItem[];
+  overallConfidence: ConfidenceLevel;
+  requiresUserConfirmation: true;
+  unmatchedItemCount: number;
+  /** Bir kalem bile eşleşmediyse eksik bir toplam sunmamak için null'dır. */
+  totals: NutrientEstimateRange | null;
+};
+
+export type AIJobStatus = 'created' | 'processing' | 'needs_confirmation' | 'failed' | 'expired';
+
+export type AIJob = {
+  jobId: string;
+  status: AIJobStatus;
+  result: MealDraft | null;
+  errorCode: string | null;
+  errorMessage: string | null;
+  correlationId: string;
+  createdAt: string;
+  updatedAt: string;
+};

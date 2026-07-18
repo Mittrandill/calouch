@@ -1,5 +1,17 @@
 export type { Database, Json } from './database';
-export type { AIProvider, ConfidenceLevel, MealAnalysis, MealAnalysisItem } from './ai';
+export type {
+  AIJob,
+  AIJobStatus,
+  AIProvider,
+  CatalogFoodMatch,
+  CatalogNutrientSnapshot,
+  ConfidenceLevel,
+  MealAnalysis,
+  MealAnalysisItem,
+  MealDraft,
+  MealDraftItem,
+  NutrientEstimateRange,
+} from './ai';
 
 import type { Database } from './database';
 
