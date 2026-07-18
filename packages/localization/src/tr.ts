@@ -9,6 +9,8 @@ export const tr = {
     retry: 'Tekrar dene',
     loading: 'Yükleniyor',
     error: 'Bir şeyler ters gitti',
+    comingSoon: 'Yakında',
+    offline: 'Çevrimdışısın — son bilinen veriler gösteriliyor',
   },
   tabs: {
     today: 'Bugün',
@@ -62,8 +64,79 @@ export const tr = {
   },
   placeholder: {
     // Dalga 1A iskelet ekranları. 1B/1C'de gerçek içerikle değişir.
-    today: 'Bugün ekranı 1C dalgasında gelecek',
     training: 'Antrenman Faz 2\'de gelecek',
+  },
+  // §9 Bugün ekranı — kart kataloğu (MVP-11). `hasRealData: false` kartlar
+  // (bkz. cardCatalog.ts) `comingSoon.description` gösterir, uydurma veri
+  // YOK — bkz. 14-open-decisions.md.
+  today: {
+    title: 'Bugün',
+    manageCards: 'Kartları düzenle',
+    focusBadge: 'Bugünün odağı',
+    allCardsHidden: 'Tüm kartlar gizli. Düzenlemek için dokun.',
+    errorBanner: 'Veriler yüklenemedi',
+    cards: {
+      calorie: {
+        title: 'Kalori',
+        remaining: 'kalan',
+        consumed: 'tüketilen',
+        noTarget: 'Hedef henüz belirlenmedi',
+      },
+      macros: {
+        title: 'Makrolar',
+        protein: 'Protein',
+        carbs: 'Karbonhidrat',
+        fat: 'Yağ',
+      },
+      water: {
+        title: 'Su',
+      },
+      lastMeal: {
+        title: 'Son öğün',
+        empty: 'Bugün henüz öğün kaydetmedin',
+      },
+      measurementTrend: {
+        title: 'Ölçü trendi',
+        empty: 'Henüz ölçü kaydın yok',
+        latestWeight: 'Son kilo',
+      },
+      activeEnergy: {
+        title: 'Aktif enerji',
+        description: 'Sağlık entegrasyonu (MVP-12) geldiğinde burada görünecek',
+      },
+      steps: {
+        title: 'Adım',
+        description: 'Sağlık entegrasyonu (MVP-12) geldiğinde burada görünecek',
+      },
+      todayWorkout: {
+        title: 'Bugünkü antrenman',
+        description: 'Antrenman modülü geldiğinde burada görünecek',
+      },
+      streak: {
+        title: 'Seri',
+        description: 'Bu özellik yakında geliyor',
+      },
+      challenge: {
+        title: 'Challenge',
+        description: 'Bu özellik yakında geliyor',
+      },
+      aiInsight: {
+        title: 'AI kısa değerlendirme',
+        description: 'AI hoca geldiğinde burada görünecek',
+      },
+    },
+  },
+  dashboardManage: {
+    title: 'Kartları düzenle',
+    visible: 'Görünür',
+    hidden: 'Gizli',
+    moveUp: 'Yukarı taşı',
+    moveDown: 'Aşağı taşı',
+    size: 'Boyut',
+    sizeCompact: 'Kompakt',
+    sizeExpanded: 'Geniş',
+    setFocus: 'Bugünün odağı yap',
+    isFocus: 'Bugünün odağı',
   },
   // §03 manuel öğün kaydı.
   diary: {

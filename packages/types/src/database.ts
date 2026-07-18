@@ -2,9 +2,10 @@
  * Supabase MCP `generate_typescript_types` ile canlı şemadan üretildi.
  * ELLE DÜZENLENMEZ — migration eklendiğinde yeniden üretilir.
  *
- * Kaynak: proje aaufvndbagvkpbtqefee, migration 20260717205246 sonrası
+ * Kaynak: proje aaufvndbagvkpbtqefee, migration 20260718080000 sonrası
  * (meal_entries/log_meal/water_logs/recipes/favorite_foods/
- * body_measurements/progress_photos/ai_jobs + MVP-09 job pipeline dahil).
+ * body_measurements/progress_photos/ai_jobs + MVP-09 job pipeline +
+ * profiles.dashboard_layout (MVP-11) dahil).
  *
  * `private.ai_jobs`/`ai_usage_ledger`/`ai_feature_flags` bilerek burada YOK —
  * Data API `private` şemasını yayınlamaz (bkz. supabase/config.toml
@@ -298,6 +299,7 @@ export type Database = {
           bmr_kcal: number | null;
           carbs_g: number | null;
           created_at: string;
+          dashboard_layout: Json;
           diet_preference: string | null;
           display_name: string | null;
           fat_g: number | null;
@@ -331,6 +333,7 @@ export type Database = {
           bmr_kcal?: number | null;
           carbs_g?: number | null;
           created_at?: string;
+          dashboard_layout?: Json;
           diet_preference?: string | null;
           display_name?: string | null;
           fat_g?: number | null;
@@ -364,6 +367,7 @@ export type Database = {
           bmr_kcal?: number | null;
           carbs_g?: number | null;
           created_at?: string;
+          dashboard_layout?: Json;
           diet_preference?: string | null;
           display_name?: string | null;
           fat_g?: number | null;
@@ -584,11 +588,11 @@ export type Database = {
       };
       complete_ai_job_v2: {
         Args: {
-          p_estimated_cost_usd: number | null;
-          p_input_tokens: number | null;
+          p_estimated_cost_usd: number;
+          p_input_tokens: number;
           p_job_id: string;
           p_model: string;
-          p_output_tokens: number | null;
+          p_output_tokens: number;
           p_raw_response: Json;
           p_result_response: Json;
         };
@@ -638,26 +642,13 @@ export type Database = {
         Args: {
           p_error_code: string;
           p_error_message: string;
-          p_estimated_cost_usd: number | null;
-          p_input_tokens: number | null;
+          p_estimated_cost_usd: number;
+          p_input_tokens: number;
           p_job_id: string;
           p_model: string;
-          p_output_tokens: number | null;
+          p_output_tokens: number;
         };
         Returns: undefined;
-      };
-      get_ai_job: {
-        Args: { p_job_id: string };
-        Returns: {
-          correlation_id: string;
-          created_at: string;
-          error_code: string | null;
-          error_message: string | null;
-          job_id: string;
-          result_response: Json | null;
-          status: string;
-          updated_at: string;
-        }[];
       };
       food_detail: {
         Args: { target_food_id: string };
@@ -681,6 +672,19 @@ export type Database = {
           sugar_g: number;
         }[];
       };
+      get_ai_job: {
+        Args: { p_job_id: string };
+        Returns: {
+          correlation_id: string;
+          created_at: string;
+          error_code: string;
+          error_message: string;
+          job_id: string;
+          result_response: Json;
+          status: string;
+          updated_at: string;
+        }[];
+      };
       list_favorite_foods: {
         Args: { only_locale?: string };
         Returns: {
@@ -695,29 +699,8 @@ export type Database = {
           protein_g: number;
         }[];
       };
-      match_ai_food: {
-        Args: { p_candidate_names: string[]; p_locale?: string };
-        Returns: {
-          carbs_g: number;
-          energy_kcal: number;
-          fat_g: number;
-          fiber_g: number | null;
-          food_id: string;
-          food_version_id: string;
-          match_score: number;
-          matched_candidate: string;
-          matched_locale: string;
-          matched_name: string;
-          protein_g: number;
-          saturated_fat_g: number | null;
-          sodium_mg: number | null;
-          source_display_name: string;
-          source_key: string;
-          sugar_g: number | null;
-        }[];
-      };
       list_recipes: {
-        Args: Record<PropertyKey, never>;
+        Args: never;
         Returns: {
           name: string;
           per_serving_energy_kcal: number;
@@ -735,6 +718,27 @@ export type Database = {
           p_operation_id: string;
         };
         Returns: string;
+      };
+      match_ai_food: {
+        Args: { p_candidate_names: string[]; p_locale?: string };
+        Returns: {
+          carbs_g: number;
+          energy_kcal: number;
+          fat_g: number;
+          fiber_g: number;
+          food_id: string;
+          food_version_id: string;
+          match_score: number;
+          matched_candidate: string;
+          matched_locale: string;
+          matched_name: string;
+          protein_g: number;
+          saturated_fat_g: number;
+          sodium_mg: number;
+          source_display_name: string;
+          source_key: string;
+          sugar_g: number;
+        }[];
       };
       recipe_detail: {
         Args: { target_recipe_id: string };
@@ -794,3 +798,120 @@ export type Database = {
     };
   };
 };
+
+type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>;
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>];
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
+      Row: infer R;
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    ? (DefaultSchema['Tables'] & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R;
+      }
+      ? R
+      : never
+    : never;
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    keyof DefaultSchema['Tables'] | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+      Insert: infer I;
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I;
+      }
+      ? I
+      : never
+    : never;
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    keyof DefaultSchema['Tables'] | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+      Update: infer U;
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U;
+      }
+      ? U
+      : never
+    : never;
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    keyof DefaultSchema['Enums'] | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
+    : never) = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
+    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
+    : never;
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    keyof DefaultSchema['CompositeTypes'] | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
+    : never) = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
+    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
+    : never;
+
+export const Constants = {
+  public: {
+    Enums: {},
+  },
+} as const;

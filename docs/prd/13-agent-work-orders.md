@@ -250,18 +250,36 @@ Taslak sunumu: toplam tahmin + **aralık** + güven seviyesi. Onay/düzenle/ekle
 - Onaylanan taslağın `ai_jobs.status`'unu ayrı bir "confirmed" durumuna taşıması yok — tamamlanma sinyali `meal_entries` satırının varlığı, job şeması MVP-09'un kapsam kararıyla `needs_confirmation`'da kalmaya devam ediyor.
 
 #### MVP-11 — Bugün ekranı
-**Durum:** `todo` · **PRD:** §9 · **Bağımlılık:** MVP-10
+**Durum:** `done` · **PRD:** §9 · **Bağımlılık:** MVP-10
 
 Kart kataloğu, sıralama/görünürlük/odak kartı; tercih hesaba yazılır, offline okunur, cihazlar arası senkron.
 
-**Kabul:** Boş/loading/offline/hata/dolu durumları; kart düzenleme erişilebilir ve kalıcı; hiçbir health değeri analitiğe girmez.
+**Kabul:** Boş/loading/offline/hata/dolu durumları ✅; kart düzenleme erişilebilir ve kalıcı ✅ (buton tabanlı sıralama, ekran okuyucu dostu — bkz. 14-open-decisions.md); hiçbir health değeri analitiğe girmez ✅ (bu iş hiçbir analitik olayı eklemedi).
+
+**Kapsam kararı:** PRD'nin 6 madde bülleti (kalori+aktif enerji, makrolar, su+adım, son öğün+antrenman, ölçü trendi+seri+challenge, AI değerlendirme) 11 bağımsız yönetilebilir karta açıldı — her biri ayrı gizlenip boyutlandırılabilsin diye. Veri kaynağı olmayan 6 kart (aktif enerji, adım, bugünkü antrenman, seri, challenge, AI değerlendirme) katalogda tam yer alır (sıralanabilir/gizlenebilir/odak seçilebilir) ama gövdede uydurma sayı YERİNE "Yakında" durumu gösterir — bkz. 14-open-decisions.md.
+
+**Bitti:**
+- `profiles.dashboard_layout jsonb` (migration `20260718080000`) — `goal_overrides` ile AYNI desen: tek satır/kullanıcı, obje şekli CHECK, yeni RPC yok (mevcut `useUpdateProfile()` ile yazılır, §09 last-write-wins). 8 pgTAP testi (varsayılan, pozitif yazma, çapraz kullanıcı izolasyonu, CHECK ihlalleri, anon reddi) canlı şemada transaction+rollback ile 8/8 geçti.
+- `apps/mobile/src/dashboard/cardCatalog.ts` — 11 kartlık statik katalog; `useDashboardLayout()` sunucudaki serbest-şekilli jsonb'yi güvenli bir yerleşime çevirir, kayıtlı olmayan yeni kart id'lerini sona ekler (yeni kart tipi migration gerektirmez).
+- Gerçek veri kartları: `CalorieCard`, `MacroCard`, `WaterCard`, `LastMealCard`, `MeasurementTrendCard` — mevcut `useDailyNutritionSummary`/`useProfile`/`useDailyWaterSummary`/`useTodaysMeals`/`useWeightTrend` hook'larını yeniden kullanır, yeni sorgu yolu açmaz.
+- `ComingSoonCard` — veri kaynağı olmayan 6 kart için tek paylaşımlı "Yakında" gövdesi.
+- `apps/mobile/app/manage-dashboard-cards.tsx` — görünürlük/sıra (yukarı/aşağı buton)/boyut/odak kartı düzenleme; her etkileşim anında yazar.
+- Paylaşımlı `Card`/`ProgressBar` bileşenleri (`apps/mobile/src/components/`) — önceki ekranlardaki inline kart tekrarının ilk paylaşımlı çıkarımı (eski ekranlar refactor edilmedi, kapsam dışı).
+- Offline okunabilirlik: `@tanstack/react-query-persist-client` + `@react-native-community/netinfo` — `queryClient.ts`/`_layout.tsx`'e eklendi, yalnız Bugün ekranını değil profil/su/öğün/ölçü sorgularının tümünü offline-okunur yaptı.
+
+**Kalan:**
+- Aktif enerji + adım → MVP-12 (health) gerçek veriyle bağlanınca `ComingSoonCard` yerini alır.
+- Bugünkü antrenman → `TRN-*` (Faz 2+).
+- AI kısa değerlendirme → `COACH-*` (Faz 2+).
+- Seri ve challenge → henüz iş kimliği yok; `11-delivery-roadmap.md` grafiğine eklenmeden numaralandırılmaz (§00 "yayınlanmayacak yüzey önceden sözleşmeye çevrilmez").
+- pgTAP testleri Docker'da topluca yeniden çalıştırılıp doğrulanmadı (yukarıdaki 8/8, önceki MVP'lerdeki gibi canlı şemada transaction+rollback ile kanıtlandı, dosyanın kendisinin Docker altında da geçtiği ayrıca doğrulanmalı).
 
 ### Dalga 1D — Health ve gelir
 
 #### MVP-12 — Health ve aktivite
 **Durum:** `todo` · **PRD:** §17 · **Bağımlılık:** MVP-02 · `türetilmiş`
 
-HealthKit/Health Connect, temel adım/aktif enerji. Native entegrasyon kapısı (§01) uygulanır.
+HealthKit/Health Connect, temel adım/aktif enerji. Native entegrasyon kapısı (§01) uygulanır. Bugün ekranındaki (MVP-11) `activeEnergy`/`steps` "Yakında" kartlarını gerçek veriyle değiştirir — bkz. `apps/mobile/src/dashboard/cardCatalog.ts`.
 
 **Kabul:** Health izni reddedilse de manuel öğün/su/ölçü/antrenman çalışır; health işi temel özellikleri bloklamaz.
 
@@ -319,6 +337,8 @@ Kimlikler `11-delivery-roadmap.md` grafiğinde grup olarak geçer (`TRN-*`, `COA
 | `VOICE-*` | Sesli hoca: ephemeral token → Live session → voice quota → fallback STT/TTS | §21–24 | Gemini Live preview durumu doğrulanmadan production varsayılanı olmaz |
 | `POSE-*` | Cihaz içi form: frame processor → MediaPipe → state machine → local feedback | §21–24 | İlk on hareket ayrı feature flag |
 | `ADV-*` | Video form, fotoğraftan ölçü, wearable, challenge, adaptif program | §21–24 | Her deneysel ölçüm aralık/confidence ve ayrı consent taşır |
+
+`TRN-*` Bugün ekranındaki (MVP-11) `todayWorkout`, `COACH-*` ise `aiInsight` "Yakında" kartını gerçek veriyle değiştirir. Seri/challenge kartları (`streak`/`challenge`) henüz hiçbir gruba bağlanmadı — `ADV-*`'nin "challenge" kapsamı bununla örtüşebilir, karar `14-open-decisions.md`'de açık.
 
 ## Paralel çalışma sınırları
 

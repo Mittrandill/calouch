@@ -1,11 +1,11 @@
-import { QueryClientProvider } from '@tanstack/react-query';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 import { AuthProvider } from '@/auth/AuthProvider';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { queryClient } from '@/data/queryClient';
+import { asyncStoragePersister, queryClient } from '@/data/queryClient';
 import { LocaleProvider } from '@/i18n/LocaleProvider';
 import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
 
@@ -25,7 +25,14 @@ export default function RootLayout() {
       <ThemeProvider>
         <LocaleProvider>
           <ErrorBoundary>
-            <QueryClientProvider client={queryClient}>
+            <PersistQueryClientProvider
+              client={queryClient}
+              persistOptions={{
+                persister: asyncStoragePersister,
+                // §09 sağlık verisi ilkesiyle tutarlı: diskte süresiz kalmaz.
+                maxAge: 24 * 60 * 60 * 1000,
+              }}
+            >
               <AuthProvider>
                 <ThemedStatusBar />
                 <Stack screenOptions={{ headerShown: false }}>
@@ -37,9 +44,10 @@ export default function RootLayout() {
                   <Stack.Screen name="recipe-builder" options={{ presentation: 'modal' }} />
                   <Stack.Screen name="measurements" options={{ presentation: 'modal' }} />
                   <Stack.Screen name="progress-photos" options={{ presentation: 'modal' }} />
+                  <Stack.Screen name="manage-dashboard-cards" options={{ presentation: 'modal' }} />
                 </Stack>
               </AuthProvider>
-            </QueryClientProvider>
+            </PersistQueryClientProvider>
           </ErrorBoundary>
         </LocaleProvider>
       </ThemeProvider>

@@ -11,6 +11,8 @@ export const en: Translations = {
     retry: 'Try again',
     loading: 'Loading',
     error: 'Something went wrong',
+    comingSoon: 'Coming soon',
+    offline: "You're offline — showing the last known data",
   },
   tabs: {
     today: 'Today',
@@ -60,8 +62,76 @@ export const en: Translations = {
     },
   },
   placeholder: {
-    today: 'The Today screen arrives in wave 1C',
     training: 'Training arrives in phase 2',
+  },
+  today: {
+    title: 'Today',
+    manageCards: 'Manage cards',
+    focusBadge: "Today's focus",
+    allCardsHidden: 'All cards are hidden. Tap to manage.',
+    errorBanner: "Couldn't load your data",
+    cards: {
+      calorie: {
+        title: 'Calories',
+        remaining: 'remaining',
+        consumed: 'consumed',
+        noTarget: 'No target set yet',
+      },
+      macros: {
+        title: 'Macros',
+        protein: 'Protein',
+        carbs: 'Carbs',
+        fat: 'Fat',
+      },
+      water: {
+        title: 'Water',
+      },
+      lastMeal: {
+        title: 'Last meal',
+        empty: "You haven't logged a meal today yet",
+      },
+      measurementTrend: {
+        title: 'Weight trend',
+        empty: "You haven't logged a measurement yet",
+        latestWeight: 'Latest weight',
+      },
+      activeEnergy: {
+        title: 'Active energy',
+        description: "Will appear here once health sync (MVP-12) arrives",
+      },
+      steps: {
+        title: 'Steps',
+        description: "Will appear here once health sync (MVP-12) arrives",
+      },
+      todayWorkout: {
+        title: "Today's workout",
+        description: 'Will appear here once training arrives',
+      },
+      streak: {
+        title: 'Streak',
+        description: 'Coming soon',
+      },
+      challenge: {
+        title: 'Challenge',
+        description: 'Coming soon',
+      },
+      aiInsight: {
+        title: 'AI insight',
+        description: 'Will appear here once the AI coach arrives',
+      },
+    },
+  },
+  dashboardManage: {
+    title: 'Manage cards',
+    visible: 'Visible',
+    hidden: 'Hidden',
+    moveUp: 'Move up',
+    moveDown: 'Move down',
+    size: 'Size',
+    sizeCompact: 'Compact',
+    sizeExpanded: 'Expanded',
+    setFocus: "Make today's focus",
+    isFocus: "Today's focus",
   },
   diary: {
     title: 'Diary',

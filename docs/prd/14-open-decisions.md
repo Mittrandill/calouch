@@ -96,6 +96,17 @@ MVP-05 (manuel öğün) yalnız **sunucu tarafı** idempotency'yi teslim etti: `
 
 ## Kapalı
 
+### Bugün ekranı: kart kataloğu kapsamı ve "Yakında" placeholder'ı
+**Karar tarihi:** 2026-07-18 · **Etki:** MVP-11, MVP-12, `TRN-*`, `COACH-*` · **PRD:** §9
+
+**Karar:** PRD §9'un 6 madde bülleti (kalori+aktif enerji, makrolar, su+adım, son öğün+antrenman, ölçü trendi+seri+challenge, AI değerlendirme) 11 bağımsız yönetilebilir karta açıldı (`calorie`, `macros`, `water`, `lastMeal`, `measurementTrend`, `activeEnergy`, `steps`, `todayWorkout`, `streak`, `challenge`, `aiInsight` — bkz. `apps/mobile/src/dashboard/cardCatalog.ts`). Bunlardan 5'inin gerçek veri kaynağı vardı (mevcut hook'lar), 6'sının yoktu. Kullanıcıyla konuşuldu: kart kataloğunun TAMAMI şimdi inşa edildi (sıralama/görünürlük/boyut/odak hepsi çalışır, veri kaynağı olmayan kartlar dahil) — ama gövdede uydurma sayı YOK, `ComingSoonCard` "Yakında" rozeti + hangi işin bunu getireceğini anlatan kısa açıklama gösterir.
+
+**Gerekçe:** "Kart kataloğu" ifadesi doğal olarak her kartın bağımsız gizlenip boyutlandırılabildiği bir yapıyı işaret ediyor — 6 bülleti tek büyük kart yapmak bu özerkliği kaybederdi. Gerçek kullanıcılara (bu bir üretim ekranı, storybook/demo değil) sahte adım sayısı, uydurma seri günü veya var olmayan bir AI değerlendirmesi göstermek §00'ın "belirsizlik görünürdür" ve genel dürüstlük ilkesiyle çelişirdi — bir sağlık/beslenme uygulamasında bu yalnız kozmetik değil, güven sorunu. "Yakında" durumu PRD'nin "kart kataloğu + düzenleme" gereksinimini tam karşılarken bu riski taşımaz.
+
+Ayrıca sürükle-bırak yerine buton tabanlı sıralama seçildi: bu ortamda `react-native-reanimated`/`react-native-gesture-handler` kurulu değildi (expo-router bunları optional peer olarak listeliyor ama hiç yüklenmemiş), yeni bir native bağımlılık zinciri açmak bu işin kapsamını aşardı. Buton tabanlı sıralama ayrıca kabul kriterindeki "kart düzenleme erişilebilir" şartını sürükleme jestinden daha doğrudan karşılıyor (ekran okuyucu ile çalışır). Aynı gerekçeyle ring yerine düz `ProgressBar` (`react-native-svg` kurulu değildi) kullanıldı.
+
+**Sonuç:** `docs/prd/13-agent-work-orders.md`'de MVP-12/`TRN-*`/`COACH-*` tanımlarına bu kartlara geri referans eklendi — o işleri üstlenen ajan `ComingSoonCard`'ı gerçek veriyle değiştirmesi gerektiğini bilir. Seri (`streak`) ve challenge kartlarının bağlanacağı iş kimliği henüz yok — `ADV-*`'nin "challenge" kapsamı (§21–24) örtüşebilir ama teyit edilmedi; bu satır `Açık` sayılır, ilgili faz başlamadan numaralandırılmayacak (§00).
+
 ### Gemini model, maliyet tavanı ve kill switch
 **Karar tarihi:** 2026-07-17 · **Etki:** MVP-08, MVP-09 · **PRD:** §10–11
 

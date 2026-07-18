@@ -1,11 +1,115 @@
-import { PlaceholderScreen } from '@/components/Screen';
+import { router } from 'expo-router';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+
+import { Screen } from '@/components/Screen';
+import { DashboardCard } from '@/dashboard/DashboardCard';
+import { useDashboardLayout } from '@/dashboard/useDashboardLayout';
 import { useTranslations } from '@/i18n/LocaleProvider';
+import { useTheme } from '@/theme/ThemeProvider';
 
 /**
- * Bugün ekranı.
- * Kart kataloğu ve düzenlenebilir yerleşim Dalga 1C'de gelir (§02, MVP-11).
+ * Bugün ekranı (§9, MVP-11). Kart kataloğu, sıralama/görünürlük/boyut/odak
+ * kartı tercihi `useDashboardLayout()` üzerinden `profiles.dashboard_layout`
+ * ile senkron.
  */
 export default function TodayScreen() {
+  const theme = useTheme();
   const t = useTranslations();
-  return <PlaceholderScreen title={t.tabs.today} subtitle={t.placeholder.today} />;
+
+  const { isLoading, isError, isOffline, visibleOrderedCards, focusCard, layout } = useDashboardLayout();
+
+  const remainingCards = visibleOrderedCards.filter((card) => card.id !== focusCard?.id);
+
+  return (
+    <Screen scrollable>
+      <View style={styles.header}>
+        <Text
+          accessibilityRole="header"
+          style={[theme.typography.display, { color: theme.colors.text.primary }]}
+        >
+          {t.today.title}
+        </Text>
+        <Pressable
+          onPress={() => router.push('/manage-dashboard-cards')}
+          accessibilityRole="button"
+          accessibilityLabel={t.today.manageCards}
+          style={{
+            minWidth: theme.minTouchTarget,
+            minHeight: theme.minTouchTarget,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Ionicons name="options-outline" size={24} color={theme.colors.text.secondary} />
+        </Pressable>
+      </View>
+
+      {isOffline && (
+        <View
+          style={[
+            styles.banner,
+            {
+              marginTop: theme.spacing.sm,
+              borderRadius: theme.radius.md,
+              backgroundColor: theme.colors.status.infoSurface,
+              padding: theme.spacing.md,
+            },
+          ]}
+        >
+          <Text style={[theme.typography.bodySm, { color: theme.colors.status.info }]}>
+            {t.common.offline}
+          </Text>
+        </View>
+      )}
+
+      {isLoading ? (
+        <View style={{ marginTop: theme.spacing.xxl, alignItems: 'center' }}>
+          <ActivityIndicator color={theme.colors.brand.text} />
+        </View>
+      ) : isError && !isOffline ? (
+        <View style={{ marginTop: theme.spacing.xxl, alignItems: 'center' }}>
+          <Text
+            accessibilityRole="alert"
+            style={[theme.typography.body, { color: theme.colors.status.danger, textAlign: 'center' }]}
+          >
+            {t.today.errorBanner}
+          </Text>
+        </View>
+      ) : visibleOrderedCards.length === 0 ? (
+        <Pressable
+          onPress={() => router.push('/manage-dashboard-cards')}
+          accessibilityRole="button"
+          style={{ marginTop: theme.spacing.xxl, alignItems: 'center' }}
+        >
+          <Text style={[theme.typography.body, { color: theme.colors.text.tertiary, textAlign: 'center' }]}>
+            {t.today.allCardsHidden}
+          </Text>
+        </Pressable>
+      ) : (
+        <View style={{ marginTop: theme.spacing.lg, gap: theme.spacing.md }}>
+          {focusCard !== undefined && (
+            <DashboardCard
+              card={focusCard}
+              size={focusCard.supportedSizes.includes('expanded') ? 'expanded' : focusCard.defaultSize}
+              isFocused
+            />
+          )}
+          {remainingCards.map((card) => (
+            <DashboardCard
+              key={card.id}
+              card={card}
+              size={layout.cardSizes[card.id] ?? card.defaultSize}
+              isFocused={false}
+            />
+          ))}
+        </View>
+      )}
+    </Screen>
+  );
 }
+
+const styles = StyleSheet.create({
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  banner: {},
+});
