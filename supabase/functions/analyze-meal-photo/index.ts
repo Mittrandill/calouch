@@ -60,8 +60,11 @@ const nullableNutrientsSchema = z.object({
   sodiumMg: z.number().nonnegative().nullable(),
 });
 const catalogMatchSchema = z.object({
-  foodId: z.string().uuid(),
-  foodVersionId: z.string().uuid(),
+  // bkz. packages/validation/src/mealAnalysis.ts üstündeki aynı başlıklı not:
+  // seed katalog id'leri RFC 4122 versiyon/varyant biçimine uymaz ama geçerli
+  // Postgres uuid'dir; `.guid()` yalnız şekli doğrular, sürüm dayatmaz.
+  foodId: z.string().guid(),
+  foodVersionId: z.string().guid(),
   matchedName: z.string(),
   matchedCandidate: z.string(),
   matchedLocale: z.enum(['tr', 'en']),

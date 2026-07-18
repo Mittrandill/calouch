@@ -75,8 +75,16 @@ export const catalogNutrientSnapshotSchema = z.object({
 }) satisfies z.ZodType<CatalogNutrientSnapshot>;
 
 export const catalogFoodMatchSchema = z.object({
-  foodId: z.string().uuid(),
-  foodVersionId: z.string().uuid(),
+  // GÜVENLİK/DOĞRULUK NOTU (ampirik olarak bulundu, MVP-10 E2E doğrulaması
+  // sırasında): `.uuid()` RFC 4122 versiyon/varyant bitlerini zorunlu kılar
+  // (13. hex hanesi 1-8, 17. hane 8/9/a/b). `supabase/seed/catalog_starter_foods.sql`
+  // gibi elle yazılmış "vanity" katalog id'leri (ör. `10000000-...-000000000001`)
+  // bu kalıba UYMAZ ama Postgres `uuid` kolonu için tamamen geçerlidir — bu
+  // alan dış/güvenilmeyen girdi değil, kendi veritabanımızın kimliğidir.
+  // `.guid()` yalnız UUID ŞEKLİNİ (8-4-4-4-12 hex) doğrular, versiyon/varyant
+  // dayatmaz — ihtiyacımız olan gerçek kontrol budur.
+  foodId: z.string().guid(),
+  foodVersionId: z.string().guid(),
   matchedName: z.string().min(1),
   matchedCandidate: z.string().min(1),
   matchedLocale: z.enum(['tr', 'en']),

@@ -1,7 +1,7 @@
-import type { CatalogFoodMatch, MealAnalysis } from '@calouch/types';
+import type { CatalogFoodMatch, CatalogNutrientSnapshot, MealAnalysis } from '@calouch/types';
 import { describe, expect, it } from 'vitest';
 
-import { buildAiMealDraft } from './aiMealDraft';
+import { buildAiMealDraft, scaleCatalogNutrients, sumCatalogNutrients } from './aiMealDraft';
 
 const rawAnalysis = {
   isFood: true,
@@ -65,5 +65,41 @@ describe('buildAiMealDraft', () => {
 
   it('kalem ve eşleşme sayısı farklıysa açıkça reddeder', () => {
     expect(() => buildAiMealDraft(rawAnalysis, [match()])).toThrow(/Her analiz kalemi/);
+  });
+});
+
+describe('scaleCatalogNutrients', () => {
+  const per100g: CatalogNutrientSnapshot = {
+    energyKcal: 100, proteinG: 10, carbsG: 20, sugarG: 2, fatG: 4,
+    saturatedFatG: null, fiberG: 5, sodiumMg: 50,
+  };
+
+  it('grama orantılı ölçekler', () => {
+    const result = scaleCatalogNutrients(per100g, 150);
+    expect(result).toMatchObject({ energyKcal: 150, proteinG: 15, carbsG: 30, fatG: 6, fiberG: 7.5 });
+  });
+
+  it('null opsiyonel alanı sıfıra çevirmez', () => {
+    expect(scaleCatalogNutrients(per100g, 150).saturatedFatG).toBeNull();
+  });
+});
+
+describe('sumCatalogNutrients', () => {
+  it('zorunlu alanları her zaman toplar', () => {
+    const sum = sumCatalogNutrients([
+      { energyKcal: 100, proteinG: 10, carbsG: 20, sugarG: 2, fatG: 4, saturatedFatG: 1, fiberG: 5, sodiumMg: 50 },
+      { energyKcal: 50, proteinG: 5, carbsG: 10, sugarG: 1, fatG: 2, saturatedFatG: 0.5, fiberG: 2, sodiumMg: 25 },
+    ]);
+    expect(sum).toMatchObject({ energyKcal: 150, proteinG: 15, carbsG: 30, fatG: 6 });
+  });
+
+  it('bir kalemde eksik opsiyonel alan varsa toplamı sessizce sıfırlamaz, null bırakır', () => {
+    const sum = sumCatalogNutrients([
+      { energyKcal: 100, proteinG: 10, carbsG: 20, sugarG: 2, fatG: 4, saturatedFatG: null, fiberG: 5, sodiumMg: 50 },
+      { energyKcal: 50, proteinG: 5, carbsG: 10, sugarG: 1, fatG: 2, saturatedFatG: 0.5, fiberG: null, sodiumMg: 25 },
+    ]);
+    expect(sum.saturatedFatG).toBeNull();
+    expect(sum.fiberG).toBeNull();
+    expect(sum.sugarG).toBe(3);
   });
 });

@@ -52,4 +52,8 @@ export {
 } from './meals/nutrients';
 
 export type { NutrientProfile, WeightedNutrients } from './meals/types';
-export { buildAiMealDraft } from './meals/aiMealDraft';
+export {
+  buildAiMealDraft,
+  scaleCatalogNutrients,
+  sumCatalogNutrients,
+} from './meals/aiMealDraft';

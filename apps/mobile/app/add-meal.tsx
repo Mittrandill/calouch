@@ -17,20 +17,16 @@ import { OptionList, type Option } from '@/onboarding/components/OptionList';
 import { FoodSearchResultRow } from '@/diary/FoodSearchResultRow';
 import { useDebouncedValue } from '@/diary/useDebouncedValue';
 import { useFavoriteFoods, useToggleFavorite } from '@/data/favorites';
-import { useFoodDetail, useFoodSearch, useLogMeal, type MealType } from '@/data/meals';
+import {
+  defaultMealTypeForNow,
+  useFoodDetail,
+  useFoodSearch,
+  useLogMeal,
+  type MealType,
+} from '@/data/meals';
 import { useRecipes } from '@/data/recipes';
 import { useLocale, useTranslations } from '@/i18n/LocaleProvider';
 import { useTheme } from '@/theme/ThemeProvider';
-
-/** Saatin gününe göre akla yatkın bir varsayılan öğün türü. */
-function defaultMealTypeForNow(): MealType {
-  const hour = new Date().getHours();
-  if (hour < 11) return 'breakfast';
-  if (hour < 15) return 'lunch';
-  if (hour < 18) return 'snack';
-  if (hour < 22) return 'dinner';
-  return 'night';
-}
 
 /**
  * Öğün ekleme akışı: ara -> seç -> miktar/öğün türü -> kaydet.

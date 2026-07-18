@@ -187,7 +187,7 @@ export const en: Translations = {
     chooseFromLibrary: 'Choose from library',
     analyzing: 'Analyzing…',
     previewNotice:
-      'This is a draft — values are calculated from matched catalog entries. Confirmation, editing, and saving are coming next.',
+      'This is a draft — values are calculated from matched catalog entries. Review and edit it before saving.',
     resultTitle: 'Analysis draft',
     mealTitleLabel: 'Meal',
     gramRangeLabel: 'Portion',
@@ -204,6 +204,20 @@ export const en: Translations = {
       low: 'Low confidence',
       medium: 'Medium confidence',
       high: 'High confidence',
+    },
+    review: {
+      lowConfidenceBanner:
+        "This draft's overall confidence is low — check the items carefully before saving.",
+      weakMatchWarning: 'This match may not be exact — tap "Change" if it\'s wrong.',
+      change: 'Change',
+      itemExcludedNotice: "This item won't be saved",
+      remove: 'Remove',
+      include: 'Add back',
+      searchCatalogPrompt: 'Pick a food from the catalog',
+      confirmAndSave: 'Confirm and save',
+      reanalyze: 'Re-analyze',
+      reanalyzing: 'Re-analyzing…',
+      discard: 'Discard',
     },
     errors: {
       kill_switch: 'AI meal analysis is temporarily unavailable',

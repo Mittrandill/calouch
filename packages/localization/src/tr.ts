@@ -186,15 +186,15 @@ export const tr = {
       unavailable: 'Cihazında biyometrik doğrulama kullanılamıyor',
     },
   },
-  // §04/§10-11 AI fotoğraf analizi — MVP-09 katalog taslağı. Kalıcı kayıt ve
-  // kullanıcı doğrulaması MVP-10'a kadar bilinçli olarak yoktur.
+  // §04/§10-11 AI fotoğraf analizi. MVP-09 katalog taslağını üretir; MVP-10
+  // taslağı düzenlenebilir/onaylanabilir hale getirip log_meal()'e bağlar.
   camera: {
     title: 'AI ile yemek analiz et',
     takePhoto: 'Fotoğraf çek',
     chooseFromLibrary: 'Galeriden seç',
     analyzing: 'Analiz ediliyor…',
     previewNotice:
-      'Bu bir taslaktır — değerler eşleşen katalog kayıtlarından hesaplandı. Onaylama, düzenleme ve kaydetme yakında eklenecek.',
+      'Bu bir taslaktır — değerler eşleşen katalog kayıtlarından hesaplandı. Kaydetmeden önce gözden geçir, gerekirse düzenle.',
     resultTitle: 'Analiz taslağı',
     mealTitleLabel: 'Öğün',
     gramRangeLabel: 'Porsiyon',
@@ -211,6 +211,25 @@ export const tr = {
       low: 'Düşük güven',
       medium: 'Orta güven',
       high: 'Yüksek güven',
+    },
+    // MVP-10: taslak onay/düzenleme ekranı. Gram/öğün türü/arama etiketleri
+    // §03'teki `diary.quantity`/`diary.search`/`diary.error` anahtarlarından
+    // yeniden kullanılır — burada yalnız bu ekrana özgü metinler yaşar.
+    review: {
+      lowConfidenceBanner:
+        'Bu taslağın genel güveni düşük — kaydetmeden önce kalemleri dikkatle kontrol et.',
+      // Katalog eşleşmesi ismen benzer ama muhtemelen yanlış olabilir (ör.
+      // "Adana kebap" katalogda yok, "Izgara köfte"ye düşük skorla eşleşir).
+      weakMatchWarning: 'Bu eşleşme kesin olmayabilir — yanlışsa "Değiştir"e dokun.',
+      change: 'Değiştir',
+      itemExcludedNotice: 'Bu kalem kaydedilmeyecek',
+      remove: 'Kaldır',
+      include: 'Geri ekle',
+      searchCatalogPrompt: 'Kataloğdan besin seç',
+      confirmAndSave: 'Onayla ve kaydet',
+      reanalyze: 'Yeniden analiz et',
+      reanalyzing: 'Yeniden analiz ediliyor…',
+      discard: 'Vazgeç',
     },
     errors: {
       kill_switch: 'AI fotoğraf analizi geçici olarak kapalı',

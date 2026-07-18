@@ -8,7 +8,16 @@ import type {
 const OPTIONAL_KEYS = ['sugarG', 'saturatedFatG', 'fiberG', 'sodiumMg'] as const;
 const REQUIRED_KEYS = ['energyKcal', 'proteinG', 'carbsG', 'fatG'] as const;
 
-function scale(per100g: CatalogNutrientSnapshot, grams: number): CatalogNutrientSnapshot {
+/**
+ * Bir 100 g snapshot'ını verilen grama ölçekler; bilinmeyen (null) opsiyonel
+ * alan null kalır, sıfır SAYILMAZ. MVP-10: mobil taraf kullanıcının taslakta
+ * düzenlediği gram değeri için kcal/makro önizlemesini bu AYNI saf fonksiyonla
+ * yeniden hesaplar — mantık iki yerde ayrı ayrı yazılmaz.
+ */
+export function scaleCatalogNutrients(
+  per100g: CatalogNutrientSnapshot,
+  grams: number,
+): CatalogNutrientSnapshot {
   const factor = grams / 100;
   return {
     energyKcal: per100g.energyKcal * factor,
@@ -23,7 +32,15 @@ function scale(per100g: CatalogNutrientSnapshot, grams: number): CatalogNutrient
   };
 }
 
-function sum(items: readonly CatalogNutrientSnapshot[]): CatalogNutrientSnapshot {
+/**
+ * Birden çok kalemin snapshot'ını toplar; bir kalemde eksik olan opsiyonel
+ * alan TÜMÜNDE eksikmiş gibi toplamı sessizce sıfırlamaz — yalnız TÜM
+ * kalemler o alanı taşıyorsa toplanır (bkz. `daily_nutrition_summary` ile
+ * aynı semantik).
+ */
+export function sumCatalogNutrients(
+  items: readonly CatalogNutrientSnapshot[],
+): CatalogNutrientSnapshot {
   const result: CatalogNutrientSnapshot = {
     energyKcal: 0,
     proteinG: 0,
@@ -67,9 +84,9 @@ export function buildAiMealDraft(
         catalogMatch === null
           ? null
           : {
-              estimated: scale(catalogMatch.per100g, item.estimatedGrams),
-              minimum: scale(catalogMatch.per100g, item.minGrams),
-              maximum: scale(catalogMatch.per100g, item.maxGrams),
+              estimated: scaleCatalogNutrients(catalogMatch.per100g, item.estimatedGrams),
+              minimum: scaleCatalogNutrients(catalogMatch.per100g, item.minGrams),
+              maximum: scaleCatalogNutrients(catalogMatch.per100g, item.maxGrams),
             },
     };
   });
@@ -79,9 +96,9 @@ export function buildAiMealDraft(
     unmatchedItemCount > 0
       ? null
       : {
-          estimated: sum(allNutrients.map((range) => range.estimated)),
-          minimum: sum(allNutrients.map((range) => range.minimum)),
-          maximum: sum(allNutrients.map((range) => range.maximum)),
+          estimated: sumCatalogNutrients(allNutrients.map((range) => range.estimated)),
+          minimum: sumCatalogNutrients(allNutrients.map((range) => range.minimum)),
+          maximum: sumCatalogNutrients(allNutrients.map((range) => range.maximum)),
         };
 
   return {

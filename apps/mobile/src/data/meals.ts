@@ -59,6 +59,16 @@ export type MealType =
   | 'night'
   | 'custom';
 
+/** Saatin gününe göre akla yatkın bir varsayılan öğün türü. */
+export function defaultMealTypeForNow(): MealType {
+  const hour = new Date().getHours();
+  if (hour < 11) return 'breakfast';
+  if (hour < 15) return 'lunch';
+  if (hour < 18) return 'snack';
+  if (hour < 22) return 'dinner';
+  return 'night';
+}
+
 export type LogMealItem =
   | { kind: 'food'; foodId: string; quantityGrams: number; portionLabel?: string }
   | { kind: 'recipe'; recipeId: string; servings: number };

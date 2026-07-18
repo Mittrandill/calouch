@@ -226,11 +226,28 @@ Private media upload, provider adapter, request/response şeması, Zod validatio
 **Doğrulama:** 4 deterministik motor unit testi; canlı şemada transaction+rollback ile 18/18 pgTAP (exact/alias/source/snapshot, raw-result ayrımı, owner/other/anon, idempotent ledger); `pnpm verify` 24/24 task. `analyze-meal-photo` v4 ve `ai-jobs` v1 ACTIVE, ikisi de `verify_jwt: true`.
 
 #### MVP-10 — Kullanıcı doğrulaması
-**Durum:** `todo` · **PRD:** §10.1, §11 · **Bağımlılık:** MVP-09
+**Durum:** `done` · **PRD:** §10.1, §11 · **Bağımlılık:** MVP-09
 
 Taslak sunumu: toplam tahmin + **aralık** + güven seviyesi. Onay/düzenle/ekle/yeniden analiz/sil.
 
-**Kabul:** Değişmez kural: "AI yalnızca tahmin veya taslak üretir; kullanıcı onayı olmadan öğün kalıcılaşmaz." Düşük güven açıkça işaretlenir.
+**Kabul:** Değişmez kural: "AI yalnızca tahmin veya taslak üretir; kullanıcı onayı olmadan öğün kalıcılaşmaz." ✅ — kayıt yalnız kullanıcı "Onayla ve kaydet"e bastığında `log_meal()` üzerinden olur. Düşük güven açıkça işaretlenir ✅ (`overallConfidence` banner + kalem bazlı `confidence` etiketi + zayıf katalog eşleşmesi uyarısı).
+
+**Kapsam kararı:** Yeni migration/RPC yok — onaylanan her eşleşmiş kalem `catalogMatch.foodId` (veya kullanıcının manuel seçimi) + gram ile mevcut `log_meal()` `kind:'food'` dalına gönderilir. `log_meal()` zaten kayıt anındaki `current_version_id`'yi çözüyor; taslaktaki `food_version_id`'yi pinlemeye gerek yok — manuel arama akışıyla birebir aynı semantik.
+
+**Bitti:**
+- `apps/mobile/src/camera/MealDraftReview.tsx` — taslağı düzenlenebilir/onaylanabilir hale getiren ana bileşen: canlı toplam, düşük genel güven banner'ı, öğün türü seçimi (`add-meal.tsx`'ten yeniden kullanılan `defaultMealTypeForNow`, artık `@/data/meals`'de), "Onayla ve kaydet" (`useLogMeal()`), "Yeniden analiz" (aynı fotoğrafla, yeni `operationId`/`storagePath`), "Vazgeç".
+- `apps/mobile/src/camera/MealDraftItemRow.tsx` — kalem başına düzenlenebilir gram + `scaleCatalogNutrients` ile canlı kcal/makro önizlemesi; dahil et/kaldır; eşleşmeyen kalemlerde satır içi katalog araması (`useFoodSearch`/`FoodSearchResultRow` yeniden kullanıldı) — §04 "katalog eşleşmesi yoksa kullanıcı manuel arama/özel besine yönlenir".
+- `apps/mobile/src/camera/mealDraftPreview.ts` — saf önizleme mantığı (`previewNutrients`/`resolvedFoodId`), manuel seçim her zaman orijinal AI eşleşmesinden önceliklidir.
+- `packages/nutrition-engine` — `scale`/`sum` iç fonksiyonları `scaleCatalogNutrients`/`sumCatalogNutrients` adıyla export edildi (mobil, gram düzenlemesinde AYNI null-koruyan formülü yeniden kullanır), birim testleri eklendi.
+- **E2E doğrulama (Chrome + `expo start --web`, gerçek Supabase projesine karşı, gerçek bir Adana kebap tabağı fotoğrafıyla):** fotoğraf çek → analiz → düzenlenebilir taslak → gram değiştir/kalem kaldır → "Onayla ve kaydet" → `meal_entries` satırı oluştu, günlükte göründü zinciri uçtan uca çalıştı.
+- **Bu doğrulama sırasında iki gerçek hata bulundu ve düzeltildi:**
+  1. `packages/validation/src/mealAnalysis.ts` ve edge function'ın inline kopyasındaki `catalogFoodMatchSchema.foodId`/`foodVersionId` `z.string().uuid()` kullanıyordu — zod v4'te bu RFC 4122 versiyon/varyant hanelerini zorunlu kılıyor. `supabase/seed/catalog_starter_foods.sql`'deki "vanity" id'ler (`10000000-0000-0000-0000-000000000012` gibi) bu kalıba uymuyor — geçerli bir Postgres uuid ama RFC-uyumlu değil. Sonuç: katalogda **başarılı bir eşleşme** olan HER job `mealDraftSchema` doğrulamasında çöküp `invalid_response` ile `failed` oluyordu. `.uuid()` → `.guid()` (yalnız şekli doğrular, sürüm dayatmaz) ile düzeltildi, `analyze-meal-photo` v5 olarak redeploy edildi, `packages/validation/src/mealAnalysis.test.ts`'e regresyon testi eklendi.
+  2. 15 besinlik seed katalogda "Adana kebap" yok — bulanık (trigram) arama onu en yakın isme (`Izgara köfte`, ~%44 skor) düşürüyor ve bunu sessizce "kesin eşleşme" gibi sunuyordu. Kalıcı çözüm (gerçek bir besin veritabanı) MVP-10'un kapsamı dışı ve `14-open-decisions.md`'de açık karar olarak duruyor; MVP-10 kapsamında UI tarafı düzeltildi: `matchScore < 0.7` olan kalemlerde "Bu eşleşme kesin olmayabilir" uyarısı + her eşleşmiş kalemde "Değiştir" butonu (satır içi aramayla manuel düzeltme).
+
+**Kalan:**
+- Besin veri kaynağı (USDA FoodData Central / Türkiye'ye özgü lisanslı kaynak) — `14-open-decisions.md`'de açık karar, henüz bir işe bağlanmadı. Katalog küçük kaldığı sürece zayıf/yanlış eşleşmeler (yukarıdaki "Değiştir" ile) elle düzeltilmeye devam edecek.
+- Tam istemci tarafı offline outbox — MVP-05'teki aynı kapsam-dışı gerekçe.
+- Onaylanan taslağın `ai_jobs.status`'unu ayrı bir "confirmed" durumuna taşıması yok — tamamlanma sinyali `meal_entries` satırının varlığı, job şeması MVP-09'un kapsam kararıyla `needs_confirmation`'da kalmaya devam ediyor.
 
 #### MVP-11 — Bugün ekranı
 **Durum:** `todo` · **PRD:** §9 · **Bağımlılık:** MVP-10
