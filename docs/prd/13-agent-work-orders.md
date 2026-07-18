@@ -156,27 +156,74 @@ Tarif oluşturma/düzenleme/öğüne ekleme, su takibi, favori besin. Kapsam `03
 - Widget/ses/wearable su entegrasyonları — §03 "ileri faz adaptörleri".
 
 #### MVP-07 — Ölçü ve kilo
-**Durum:** `todo` · **PRD:** §15–16 · **Bağımlılık:** MVP-02 · `türetilmiş`
+**Durum:** `partial` · **PRD:** §15–16 · **Bağımlılık:** MVP-02 · `türetilmiş`
 
 Kilo/ölçü kaydı ve trend. İlerleme fotoğrafı **private** storage.
 
 **Veri sınıfı:** Sağlık + medya (yüksek).
 
+**Bitti:**
+- `body_measurements` (17 nullable metrik kolonu — EAV değil, geniş tablo; §05 "aynı değerler sessizce birleştirilmez" kabul kriteri satır bazlı kaynak ayrımıyla sağlanır) + `operation_id` idempotency + fiziksel akla yatkınlık CHECK'leri (nutrition-engine'in kendi aralıklarıyla eşleştirilmiş) + `weight_trend()` RPC (SECURITY INVOKER).
+- `progress_photos` — `progress-photos` private bucket + storage.objects RLS (`{user_id}/{photo_id}.ext` yol sözleşmesi, hem storage hem metadata tablosunda çift katman kontrol) + signed URL üretimi (600s TTL). Public URL yok.
+- Mobile: `measurements.tsx` (kilo hızlı giriş + "diğer ölçüler" genişleyen form + geçmiş listesi), `progress-photos.tsx` (açı seçimi, kamera/galeriden yükleme, silme, opsiyonel Face ID/parmak izi kilidi — `useBiometricLockPreference`/`useBiometricGate`). Profil sekmesinden giriş linki.
+- Kilo girildiğinde hedef motorunun yeniden tetiklenmesi (`useLogMeasurement` içinde, onboarding.tsx ile aynı çağrı deseni).
+- 18 (body_measurements) + 12 (progress_photos) pgTAP testi yazıldı — pozitif akış, aralık/has-value CHECK'leri, idempotency, çapraz kullanıcı izolasyonu, soft-delete, anon reddi, DELETE grant'inin yokluğu. **Bu ortamda Docker/yerel Postgres olmadığı için `supabase test db` ile ÇALIŞTIRILAMADI** — merge öncesi CI'da veya yerel Docker ile doğrulanmalı.
+- **E2E doğrulama (Chrome + `expo start --web`, gerçek Supabase projesine karşı, test hesabı `calouch.local.test+uiverify@gmail.com`):** ölçü formu → kaydet → geçmiş listesi → profil `weight_kg` güncellemesi → hedef motoru yeniden hesabı (`target_calories_kcal` değişti) zinciri uçtan uca çalıştı; ilerleme fotoğrafı kilit tercihi (kalıcı, donanımsız cihazda sessiz devre dışı), açı seçimi, galeriden yükleme (storage.objects'e gerçek dosya + doğru `{user_id}/{uuid}` yolu) ve silme (storage'dan gerçek silme + metadata soft-delete) doğrulandı.
+- Bu doğrulama sırasında **gerçek bir hata bulundu ve düzeltildi**: `useBiometricLock.ts` doğrudan `expo-secure-store` çağırıyordu; bu paketin web karşılığı yok (`authStorage.ts`'teki bilinen sınırlama) ve ekranı web'de çökertiyordu. `webDevStorage` deseni uygulanarak düzeltildi (yalnız web dev-browsing dalını etkiler, iOS/Android'de zaten SecureStore kullanılıyordu).
+
+**Kalan:**
+- Ölçü geçmişinde düzenleme/silme aksiyonu yok — kullanıcı yanlış ölçüyü yeni kayıtla düzeltir (MVP-05'teki aynı kapsam-dışı gerekçe).
+- Tam istemci tarafı offline outbox — MVP-05/06 ile aynı gerekçeyle mobil mimarinin geneline ait, ayrı iş.
+- HealthKit/Health Connect/akıllı tartı senkronizasyonu — `source` kolonu bunu kabul edecek şekilde baştan geniş tutuldu, gerçek adaptör MVP-12'de.
+- Fotoğraftan ölçü tahmini — §05 "deneysel ve ileri fazdır", kapsam dışı (bkz. migration yorumu, `14-open-decisions.md`).
+- `storage.objects` RLS politikaları pgTAP ile test edilmedi (gerçek upload/silme akışı yukarıdaki E2E testinde dolaylı olarak doğrulandı, ama izole pozitif/negatif pgTAP testi yok).
+- Kamera ile fotoğraf çekimi (`launchCameraAsync`) test edilmedi — bu ortamda webcam yok; gerçek cihazda denenmeli.
+- pgTAP testleri hâlâ Docker'da çalıştırılıp doğrulanmadı (yukarıdaki E2E, veritabanı davranışını kanıtlıyor ama pgTAP dosyalarının kendisinin sözdizimsel/mantıksal olarak eksiksiz çalıştığını KANITLAMAZ).
+
 ### Dalga 1C — AI ve dashboard
 
 #### MVP-08 — AI kontratları ve private medya
-**Durum:** `todo` · **PRD:** §10–11 · **Bağımlılık:** MVP-04, MVP-05
+**Durum:** `partial` · **PRD:** §10–11 · **Bağımlılık:** MVP-04, MVP-05
 
 Private media upload, provider adapter, request/response şeması, Zod validation, idempotency, rate limit, correlation ID, maliyet/kill switch.
 
 **Kabul:** Gemini anahtarı istemciye girmez; hassas bucket public değil; signed URL expiry testli.
 
+**Kapsam kararı:** Bu iş, Gemini'den doğrulanmış HAM aday listesini (yiyecek adları, porsiyon aralığı, güven) dönen bir dikey dilim olarak sınırlandı. Katalog eşleştirme ve kalori/makro hesabı MVP-09'un işi — bkz. `supabase/functions/analyze-meal-photo/index.ts` üstündeki kapsam notu.
+
+**Bitti:**
+- `private` şeması ilk kez açıldı (`ai_jobs`/`ai_usage_ledger`/`ai_feature_flags`) — yalnız `public.create_ai_job`/`complete_ai_job`/`fail_ai_job` SECURITY DEFINER RPC'leri üzerinden erişilir (`log_meal()`/`catalog` şemasıyla AYNI desen). Data API `private`'ı yayınlamaz.
+- **Sıfır servis rolü mimarisi:** Edge Function kullanıcının kendi JWT'siyle çalışır — storage indirme/silme ve RPC'ler kullanıcının kendi RLS/`auth.uid()` kontrolüyle işler. `GEMINI_API_KEY` tek server secret'tır.
+- `ai-meal-photos` private bucket — `progress-photos` ile birebir aynı RLS deseni (`{user_id}/{uuid}.jpg`).
+- `packages/types/src/ai.ts` — `AIProvider`/`MealAnalysis`/`MealAnalysisItem` (yalnız `analyzeMealImage`, diğer §04 metodları henüz tasarlanmadığı için eklenmedi).
+- `packages/validation` — provider ve deterministik taslak Zod şemaları, `packages/types` ile `satisfies` üzerinden derleme-zamanı senkron kontrolü, 8 unit test.
+- `supabase/functions/analyze-meal-photo` — MVP-09 ile v4'e yükseltildi (`verify_jwt: true`): job'ı hemen kabul eder, provider/katalog/motor zincirini `EdgeRuntime.waitUntil` ile arka planda tamamlar.
+- Mobile: fotoğraf çek/seç, resize+EXIF temizliği, idempotent upload/POST, job polling ve katalogdan hesaplanmış sonuç önizlemesi. Kaydet aksiyonu YOK (MVP-10).
+- Gemini model: `gemini-2.5-flash`. Kota: kullanıcı başına günde 10 (billing sistemi gelene kadar geçici sabit) — bkz. `14-open-decisions.md` "Gemini model, maliyet tavanı ve kill switch" (Kapalı).
+- `ai_jobs_test.sql` — 17 pgTAP testi (pozitif akış, idempotency, sahiplik kontrolü, çapraz kullanıcı izolasyonu, kill switch, rate limit, ledger, anon reddi).
+
+**Kalan:**
+- MVP-10: kullanıcı onay/düzenle/kaydet UI'ı.
+- Gerçek Gemini yanıtıyla E2E doğrulama — bu ortamda kullanıcı kendi API anahtarını Supabase secret olarak eklemeyi kabul etti; edge function deploy edildi ama gerçek bir fotoğrafla uçtan uca çalıştırılıp doğrulanması ayrı bir adım.
+- MVP-08'in özgün 17 pgTAP testi hâlâ topluca yeniden çalıştırılmadı (Docker yok); MVP-09'un yeni 18 pgTAP testi ise canlı şemada transaction+rollback ile geçti.
+- `storage.objects` RLS'i (ai-meal-photos) izole pgTAP testine sahip değil — yalnız metadata tablosuna erişim yok zaten (bu bucket'ın hiç metadata tablosu yok, doğrudan job'a bağlı).
+- Fotoğraf saklama tercihi (kullanıcının "AI/fotoğraf kullanımı" tercihi, §09 gizlilik merkezi) yok — varsayılan HER ZAMAN analiz sonrası silme (MVP-16/17 kapsamında gerçek tercih eklenebilir).
+
 #### MVP-09 — AI job pipeline
-**Durum:** `todo` · **PRD:** §10–11 · **Bağımlılık:** MVP-08
+**Durum:** `done` · **PRD:** §10–11 · **Bağımlılık:** MVP-08
 
 `POST /v1/ai/meals/analyze`, `GET /v1/ai/jobs/:id`; schema validation → katalog eşleştirme → deterministik motor.
 
 **Kabul:** AI çıktısı doğrudan kalori yazmaz; katalog eşleşmesi üzerinden hesaplanır.
+
+**Bitti:**
+- `public.match_ai_food(text[], locale)` provider adaylarını ad+alias üzerinden, çağıranın katalog RLS görünürlüğü altında current `food_version` ile eşleştirir; source ve 100 g nutrient snapshot'ını döndürür. Eşleşmeyen kalem `null` kalır, AI nutrient fallback'i yoktur.
+- `private.ai_jobs.raw_response` (doğrulanmış provider ad/gram tahmini) ile `result_response` (katalogdan deterministik hesaplanan taslak) ayrıldı. Job başına unique usage ledger, completion/failure retry'ında ikinci maliyet satırını engeller.
+- Saf motor tahmini/min/max gramı katalog 100 g snapshot'ına ölçekler; opsiyonel bilinmeyen nutrient'ı sıfırlaştırmaz. Bir kalem eşleşmezse yanıltıcı eksik toplam yerine `totals: null` üretir.
+- POST artık asenkron `processing` döner; `GET /functions/v1/ai-jobs/:id` yalnız owner'ın durum/sonuç/hata kontratını yayınlar. Mobil 60 saniyeye kadar poll eder ve aynı `operationId` ile güvenli ağ retry'ı yapar.
+- Kamera taslağı eşleşen katalog adı/kaynağı ile deterministik kalori-protein-karbonhidrat-yağ değerlerini gösterir. Onay/düzenleme/kaydetme hâlâ bilinçli olarak MVP-10'dadır.
+
+**Doğrulama:** 4 deterministik motor unit testi; canlı şemada transaction+rollback ile 18/18 pgTAP (exact/alias/source/snapshot, raw-result ayrımı, owner/other/anon, idempotent ledger); `pnpm verify` 24/24 task. `analyze-meal-photo` v4 ve `ai-jobs` v1 ACTIVE, ikisi de `verify_jwt: true`.
 
 #### MVP-10 — Kullanıcı doğrulaması
 **Durum:** `todo` · **PRD:** §10.1, §11 · **Bağımlılık:** MVP-09

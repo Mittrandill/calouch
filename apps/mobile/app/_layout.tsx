@@ -35,6 +35,8 @@ export default function RootLayout() {
                   <Stack.Screen name="add-meal" options={{ presentation: 'modal' }} />
                   <Stack.Screen name="recipes" options={{ presentation: 'modal' }} />
                   <Stack.Screen name="recipe-builder" options={{ presentation: 'modal' }} />
+                  <Stack.Screen name="measurements" options={{ presentation: 'modal' }} />
+                  <Stack.Screen name="progress-photos" options={{ presentation: 'modal' }} />
                 </Stack>
               </AuthProvider>
             </QueryClientProvider>

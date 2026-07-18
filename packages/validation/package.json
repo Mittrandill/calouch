@@ -1,5 +1,5 @@
 {
-  "name": "@calouch/nutrition-engine",
+  "name": "@calouch/validation",
   "version": "0.0.0",
   "private": true,
   "main": "./src/index.ts",
@@ -10,7 +10,8 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@calouch/types": "workspace:*"
+    "@calouch/types": "workspace:*",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

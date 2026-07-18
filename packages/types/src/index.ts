@@ -1,4 +1,17 @@
 export type { Database, Json } from './database';
+export type {
+  AIJob,
+  AIJobStatus,
+  AIProvider,
+  CatalogFoodMatch,
+  CatalogNutrientSnapshot,
+  ConfidenceLevel,
+  MealAnalysis,
+  MealAnalysisItem,
+  MealDraft,
+  MealDraftItem,
+  NutrientEstimateRange,
+} from './ai';
 
 import type { Database } from './database';
 
@@ -61,3 +74,20 @@ export type WaterLog = Database['public']['Tables']['water_logs']['Row'];
 export type WaterLogInsert = Database['public']['Tables']['water_logs']['Insert'];
 export type DailyWaterSummaryRow =
   Database['public']['Functions']['daily_water_summary']['Returns'][number];
+
+/**
+ * Vücut ölçümü. `water_logs` ile aynı desen — client doğrudan INSERT
+ * yapar, `Insert` tipi dışa açılır.
+ */
+export type BodyMeasurement = Database['public']['Tables']['body_measurements']['Row'];
+export type BodyMeasurementInsert = Database['public']['Tables']['body_measurements']['Insert'];
+export type WeightTrendRow = Database['public']['Functions']['weight_trend']['Returns'][number];
+
+/**
+ * İlerleme fotoğrafı METADATASI — ikili veri `progress-photos` private
+ * bucket'ında, bu yalnız storage_path/açı/tarih taşır. Görüntüleme
+ * `supabase.storage.from('progress-photos').createSignedUrl(storage_path, ...)`
+ * ile yapılır (§05 "public URL yoktur").
+ */
+export type ProgressPhoto = Database['public']['Tables']['progress_photos']['Row'];
+export type ProgressPhotoInsert = Database['public']['Tables']['progress_photos']['Insert'];

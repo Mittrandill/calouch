@@ -53,6 +53,9 @@ importers:
       '@calouch/types':
         specifier: workspace:*
         version: link:../../packages/types
+      '@calouch/validation':
+        specifier: workspace:*
+        version: link:../../packages/validation
       '@expo/vector-icons':
         specifier: ^15.1.1
         version: 15.1.1(expo-font@57.0.1)(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
@@ -77,9 +80,18 @@ importers:
       expo-dev-client:
         specifier: ~57.0.6
         version: 57.0.6(expo@57.0.6)(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3))
+      expo-image-manipulator:
+        specifier: ~57.0.5
+        version: 57.0.5(expo@57.0.6)
+      expo-image-picker:
+        specifier: ~57.0.4
+        version: 57.0.4(expo@57.0.6)
       expo-linking:
         specifier: ~57.0.3
         version: 57.0.3(expo@57.0.6)(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
+      expo-local-authentication:
+        specifier: ~57.0.1
+        version: 57.0.1(expo@57.0.6)
       expo-localization:
         specifier: ~57.0.1
         version: 57.0.1(expo@57.0.6)(react@19.2.3)
@@ -162,6 +174,10 @@ importers:
         version: 3.2.7(@types/node@26.1.1)(lightningcss@1.32.0)(terser@5.49.0)(yaml@2.9.0)
 
   packages/nutrition-engine:
+    dependencies:
+      '@calouch/types':
+        specifier: workspace:*
+        version: link:../types
     devDependencies:
       typescript:
         specifier: ^5.9.3
@@ -171,6 +187,22 @@ importers:
         version: 3.2.7(@types/node@26.1.1)(lightningcss@1.32.0)(terser@5.49.0)(yaml@2.9.0)
 
   packages/types:
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.7(@types/node@26.1.1)(lightningcss@1.32.0)(terser@5.49.0)(yaml@2.9.0)
+
+  packages/validation:
+    dependencies:
+      '@calouch/types':
+        specifier: workspace:*
+        version: link:../types
+      zod:
+        specifier: ^4.1.12
+        version: 4.4.3
     devDependencies:
       typescript:
         specifier: ^5.9.3
@@ -2151,6 +2183,21 @@ packages:
       react: '*'
       react-native: '*'
 
+  expo-image-loader@57.0.1:
+    resolution: {integrity: sha512-uhrZKLT/cTl2mXyR28kPpVkS5O+PK9N1QA/07IFM4f5T4g0lTW1JHT3NEWwEEsGFldPmVX4j7LwUVVZxE+woug==}
+    peerDependencies:
+      expo: '*'
+
+  expo-image-manipulator@57.0.5:
+    resolution: {integrity: sha512-gEZ6tEsLwtz+dRXPC2QDObcQhAW7c9J6WW4W+5qQ4T6DlgkjtunLpHijM79W8fc99ER2X2IQS1ogJ8u9VAF7qA==}
+    peerDependencies:
+      expo: '*'
+
+  expo-image-picker@57.0.4:
+    resolution: {integrity: sha512-ypuO99+rMqrjYlTt8EqJ415ff+qIj/gPyEbcOW8g6CFtC6Ljk8OWYyiEFKZg3989Rdljla/fN3IWqXOXKN/2og==}
+    peerDependencies:
+      expo: '*'
+
   expo-json-utils@57.0.1:
     resolution: {integrity: sha512-cgTe1NqzQdYs/WN+3nIY5IZg8s0pb0xaTUbhYvxQDn137GbwRfHoGM2se3m3Vsl4Qu+B9G4RPEK5WJDEU2Do7g==}
 
@@ -2165,6 +2212,11 @@ packages:
     peerDependencies:
       react: '*'
       react-native: '*'
+
+  expo-local-authentication@57.0.1:
+    resolution: {integrity: sha512-FrXtuXVBmXmwmvDus0OsFWMdzjYTaLd/ZvvVMKnRjXDKDS+LFG2Sz3r9f3Go0goJdpb/hA09wGwGi8XfW3Aa0w==}
+    peerDependencies:
+      expo: '*'
 
   expo-localization@57.0.1:
     resolution: {integrity: sha512-8Ffl4UTbOsQeGT0v5fxMbyPHyPMPnhSPDFQJa8p9rjJrthFoAtNi+fL6Ssmrvf1/7dmPq1mVY52MEt0TMEfgjA==}
@@ -5963,6 +6015,20 @@ snapshots:
       react: 19.2.3
       react-native: 0.86.0(@types/react@19.2.17)(react@19.2.3)
 
+  expo-image-loader@57.0.1(expo@57.0.6):
+    dependencies:
+      expo: 57.0.6(@babel/core@7.29.7)(@expo/metro-runtime@57.0.5)(expo-router@57.0.6)(react-dom@19.2.3(react@19.2.3))(react-native-web@0.21.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
+
+  expo-image-manipulator@57.0.5(expo@57.0.6):
+    dependencies:
+      expo: 57.0.6(@babel/core@7.29.7)(@expo/metro-runtime@57.0.5)(expo-router@57.0.6)(react-dom@19.2.3(react@19.2.3))(react-native-web@0.21.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
+      expo-image-loader: 57.0.1(expo@57.0.6)
+
+  expo-image-picker@57.0.4(expo@57.0.6):
+    dependencies:
+      expo: 57.0.6(@babel/core@7.29.7)(@expo/metro-runtime@57.0.5)(expo-router@57.0.6)(react-dom@19.2.3(react@19.2.3))(react-native-web@0.21.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
+      expo-image-loader: 57.0.1(expo@57.0.6)
+
   expo-json-utils@57.0.1: {}
 
   expo-keep-awake@57.0.1(expo@57.0.6)(react@19.2.3):
@@ -5979,6 +6045,11 @@ snapshots:
     transitivePeerDependencies:
       - expo
       - supports-color
+
+  expo-local-authentication@57.0.1(expo@57.0.6):
+    dependencies:
+      expo: 57.0.6(@babel/core@7.29.7)(@expo/metro-runtime@57.0.5)(expo-router@57.0.6)(react-dom@19.2.3(react@19.2.3))(react-native-web@0.21.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
+      invariant: 2.2.4
 
   expo-localization@57.0.1(expo@57.0.6)(react@19.2.3):
     dependencies:
