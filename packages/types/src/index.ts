@@ -84,6 +84,17 @@ export type BodyMeasurementInsert = Database['public']['Tables']['body_measureme
 export type WeightTrendRow = Database['public']['Functions']['weight_trend']['Returns'][number];
 
 /**
+ * Günlük adım/aktif enerji (§17). `water_logs` ile aynı desen — client
+ * doğrudan `.upsert()` yapar, `Insert` tipi dışa açılır. Sunucudaki
+ * `unique(user_id, activity_date, source)` yeniden sync'i idempotent kılar.
+ */
+export type DailyActivityMetric = Database['public']['Tables']['daily_activity_metrics']['Row'];
+export type DailyActivityMetricInsert =
+  Database['public']['Tables']['daily_activity_metrics']['Insert'];
+export type DailyActivitySummaryRow =
+  Database['public']['Functions']['daily_activity_summary']['Returns'][number];
+
+/**
  * İlerleme fotoğrafı METADATASI — ikili veri `progress-photos` private
  * bucket'ında, bu yalnız storage_path/açı/tarih taşır. Görüntüleme
  * `supabase.storage.from('progress-photos').createSignedUrl(storage_path, ...)`

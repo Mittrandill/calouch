@@ -65,6 +65,7 @@ export default tseslint.config(
       'packages/nutrition-engine/**/*.ts',
       'packages/activity-engine/**/*.ts',
       'packages/pose-engine/**/*.ts',
+      'packages/health-connectors/**/*.ts',
       'packages/types/**/*.ts',
       'packages/validation/**/*.ts',
     ],

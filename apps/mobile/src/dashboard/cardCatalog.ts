@@ -45,14 +45,8 @@ export const DASHBOARD_CARD_CATALOG: readonly DashboardCardDefinition[] = [
     supportedSizes: ['compact', 'expanded'],
     defaultSize: 'compact',
   },
-  {
-    id: 'activeEnergy',
-    hasRealData: false,
-    pendingOn: 'MVP-12',
-    supportedSizes: ['compact'],
-    defaultSize: 'compact',
-  },
-  { id: 'steps', hasRealData: false, pendingOn: 'MVP-12', supportedSizes: ['compact'], defaultSize: 'compact' },
+  { id: 'activeEnergy', hasRealData: true, supportedSizes: ['compact'], defaultSize: 'compact' },
+  { id: 'steps', hasRealData: true, supportedSizes: ['compact'], defaultSize: 'compact' },
   {
     id: 'todayWorkout',
     hasRealData: false,

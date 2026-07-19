@@ -6,6 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from '@/auth/AuthProvider';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { asyncStoragePersister, queryClient } from '@/data/queryClient';
+import { HealthConnectionProvider } from '@/health/HealthConnectionProvider';
 import { LocaleProvider } from '@/i18n/LocaleProvider';
 import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
 
@@ -34,18 +35,21 @@ export default function RootLayout() {
               }}
             >
               <AuthProvider>
-                <ThemedStatusBar />
-                <Stack screenOptions={{ headerShown: false }}>
-                  <Stack.Screen name="(tabs)" />
-                  <Stack.Screen name="(auth)" />
-                  <Stack.Screen name="onboarding" />
-                  <Stack.Screen name="add-meal" options={{ presentation: 'modal' }} />
-                  <Stack.Screen name="recipes" options={{ presentation: 'modal' }} />
-                  <Stack.Screen name="recipe-builder" options={{ presentation: 'modal' }} />
-                  <Stack.Screen name="measurements" options={{ presentation: 'modal' }} />
-                  <Stack.Screen name="progress-photos" options={{ presentation: 'modal' }} />
-                  <Stack.Screen name="manage-dashboard-cards" options={{ presentation: 'modal' }} />
-                </Stack>
+                <HealthConnectionProvider>
+                  <ThemedStatusBar />
+                  <Stack screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="(tabs)" />
+                    <Stack.Screen name="(auth)" />
+                    <Stack.Screen name="onboarding" />
+                    <Stack.Screen name="add-meal" options={{ presentation: 'modal' }} />
+                    <Stack.Screen name="recipes" options={{ presentation: 'modal' }} />
+                    <Stack.Screen name="recipe-builder" options={{ presentation: 'modal' }} />
+                    <Stack.Screen name="measurements" options={{ presentation: 'modal' }} />
+                    <Stack.Screen name="progress-photos" options={{ presentation: 'modal' }} />
+                    <Stack.Screen name="manage-dashboard-cards" options={{ presentation: 'modal' }} />
+                    <Stack.Screen name="health-connection" options={{ presentation: 'modal' }} />
+                  </Stack>
+                </HealthConnectionProvider>
               </AuthProvider>
             </PersistQueryClientProvider>
           </ErrorBoundary>

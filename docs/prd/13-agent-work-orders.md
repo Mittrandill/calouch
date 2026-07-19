@@ -46,7 +46,7 @@ pnpm/Turborepo monorepo, git remote, PR kapıları (typecheck, lint, test, Expo 
 `apps/*` ve `packages/*` sınırları; domain paketlerinin UI/framework bağımsızlığı; Expo Development Build (Expo Go değil); New Architecture + Hermes.
 
 **Kabul:** §01 mimari kabul kriterleri; iki platformda development build açılır.
-**Kalan:** iOS development build — `blocked`, Apple Developer hesabı yok.
+**Kalan:** iOS development build — Apple Developer hesabı artık var (bkz. `14-open-decisions.md`), ama EAS credentials/provisioning henüz kurulmadı ve build bu ortamda üretilip doğrulanmadı.
 
 ### FND-03 — Tasarım tokenları
 **Durum:** `done` · **PRD:** §7.4–7.11 · **Bağımlılık:** FND-01 · `türetilmiş`
@@ -174,7 +174,7 @@ Kilo/ölçü kaydı ve trend. İlerleme fotoğrafı **private** storage.
 **Kalan:**
 - Ölçü geçmişinde düzenleme/silme aksiyonu yok — kullanıcı yanlış ölçüyü yeni kayıtla düzeltir (MVP-05'teki aynı kapsam-dışı gerekçe).
 - Tam istemci tarafı offline outbox — MVP-05/06 ile aynı gerekçeyle mobil mimarinin geneline ait, ayrı iş.
-- HealthKit/Health Connect/akıllı tartı senkronizasyonu — `source` kolonu bunu kabul edecek şekilde baştan geniş tutuldu, gerçek adaptör MVP-12'de.
+- HealthKit/Health Connect/akıllı tartı senkronizasyonu — `source` kolonu bunu kabul edecek şekilde baştan geniş tutuldu; MVP-12 yalnız `daily_activity_metrics` (adım/aktif enerji) getirdi, `body_measurements`'a (kilo/boy) bağlanmadı — bu iş kimliği hâlâ açık, bkz. `14-open-decisions.md`.
 - Fotoğraftan ölçü tahmini — §05 "deneysel ve ileri fazdır", kapsam dışı (bkz. migration yorumu, `14-open-decisions.md`).
 - `storage.objects` RLS politikaları pgTAP ile test edilmedi (gerçek upload/silme akışı yukarıdaki E2E testinde dolaylı olarak doğrulandı, ama izole pozitif/negatif pgTAP testi yok).
 - Kamera ile fotoğraf çekimi (`launchCameraAsync`) test edilmedi — bu ortamda webcam yok; gerçek cihazda denenmeli.
@@ -268,7 +268,7 @@ Kart kataloğu, sıralama/görünürlük/odak kartı; tercih hesaba yazılır, o
 - Offline okunabilirlik: `@tanstack/react-query-persist-client` + `@react-native-community/netinfo` — `queryClient.ts`/`_layout.tsx`'e eklendi, yalnız Bugün ekranını değil profil/su/öğün/ölçü sorgularının tümünü offline-okunur yaptı.
 
 **Kalan:**
-- Aktif enerji + adım → MVP-12 (health) gerçek veriyle bağlanınca `ComingSoonCard` yerini alır.
+- ~~Aktif enerji + adım → MVP-12 (health) gerçek veriyle bağlanınca `ComingSoonCard` yerini alır.~~ MVP-12'de yapıldı — `StepsCard`/`ActiveEnergyCard`, `ComingSoonCard` artık bu ikisini kapsamıyor.
 - Bugünkü antrenman → `TRN-*` (Faz 2+).
 - AI kısa değerlendirme → `COACH-*` (Faz 2+).
 - Seri ve challenge → henüz iş kimliği yok; `11-delivery-roadmap.md` grafiğine eklenmeden numaralandırılmaz (§00 "yayınlanmayacak yüzey önceden sözleşmeye çevrilmez").
@@ -277,11 +277,32 @@ Kart kataloğu, sıralama/görünürlük/odak kartı; tercih hesaba yazılır, o
 ### Dalga 1D — Health ve gelir
 
 #### MVP-12 — Health ve aktivite
-**Durum:** `todo` · **PRD:** §17 · **Bağımlılık:** MVP-02 · `türetilmiş`
+**Durum:** `partial` · **PRD:** §17 · **Bağımlılık:** MVP-02 · `türetilmiş`
 
 HealthKit/Health Connect, temel adım/aktif enerji. Native entegrasyon kapısı (§01) uygulanır. Bugün ekranındaki (MVP-11) `activeEnergy`/`steps` "Yakında" kartlarını gerçek veriyle değiştirir — bkz. `apps/mobile/src/dashboard/cardCatalog.ts`.
 
-**Kabul:** Health izni reddedilse de manuel öğün/su/ölçü/antrenman çalışır; health işi temel özellikleri bloklamaz.
+**Kabul:** Health izni reddedilse de manuel öğün/su/ölçü/antrenman çalışır ✅ (health hiçbir mevcut ekranı iznine bağımlı kılmaz); health işi temel özellikleri bloklamaz ✅. Gerçek iPhone'da uçtan uca doğrulandı: HealthKit'e bağlan → izin ver → Bugün ekranında adım/aktif enerji gerçek değerlerle göründü ✅.
+
+**Kapsam kararı:** §17'nin "İlk veri türleri" listesi (adım, aktif enerji, mesafe, antrenman, kilo/boy) daha geniş ama bu iş kimliğinin metni yalnız "temel adım/aktif enerji" diyor — mesafe/antrenman (`TRN-*`'ye ait olması muhtemel) ve kilo/boy senkronu (`body_measurements.source` zaten `apple_health`/`health_connect`'i kabul ediyor ama bu işte bağlanmadı) kapsam dışı bırakıldı. Arka plan senkronu da kapsam dışı — native kapı (§01) bunu HealthKit/Health Connect'ten AYRI, kendi başına gated bir yetenek sayıyor; v1 yalnız Bugün ekranı açılınca senkron yapar. Detaylı gerekçe `14-open-decisions.md`'de.
+
+**Bitti:**
+- `daily_activity_metrics` tablosu + `daily_activity_summary()` RPC (migration `20260718120000`) — bu repo'da "kullanıcı+gün başına tek satır, upsert" deseninin İLK örneği (`daily_nutrition_summary`/`daily_water_summary` append-only log üzerinden hesaplanan RPC'lerdir, tablo değil). `unique(user_id, activity_date, source)` yeniden sync'i idempotent kılar; farklı kaynaklar ayrı satır kalır (`body_measurements` ile aynı "asla sessizce birleştirilmez" ilkesi). 15 pgTAP testi canlı şemada transaction+rollback ile 15/15 geçti.
+- `packages/health-connectors` (yeni paket, monorepo mimarisinde zaten ayrılmıştı) — normalize tipler + `buildDailyActivityUpsertPayload()` (DB CHECK aralıklarını aynalayan saf fonksiyon, 7 unit test). RN import yasağı `eslint.config.mjs`'e eklendi (nutrition-engine ile aynı kısıt).
+- `apps/mobile/src/health/` — `appleHealthAdapter.ts` (`@kingstinct/react-native-healthkit`, Nitro Modules tabanlı, New Architecture destekli), `healthConnectAdapter.ts` (`react-native-health-connect`), `HealthConnectionProvider.tsx` (bağlantı durumu + `connect`/`disconnect`/`syncToday`, tercih yalnız cihazda — hesaba yazılmaz). Her iki adaptör de gerçek paket kaynak koduna (`node_modules/.../src`) karşı typecheck edildi (API tahmin edilmedi, doğrulandı).
+- `app/health-connection.tsx` — §17'nin 6 adımlı bağlanma akışı (fayda açıklaması → Bağla → OS izni → durum → Bağlantıyı Kes), Profil sekmesinden giriş linki. Onboarding'e EKLENMEDİ (§00 "Health iznini onboarding engeline dönüştürmek" yasak).
+- `StepsCard`/`ActiveEnergyCard` — bağlı değilse "Bağlan" CTA'sı (uydurma sayı YOK, MVP-11'deki ilkeyle aynı), bağlıysa `useDailyActivitySummary()` üzerinden gerçek değer. Bugün ekranı açılınca bağlıysa tek seferlik `syncToday()` tetiklenir (ön plan senkronu).
+- `app.json`: iOS `NSHealthShareUsageDescription` (yalnız okuma, `NSHealthUpdateUsageDescription` ve `background-delivery` entitlement'ı bilinçli olarak KAPALI — kullanılmayan yüzey beyan edilmez, §17), Android `READ_STEPS`/`READ_ACTIVE_CALORIES_BURNED` izinleri + Health Connect config plugin + `expo-build-properties` (`minSdkVersion: 26`, bkz. aşağıdaki hata). `expo-doctor` şema doğrulamasından temiz geçti.
+- **EAS Build kurulumu**: `eas.json` (development/preview/production profilleri) + proje ilk kez EAS'a bağlandı (`@akintkaya/calouch`). Hem Android hem iOS development build'i başarıyla üretildi ve **gerçek iPhone'a kurulup uçtan uca doğrulandı** (izin akışı, Bugün ekranında gerçek adım/aktif enerji, dev-client Metro bağlantısı).
+- **Bu doğrulama sırasında iki gerçek hata bulundu ve düzeltildi** (proje bu ana kadar yalnız `expo start --web` ile geliştirildiği için önceden yakalanamamıştı):
+  1. **Android build Gradle manifest merge hatasıyla çöktü**: `react-native-health-connect`'in bağımlı olduğu `androidx.health.connect:connect-client:1.1.0-alpha11` `minSdkVersion 26` istiyor, proje varsayılanı 24'tü. `expo-build-properties` eklenip `android.minSdkVersion: 26` yapıldı — uygulama artık Android 8.0 altını desteklemiyor (karar kaydı: `14-open-decisions.md`).
+  2. **Bağlantı durumu sekmeler arası senkronize olmuyordu**: `useHealthConnection` her çağrıldığı yerde kendi yerel `useState`'ini tutuyordu; Expo Router sekmeleri arka planda mounted tuttuğu için (tab switch'te unmount/remount YOK) `health-connection.tsx`'te bağlanıp Bugün sekmesine dönüldüğünde o sekmenin zaten mount olmuş kartları hâlâ "Bağlan" gösteriyordu. `useHealthConnection.ts` → `HealthConnectionProvider.tsx`'e taşındı: tek bir Context, `_layout.tsx`'te bir kez mount edilir (`ThemeProvider`/`LocaleProvider` ile AYNI desen), tüm tüketiciler aynı state'i paylaşır.
+
+**Kalan:**
+- Android tarafı build başarıyla üretildi ve talimatla teslim edildi ama **kullanıcı tarafından cihazda henüz doğrulanmadı** (yalnız iOS doğrulandı) — Health Connect izin akışı ve kartların Android'de de doğru göründüğü ayrıca teyit edilmeli.
+- Mesafe, antrenman, kilo/boy senkronu — kapsam dışı (yukarıda).
+- Arka plan senkronu — kapsam dışı, ayrı native kapı geçişi gerektirir.
+- Çoklu-kaynak önceliklendirmesi — RPC şimdilik yalnız en son senkronlanan satırı döner, gerçek ihtiyaç doğunca genişletilir.
+- pgTAP testleri Docker'da topluca yeniden çalıştırılıp doğrulanmadı (15/15, önceki MVP'lerdeki gibi canlı şemada transaction+rollback ile kanıtlandı).
 
 #### MVP-13 — Paywall ve restore
 **Durum:** `todo` · **PRD:** §26–27 · **Bağımlılık:** MVP-14 · `türetilmiş`

@@ -102,11 +102,11 @@ export const tr = {
       },
       activeEnergy: {
         title: 'Aktif enerji',
-        description: 'Sağlık entegrasyonu (MVP-12) geldiğinde burada görünecek',
+        connectPrompt: 'Aktif enerjini görmek için Health\'e bağlan',
       },
       steps: {
         title: 'Adım',
-        description: 'Sağlık entegrasyonu (MVP-12) geldiğinde burada görünecek',
+        connectPrompt: 'Adım sayını görmek için Health\'e bağlan',
       },
       todayWorkout: {
         title: 'Bugünkü antrenman',
@@ -137,6 +137,27 @@ export const tr = {
     sizeExpanded: 'Geniş',
     setFocus: 'Bugünün odağı yap',
     isFocus: 'Bugünün odağı',
+  },
+  // §17 HealthKit/Health Connect bağlantısı (MVP-12).
+  health: {
+    title: 'Health bağlantısı',
+    intro:
+      'Calouch, Bugün ekranında adım ve aktif enerjini göstermek için yalnızca bu iki veri türünü okur. Hiçbir sağlık verisi analiz/log kaydına girmez.',
+    connectApple: "Apple Health'e Bağlan",
+    connectAndroid: "Health Connect'e Bağlan",
+    connecting: 'Bağlanıyor…',
+    disconnect: 'Bağlantıyı Kes',
+    statusConnected: 'Bağlı',
+    statusDisconnected: 'Bağlı değil',
+    statusDenied: 'İzin verilmedi',
+    webUnsupported: 'Health bağlantısı yalnızca mobil cihazda kullanılabilir.',
+    lastSynced: 'Son güncelleme',
+    errors: {
+      notAvailable:
+        'Bu cihazda Health verisi kullanılamıyor. Android\'de Health Connect uygulamasının kurulu olduğundan emin ol.',
+      connectFailed: 'Bağlanılamadı. Tekrar dene.',
+      syncFailed: 'Veriler güncellenemedi. Tekrar dene.',
+    },
   },
   // §03 manuel öğün kaydı.
   diary: {

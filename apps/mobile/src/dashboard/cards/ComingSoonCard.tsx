@@ -8,13 +8,14 @@ import type { DashboardCardId } from '@/dashboard/cardCatalog';
 
 export type ComingSoonCardId = Exclude<
   DashboardCardId,
-  'calorie' | 'macros' | 'water' | 'lastMeal' | 'measurementTrend'
+  'calorie' | 'macros' | 'water' | 'lastMeal' | 'measurementTrend' | 'activeEnergy' | 'steps'
 >;
 
 /**
- * Veri kaynağı henüz olmayan 6 kart için tek paylaşımlı gövde
- * (`activeEnergy`/`steps`/`todayWorkout`/`streak`/`challenge`/`aiInsight` —
- * bkz. cardCatalog.ts `hasRealData: false`).
+ * Veri kaynağı henüz olmayan 4 kart için tek paylaşımlı gövde
+ * (`todayWorkout`/`streak`/`challenge`/`aiInsight` — bkz. cardCatalog.ts
+ * `hasRealData: false`). `activeEnergy`/`steps` MVP-12'de gerçek veriye
+ * bağlandı, artık `ActiveEnergyCard`/`StepsCard` kullanır.
  *
  * Bilinçli olarak uydurma sayı YOK: gerçek kullanıcılara sahte adım/kalori
  * göstermek yerine "Yakında" rozeti + hangi işin bunu getireceğini anlatan

@@ -16,15 +16,6 @@ Bir karar kapandığında satır `Kapalı` bölümüne taşınır ve gerekçesi 
 
 ## Blocked — kod ilerleyemez
 
-### Apple Developer hesabı
-**Etki:** FND-02 (iOS development build), MVP-14/15 (StoreKit), MVP-19 (yayın)
-
-Geliştirme makinesi Windows. iOS Development Build **yerelde üretilemez**; EAS Build (cloud) + Apple Developer Program üyeliği (99 USD/yıl) şart. Faz 0 çıkış kapısı "iOS/Android development build açılır" der — bu kapı hesap alınmadan kapanmaz.
-
-Android tarafı yerelde etkilenmez ve bağımsız ilerler.
-
-**Karar gereken:** Hesabı kim/hangi tüzel kişilik açacak? Bireysel mi şirket mi — şirket hesabı D-U-N-S numarası ister ve haftalar sürebilir. Veri sorumlusu yapısıyla (§09) tutarlı olmalı.
-
 ### Google Play Console hesabı
 **Etki:** MVP-14/15, MVP-19
 
@@ -95,6 +86,37 @@ MVP-05 (manuel öğün) yalnız **sunucu tarafı** idempotency'yi teslim etti: `
 ---
 
 ## Kapalı
+
+### MVP-12: Android minSdkVersion 24 → 26 (Health Connect zorunluluğu)
+**Karar tarihi:** 2026-07-19 · **Etki:** MVP-12, tüm Android kullanıcı tabanı · **PRD:** §17
+
+**Karar:** `apps/mobile/app.json`'a `expo-build-properties` eklendi, `android.minSdkVersion: 26` olarak sabitlendi (Expo 57 varsayılanı 24'tü).
+
+**Gerekçe:** İlk EAS Android build denemesi Gradle manifest merge hatasıyla ÇÖKTÜ: `react-native-health-connect`'in bağımlı olduğu `androidx.health.connect:connect-client:1.1.0-alpha11` kütüphanesi kendi `AndroidManifest.xml`'inde `minSdkVersion 26` istiyor — "kullanılan API'ler 24'te mevcut olmayabilir" diyerek merger'ı hard-fail ediyor (`tools:overrideLibrary` ile bastırmak "runtime failure'a yol açabilir" uyarısı taşıyor, bu yüzden kullanılmadı). Bu, PRD'de önceden belirtilmemiş bir kısıt — Health Connect'in kendi platform gereksinimi.
+
+**Sonuç:** Uygulama artık Android 8.0 (API 26) altı cihazlara KURULAMAZ. Android 7.x ve altı pazar payı (2026 itibarıyla küçük ve azalan) göz önüne alındığında kabul edilebilir bir taviz sayıldı; store yayın öncesi (MVP-19) bu sınırın Play Console "Data Safety"/minimum sürüm beyanına yansıtılması gerekir. Bu iş kimliğinden önce Android build'i hiç denenmemişti (proje bu ana kadar yalnız `expo start --web` ile geliştirildi) — bu yüzden kısıt önceden yakalanamamıştı.
+
+### MVP-12: Health kapsamı, tablo deseni ve native paket seçimi
+**Karar tarihi:** 2026-07-19 · **Etki:** MVP-12, gelecekte kilo/boy senkronu, `TRN-*` · **PRD:** §17
+
+**Karar:** MVP-12 yalnız "temel adım/aktif enerji" teslim eder — §17'nin daha geniş "İlk veri türleri" listesindeki mesafe, antrenman ve kilo/boy senkronu bu işin kapsamı DIŞINDA bırakıldı (kilo/boy `body_measurements.source` CHECK'inde zaten `apple_health`/`health_connect` kabul ediyor ama bu iş onu bağlamadı — hâlâ açık bir iş, kimliği yok). Arka plan senkronu da kapsam dışı: v1 yalnız Bugün ekranı açılınca (ön planda) senkron yapar.
+
+Adım/aktif enerji için repoda İLK KEZ "kullanıcı+gün başına tek satır, upsert" tablo deseni kuruldu (`daily_activity_metrics`, `unique(user_id, activity_date, source)`) — mevcut `daily_nutrition_summary`/`daily_water_summary` append-only log üzerinden hesaplanan RPC'lerdir, bu farklı bir veri şekli (OS'un gün içinde güncellediği kümülatif toplam) olduğu için farklı bir desen gerektirdi. Farklı kaynaklar (`apple_health`/`health_connect`) `body_measurements` ile AYNI ilkeyle ayrı satır kalır, asla sessizce birleştirilmez; `daily_activity_summary()` RPC'si nadir çoklu-kaynak durumunda en son senkronlanan satırı döner (basit v1 kararı).
+
+Native paketler: iOS için `@kingstinct/react-native-healthkit` (Nitro Modules tabanlı, Expo config plugin dahil, New Architecture destekli — react≥19/react-native≥0.79 peer gereksinimleri bu projenin sürümleriyle uyumlu doğrulandı), Android için `react-native-health-connect` (Expo config plugin dahil). İkisi de gerçek `node_modules` kaynak koduna karşı typecheck edildi — API tahmin edilmedi.
+
+**Gerekçe:** İş kimliğinin kendi metni ("temel adım/aktif enerji") dar kapsamı zaten söylüyor; geniş listeyi şimdi teslim etmeye çalışmak §00'ın "yayınlanmayacak yüzey önceden sözleşmeye çevrilmez" ilkesini ihlal ederdi. Arka plan senkronu, native kapının (§01) kendisi bunu HealthKit/Health Connect'ten AYRI, kendi başına gated bir yetenek saydığı için ayrıca ertelendi — aynı işte iki ayrı native kapı geçişini birleştirmek riski büyütürdü. Upsert deseni PRD'nin doğrudan gereksinimi: "§17 yeniden sync çift kayıt üretmez."
+
+**Sonuç:** Bu ortamda Android SDK/Java kurulu değil, Windows'ta iOS simulator yok — migration/pgTAP/paket kodu doğrulandı (15/15 pgTAP, typecheck/lint temiz) ama native kapının 4-5. adımları (`expo prebuild`/`expo run:android`/EAS iOS build, gerçek cihaz smoke testi) kullanıcının kendi cihazında yapılmalı — bkz. `13-agent-work-orders.md` MVP-12 "Kalan".
+
+### Apple Developer hesabı
+**Karar tarihi:** 2026-07-18 · **Etki:** FND-02 (iOS development build), MVP-14/15 (StoreKit), MVP-19 (yayın)
+
+**Karar:** Kullanıcının bir Apple Developer hesabı var — hesap edinimi artık blocked değil.
+
+**Gerekçe:** Önceki blok yalnız hesabın varlığına bağlıydı (bireysel/şirket, D-U-N-S vb.). Hesap zaten mevcut olduğu için bu karar kapandı.
+
+**Sonuç:** Geliştirme makinesi hâlâ Windows — iOS Development Build yerelde üretilemez, EAS Build (cloud) hâlâ gerekli. Hesap edinimi artık engel değil ama **EAS credentials/provisioning kurulumu henüz yapılmadı** — FND-02/MVP-14/15/19'u üstlenen ajan bunu ayrı bir adım olarak doğrulamalı, hesabın varlığını "iOS build çalışıyor" ile eşitlememeli.
 
 ### Bugün ekranı: kart kataloğu kapsamı ve "Yakında" placeholder'ı
 **Karar tarihi:** 2026-07-18 · **Etki:** MVP-11, MVP-12, `TRN-*`, `COACH-*` · **PRD:** §9

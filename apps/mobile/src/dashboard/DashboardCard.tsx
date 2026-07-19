@@ -6,11 +6,13 @@ import { useTranslations } from '@/i18n/LocaleProvider';
 import { useTheme } from '@/theme/ThemeProvider';
 
 import type { DashboardCardDefinition } from './cardCatalog';
+import { ActiveEnergyCard } from './cards/ActiveEnergyCard';
 import { CalorieCard } from './cards/CalorieCard';
 import { ComingSoonCard, type ComingSoonCardId } from './cards/ComingSoonCard';
 import { LastMealCard } from './cards/LastMealCard';
 import { MacroCard } from './cards/MacroCard';
 import { MeasurementTrendCard } from './cards/MeasurementTrendCard';
+import { StepsCard } from './cards/StepsCard';
 import { WaterCard } from './cards/WaterCard';
 
 /**
@@ -56,6 +58,10 @@ export function DashboardCard({
       return <LastMealCard size={size} focusBadge={focusBadge} />;
     case 'measurementTrend':
       return <MeasurementTrendCard size={size} focusBadge={focusBadge} />;
+    case 'steps':
+      return <StepsCard size={size} focusBadge={focusBadge} />;
+    case 'activeEnergy':
+      return <ActiveEnergyCard size={size} focusBadge={focusBadge} />;
     default:
       return <ComingSoonCard cardId={card.id as ComingSoonCardId} size={size} focusBadge={focusBadge} />;
   }

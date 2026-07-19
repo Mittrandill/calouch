@@ -2,10 +2,10 @@
  * Supabase MCP `generate_typescript_types` ile canlı şemadan üretildi.
  * ELLE DÜZENLENMEZ — migration eklendiğinde yeniden üretilir.
  *
- * Kaynak: proje aaufvndbagvkpbtqefee, migration 20260718080000 sonrası
+ * Kaynak: proje aaufvndbagvkpbtqefee, migration 20260718120000 sonrası
  * (meal_entries/log_meal/water_logs/recipes/favorite_foods/
  * body_measurements/progress_photos/ai_jobs + MVP-09 job pipeline +
- * profiles.dashboard_layout (MVP-11) dahil).
+ * profiles.dashboard_layout (MVP-11) + daily_activity_metrics (MVP-12) dahil).
  *
  * `private.ai_jobs`/`ai_usage_ledger`/`ai_feature_flags` bilerek burada YOK —
  * Data API `private` şemasını yayınlamaz (bkz. supabase/config.toml
@@ -108,6 +108,45 @@ export type Database = {
           version?: number;
           waist_cm?: number | null;
           weight_kg?: number | null;
+        };
+        Relationships: [];
+      };
+      daily_activity_metrics: {
+        Row: {
+          active_energy_kcal: number | null;
+          activity_date: string;
+          created_at: string;
+          id: string;
+          platform_record_id: string | null;
+          source: string;
+          steps: number | null;
+          synced_at: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          active_energy_kcal?: number | null;
+          activity_date: string;
+          created_at?: string;
+          id?: string;
+          platform_record_id?: string | null;
+          source: string;
+          steps?: number | null;
+          synced_at?: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          active_energy_kcal?: number | null;
+          activity_date?: string;
+          created_at?: string;
+          id?: string;
+          platform_record_id?: string | null;
+          source?: string;
+          steps?: number | null;
+          synced_at?: string;
+          updated_at?: string;
+          user_id?: string;
         };
         Relationships: [];
       };
@@ -605,6 +644,15 @@ export type Database = {
           job_id: string;
           raw_response: Json;
           status: string;
+        }[];
+      };
+      daily_activity_summary: {
+        Args: { target_date: string };
+        Returns: {
+          active_energy_kcal: number;
+          source: string;
+          steps: number;
+          synced_at: string;
         }[];
       };
       daily_nutrition_summary: {

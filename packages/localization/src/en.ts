@@ -97,11 +97,11 @@ export const en: Translations = {
       },
       activeEnergy: {
         title: 'Active energy',
-        description: "Will appear here once health sync (MVP-12) arrives",
+        connectPrompt: 'Connect to Health to see your active energy',
       },
       steps: {
         title: 'Steps',
-        description: "Will appear here once health sync (MVP-12) arrives",
+        connectPrompt: 'Connect to Health to see your step count',
       },
       todayWorkout: {
         title: "Today's workout",
@@ -132,6 +132,26 @@ export const en: Translations = {
     sizeExpanded: 'Expanded',
     setFocus: "Make today's focus",
     isFocus: "Today's focus",
+  },
+  health: {
+    title: 'Health connection',
+    intro:
+      'Calouch only reads steps and active energy to show them on the Today screen. No health value ever enters analytics or logs.',
+    connectApple: 'Connect Apple Health',
+    connectAndroid: 'Connect Health Connect',
+    connecting: 'Connecting…',
+    disconnect: 'Disconnect',
+    statusConnected: 'Connected',
+    statusDisconnected: 'Not connected',
+    statusDenied: 'Permission not granted',
+    webUnsupported: 'Health connection is only available on a mobile device.',
+    lastSynced: 'Last updated',
+    errors: {
+      notAvailable:
+        "Health data isn't available on this device. On Android, make sure the Health Connect app is installed.",
+      connectFailed: "Couldn't connect. Try again.",
+      syncFailed: "Couldn't refresh your data. Try again.",
+    },
   },
   diary: {
     title: 'Diary',

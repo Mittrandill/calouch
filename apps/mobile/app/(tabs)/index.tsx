@@ -1,10 +1,12 @@
 import { router } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useEffect } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Screen } from '@/components/Screen';
 import { DashboardCard } from '@/dashboard/DashboardCard';
 import { useDashboardLayout } from '@/dashboard/useDashboardLayout';
+import { useHealthConnection } from '@/health/HealthConnectionProvider';
 import { useTranslations } from '@/i18n/LocaleProvider';
 import { useTheme } from '@/theme/ThemeProvider';
 
@@ -18,6 +20,16 @@ export default function TodayScreen() {
   const t = useTranslations();
 
   const { isLoading, isError, isOffline, visibleOrderedCards, focusCard, layout } = useDashboardLayout();
+
+  // §17/MVP-12: HealthKit/Health Connect'e bağlıysa ekran açılınca senkron
+  // yapar — arka plan senkronu bilinçli olarak yok (§01 native kapı, bkz.
+  // 14-open-decisions.md).
+  const { status: healthStatus, syncToday: syncHealthToday } = useHealthConnection();
+  useEffect(() => {
+    if (healthStatus === 'connected') {
+      void syncHealthToday();
+    }
+  }, [healthStatus, syncHealthToday]);
 
   const remainingCards = visibleOrderedCards.filter((card) => card.id !== focusCard?.id);
 

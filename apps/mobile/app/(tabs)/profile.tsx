@@ -71,6 +71,10 @@ export default function ProfileScreen() {
         <NavigationRow label={t.measurements.title} onPress={() => router.push('/measurements')} />
       </Section>
 
+      <Section title={t.health.title}>
+        <NavigationRow label={t.health.title} onPress={() => router.push('/health-connection')} />
+      </Section>
+
       <Pressable
         onPress={() => void signOut()}
         accessibilityRole="button"
