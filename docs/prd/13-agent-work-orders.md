@@ -76,7 +76,14 @@ E-posta/şifre, Google, Apple, şifre sıfırlama, magic link, opsiyonel biyomet
 
 **Veri sınıfı:** Kimlik (yüksek hassasiyet).
 **Kabul:** Başarı, iptal, hata ve session restore durumları çalışır.
-**Kalan:** Google/Apple/magic link/şifre sıfırlama bağlanmadı; ekranda `disabled` duruyor. Apple ile giriş, platform kuralı gerektirdiğinde görünür olmalı.
+
+**Bitti:**
+- Şifre sıfırlama ve magic link — ikisi de aynı PKCE kod-değişimi mekanizmasını paylaşır: `apps/mobile/src/auth/useAuthDeepLink.ts` (yeni, `app/_layout.tsx`'te bir kere mount edilir) `calouch://...?code=xxx&type=...` derin bağlantısını yakalar, `exchangeCodeForSession` ile gerçek oturum kurar.
+- `AuthProvider.tsx`: `resetPasswordForEmail`/`signInWithMagicLink`/`updateUserPassword`, mevcut `signIn`/`signUp` ile aynı `classifyAuthError` deseni.
+- Yeni ekranlar: `app/(auth)/forgot-password.tsx`, `app/reset-password.tsx` (bilinçli olarak `(auth)` grubu DIŞINDA — grubun "authenticated ise `(tabs)`'a yönlendir" guard'ı, kod değişimi sonrası kurulan recovery oturumunu görünce kullanıcıyı ekrandan atardı).
+- `AuthForm.tsx` magic link butonu artık interaktif; `sign-in.tsx`'e "Şifremi unuttum" linki eklendi.
+
+**Kalan:** Google/Apple bağlanmadı; ekranda `disabled` duruyor — dış hesap kurulumu (Google Cloud Console, Apple Developer) gerektirdiği için ayrı bir işe bırakıldı. Apple ile giriş, platform kuralı gerektirdiğinde görünür olmalı. Gerçek e-posta ile uçtan uca doğrulama (Supabase Dashboard'da `calouch://reset-password` redirect URL kaydı + kullanıcının kendi cihazında linke basması) henüz yapılmadı.
 
 ### Dalga 1B — Deterministik çekirdek
 

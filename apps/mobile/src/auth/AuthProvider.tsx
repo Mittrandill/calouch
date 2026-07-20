@@ -6,6 +6,7 @@ import { classifyAuthError } from './authErrors';
 import { registerAuthAutoRefresh, supabase } from './supabase';
 
 export type AuthResult = { ok: true; isNewUser: boolean } | { ok: false; reason: AuthFailureReason };
+export type SimpleAuthResult = { ok: true } | { ok: false; reason: AuthFailureReason };
 
 type AuthContextValue = {
   session: Session | null;
@@ -15,6 +16,9 @@ type AuthContextValue = {
   signIn: (email: string, password: string) => Promise<AuthResult>;
   signUp: (email: string, password: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
+  resetPasswordForEmail: (email: string) => Promise<SimpleAuthResult>;
+  signInWithMagicLink: (email: string) => Promise<SimpleAuthResult>;
+  updateUserPassword: (newPassword: string) => Promise<SimpleAuthResult>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -83,6 +87,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const resetPasswordForEmail = useCallback(async (email: string): Promise<SimpleAuthResult> => {
+    try {
+      // §02 "Şifre sıfırlama". Derin bağlantı `reset-password.tsx`'e gider —
+      // `detectSessionInUrl: false` olduğu için kod değişimi
+      // `useAuthDeepLink`'te ELLE yapılır (bkz. o dosya).
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: 'calouch://reset-password',
+      });
+      if (error) return { ok: false, reason: classifyAuthError(error) };
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, reason: classifyAuthError(error) };
+    }
+  }, []);
+
+  const signInWithMagicLink = useCallback(async (email: string): Promise<SimpleAuthResult> => {
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email.trim(),
+        options: { emailRedirectTo: 'calouch://' },
+      });
+      if (error) return { ok: false, reason: classifyAuthError(error) };
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, reason: classifyAuthError(error) };
+    }
+  }, []);
+
+  const updateUserPassword = useCallback(async (newPassword: string): Promise<SimpleAuthResult> => {
+    try {
+      // Yalnız `reset-password.tsx`'te, `exchangeCodeForSession`'ın kurduğu
+      // aktif recovery oturumu varken anlamlıdır.
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) return { ok: false, reason: classifyAuthError(error) };
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, reason: classifyAuthError(error) };
+    }
+  }, []);
+
   const signOut = useCallback(async () => {
     // Sunucu çağrısı başarısız olsa da yerel oturum temizlenir; aksi hâlde
     // kullanıcı "çıkış yaptım" sanırken oturumda kalır.
@@ -101,8 +145,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signIn,
       signUp,
       signOut,
+      resetPasswordForEmail,
+      signInWithMagicLink,
+      updateUserPassword,
     }),
-    [session, isRestoring, signIn, signUp, signOut],
+    [
+      session,
+      isRestoring,
+      signIn,
+      signUp,
+      signOut,
+      resetPasswordForEmail,
+      signInWithMagicLink,
+      updateUserPassword,
+    ],
   );
 
   return <AuthContext value={value}>{children}</AuthContext>;

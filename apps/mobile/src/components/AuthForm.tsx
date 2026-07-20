@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 
+import { useAuth } from '@/auth/AuthProvider';
 import { authErrorMessage } from '@/auth/authErrors';
 import { Screen } from '@/components/Screen';
 import { useTranslations } from '@/i18n/LocaleProvider';
@@ -28,12 +29,35 @@ type Props = {
 export function AuthForm({ title, submitLabel, onSubmit, footer, successNote }: Props) {
   const theme = useTheme();
   const t = useTranslations();
+  const { signInWithMagicLink } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<AuthFailureReason | null>(null);
   const [showSuccessNote, setShowSuccessNote] = useState(false);
+
+  const [isSendingMagicLink, setIsSendingMagicLink] = useState(false);
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
+
+  const handleMagicLink = async () => {
+    if (isSendingMagicLink) return;
+    setIsSendingMagicLink(true);
+    setError(null);
+    setMagicLinkSent(false);
+
+    const result =
+      email.trim().length > 0
+        ? await signInWithMagicLink(email)
+        : ({ ok: false, reason: 'invalid_email' } as const);
+
+    if (!result.ok) {
+      setError(result.reason);
+    } else {
+      setMagicLinkSent(true);
+    }
+    setIsSendingMagicLink(false);
+  };
 
   const canSubmit = email.trim().length > 0 && password.length > 0 && !isSubmitting;
 
@@ -114,6 +138,19 @@ export function AuthForm({ title, submitLabel, onSubmit, footer, successNote }: 
           </Text>
         )}
 
+        {magicLinkSent && (
+          <Text
+            accessibilityRole="alert"
+            accessibilityLiveRegion="polite"
+            style={[
+              theme.typography.bodySm,
+              { color: theme.colors.status.success, marginTop: theme.spacing.sm },
+            ]}
+          >
+            {t.auth.magicLinkSent}
+          </Text>
+        )}
+
         <Pressable
           onPress={() => void handleSubmit()}
           disabled={!canSubmit}
@@ -141,15 +178,20 @@ export function AuthForm({ title, submitLabel, onSubmit, footer, successNote }: 
         </Pressable>
 
         {/*
-          Google / Apple / magic link: MVP-01'in kalan işinde bağlanır.
-          Bilinçli olarak `disabled`: sessizce hiçbir şey yapmayan bir butondan
-          dürüst. Apple ile giriş, §02 gereği platform kuralı istediğinde
-          görünür olmak zorunda — yer şimdiden ayrıldı.
+          Google / Apple: dış hesap kurulumu (Google Cloud Console / Apple
+          Developer) gerektiriyor, ayrı bir işte bağlanacak. Bilinçli olarak
+          `disabled`: sessizce hiçbir şey yapmayan bir butondan dürüst.
+          Apple ile giriş, §02 gereği platform kuralı istediğinde görünür
+          olmak zorunda — yer şimdiden ayrıldı.
         */}
         <View style={{ marginTop: theme.spacing.xl }}>
           <ProviderButton label={t.auth.continueWithGoogle} />
           {Platform.OS === 'ios' && <ProviderButton label={t.auth.continueWithApple} />}
-          <ProviderButton label={t.auth.magicLink} />
+          <ProviderButton
+            label={t.auth.magicLink}
+            onPress={() => void handleMagicLink()}
+            isLoading={isSendingMagicLink}
+          />
         </View>
 
         <View style={{ marginTop: theme.spacing.xl }}>{footer}</View>
@@ -197,27 +239,65 @@ function Field({
   );
 }
 
-function ProviderButton({ label }: { label: string }) {
+function ProviderButton({
+  label,
+  onPress,
+  isLoading = false,
+}: {
+  label: string;
+  /** Verilmezse buton inert kalır (Google/Apple — henüz bağlanmadı). */
+  onPress?: () => void;
+  isLoading?: boolean;
+}) {
   const theme = useTheme();
 
+  if (onPress === undefined) {
+    return (
+      <View
+        accessibilityRole="button"
+        accessibilityState={{ disabled: true }}
+        accessibilityLabel={label}
+        style={[
+          styles.providerButton,
+          {
+            minHeight: theme.minTouchTarget,
+            marginTop: theme.spacing.sm,
+            borderRadius: theme.radius.md,
+            borderColor: theme.colors.border.default,
+            opacity: 0.4,
+          },
+        ]}
+      >
+        <Text style={[theme.typography.label, { color: theme.colors.text.primary }]}>{label}</Text>
+      </View>
+    );
+  }
+
   return (
-    <View
+    <Pressable
+      onPress={onPress}
+      disabled={isLoading}
       accessibilityRole="button"
-      accessibilityState={{ disabled: true }}
       accessibilityLabel={label}
-      style={[
+      accessibilityState={{ busy: isLoading }}
+      style={({ pressed }) => [
         styles.providerButton,
         {
           minHeight: theme.minTouchTarget,
           marginTop: theme.spacing.sm,
           borderRadius: theme.radius.md,
           borderColor: theme.colors.border.default,
-          opacity: 0.4,
+          backgroundColor: pressed ? theme.colors.surface.pressed : 'transparent',
+          opacity: isLoading ? 0.6 : 1,
         },
       ]}
     >
-      <Text style={[theme.typography.label, { color: theme.colors.text.primary }]}>{label}</Text>
-    </View>
+      {isLoading ? (
+        <ActivityIndicator color={theme.colors.text.primary} />
+      ) : (
+        <Text style={[theme.typography.label, { color: theme.colors.text.primary }]}>{label}</Text>
+      )}
+    </Pressable>
   );
 }
 

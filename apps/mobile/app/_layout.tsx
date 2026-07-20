@@ -4,6 +4,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 import { AuthProvider } from '@/auth/AuthProvider';
+import { useAuthDeepLink } from '@/auth/useAuthDeepLink';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { asyncStoragePersister, queryClient } from '@/data/queryClient';
 import { HealthConnectionProvider } from '@/health/HealthConnectionProvider';
@@ -37,6 +38,7 @@ export default function RootLayout() {
               <AuthProvider>
                 <HealthConnectionProvider>
                   <ThemedStatusBar />
+                  <AuthDeepLinkListener />
                   <Stack screenOptions={{ headerShown: false }}>
                     <Stack.Screen name="(tabs)" />
                     <Stack.Screen name="(auth)" />
@@ -48,6 +50,7 @@ export default function RootLayout() {
                     <Stack.Screen name="progress-photos" options={{ presentation: 'modal' }} />
                     <Stack.Screen name="manage-dashboard-cards" options={{ presentation: 'modal' }} />
                     <Stack.Screen name="health-connection" options={{ presentation: 'modal' }} />
+                    <Stack.Screen name="reset-password" options={{ presentation: 'modal' }} />
                   </Stack>
                 </HealthConnectionProvider>
               </AuthProvider>
@@ -63,4 +66,10 @@ export default function RootLayout() {
 function ThemedStatusBar() {
   const theme = useTheme();
   return <StatusBar style={theme.isDark ? 'light' : 'dark'} />;
+}
+
+/** Magic link/şifre sıfırlama derin bağlantılarını dinler — bkz. useAuthDeepLink.ts. */
+function AuthDeepLinkListener() {
+  useAuthDeepLink();
+  return null;
 }

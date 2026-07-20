@@ -40,6 +40,12 @@ export const tr = {
     continueWithApple: 'Apple ile devam et',
     magicLink: 'E-posta ile bağlantı gönder',
     checkEmail: 'Doğrulama bağlantısı için e-postanı kontrol et',
+    magicLinkSent: 'Giriş bağlantısı için e-postanı kontrol et',
+    resetLinkSent: 'Şifre sıfırlama bağlantısı için e-postanı kontrol et',
+    sendResetLink: 'Bağlantı gönder',
+    newPassword: 'Yeni şifre',
+    setNewPassword: 'Şifreyi güncelle',
+    resetLinkExpired: 'Bu bağlantının süresi dolmuş veya daha önce kullanılmış. Yeniden şifre sıfırlama isteği gönder.',
   },
   authError: {
     invalidCredentials: 'E-posta veya şifre hatalı',

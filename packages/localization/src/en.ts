@@ -40,6 +40,12 @@ export const en: Translations = {
     continueWithApple: 'Continue with Apple',
     magicLink: 'Send me a link',
     checkEmail: 'Check your email for the verification link',
+    magicLinkSent: 'Check your email for the sign-in link',
+    resetLinkSent: 'Check your email for the password reset link',
+    sendResetLink: 'Send link',
+    newPassword: 'New password',
+    setNewPassword: 'Update password',
+    resetLinkExpired: 'This link has expired or was already used. Request a new password reset.',
   },
   authError: {
     invalidCredentials: 'Email or password is incorrect',
