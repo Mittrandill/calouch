@@ -30,7 +30,7 @@ export function Card({ title, trailing, size = 'compact', children }: CardProps)
         styles.card,
         {
           backgroundColor: theme.colors.surface.default,
-          borderRadius: theme.radius.md,
+          borderRadius: theme.radius.lg,
           borderColor: theme.colors.border.default,
           padding: size === 'expanded' ? theme.spacing.xl : theme.spacing.lg,
         },

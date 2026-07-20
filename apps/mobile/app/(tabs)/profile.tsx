@@ -116,7 +116,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
           styles.card,
           {
             backgroundColor: theme.colors.surface.default,
-            borderRadius: theme.radius.md,
+            borderRadius: theme.radius.lg,
             borderColor: theme.colors.border.default,
           },
         ]}

@@ -74,7 +74,7 @@ export function SummaryStep({ goals, onFinish, onBack, isSaving, currentIndex, t
           styles.card,
           {
             backgroundColor: theme.colors.surface.default,
-            borderRadius: theme.radius.md,
+            borderRadius: theme.radius.lg,
             borderColor: theme.colors.border.default,
           },
         ]}

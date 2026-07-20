@@ -2,7 +2,7 @@ export { darkColors, lightColors, oledColors, type ColorScheme } from './colors'
 export { AA_LARGE_TEXT, AA_TEXT, contrastRatio, hexToRgb, relativeLuminance } from './contrast';
 export { minTouchTarget, radius, spacing, type RadiusToken, type SpacingToken } from './spacing';
 export { shadows, type Shadow, type ShadowToken } from './shadows';
-export { typography, type TextStyleToken, type TypographyToken } from './typography';
+export { typography, type FontFamily, type TextStyleToken, type TypographyToken } from './typography';
 
 import { darkColors, lightColors, oledColors, type ColorScheme } from './colors';
 

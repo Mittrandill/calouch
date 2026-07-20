@@ -87,6 +87,23 @@ MVP-05 (manuel öğün) yalnız **sunucu tarafı** idempotency'yi teslim etti: `
 
 ## Kapalı
 
+### Tasarım dili yenilemesi (Rift-ilhamlı)
+**Karar tarihi:** 2026-07-19 · **Etki:** `apps/mobile` tüm ekranlar, `packages/design-tokens`, `packages/localization` (string değişikliği yok, yalnız yeni auth string'leri) · **PRD:** Yok — kullanıcı talebiyle başlatıldı, PRD'de görsel dil şartı zaten "marka kimliği sonradan gelir" diyordu.
+
+**Karar:** Uygulamanın görsel dili Behance'teki "Rift — AI Fitness & Wellness Mobile App" referans alınarak yenilendi. Kapsam kullanıcı tarafından açıkça sınırlandı: **yalnız tasarım dili** (renk, tipografi, kart/efekt/animasyon stili) — Calouch'un kendi logosu, sloganı ve markası KORUNDU, Rift'in markası kopyalanmadı.
+
+- `packages/design-tokens/src/primitives.ts`: yeni `chartreuse` (marka rengi, `500`=`#D8FF00`), `teal` (ikincil vurgu), `graphite` (koyu yüzey hiyerarşisi: `background`/`surface`/`surfaceElevated`/`surfacePressed` + OLED varyantları) ölçekleri.
+- `packages/design-tokens/src/colors.ts`: koyu tema chartreuse/graphite'tan besleniyor; açık temada `brand.text` bilinçli olarak `chartreuse[800]` kullanıyor (`[500]` beyaz zeminde WCAG AA'yı geçemiyor — kontrast hesaplanarak doğrulandı, `tokens.test.ts` 30/30 geçti).
+- `ThemeProvider.tsx`: varsayılan tema `system` yerine `dark` — Rift referansı koyu-öncelikli, kullanıcı onayıyla (`"Koyu temayı varsayılan yap"`).
+- `@expo-google-fonts/space-grotesk` + `@expo-google-fonts/inter` eklendi (`typography.ts`): display/heading/numeric Space Grotesk, body/label/caption Inter.
+- Yeni `RingGauge.tsx` (react-native-svg tabanlı animasyonlu halka gösterge) — Kalori kartının imza öğesi.
+- Kart köşe yarıçapı `radius.md` → `radius.lg`: yalnız gerçek içerik kartları (`surface.default` arkaplan + kenarlık taşıyan konteynerler), buton/input'lar bilinçli olarak `radius.md`'de bırakıldı (görsel hiyerarşi: kart ≠ kontrol).
+- App icon/splash/favicon, kullanıcının `apps/mobile/public/icon.png` altına eklediği yeni marka görseliyle değiştirildi (`app.json` `primaryColor`/`adaptiveIcon.backgroundColor` de `#D8FF00`'a güncellendi). `android-icon-monochrome.png` bilinçli olarak dokunulmadı — silüet çıkarımı için görüntü işleme aracı bu ortamda yok.
+
+**Gerekçe:** Kullanıcı ürünün genel görsel kimliğinin şablonik kaldığını belirtti ve somut bir referans verdi. Marka (logo/slogan) korunarak yalnız tasarım dilinin değişmesi istendi — bu ayrım kullanıcı tarafından açıkça yapıldı (`"sloganı logoyu falan bizimki kalsın... ekranlar, efektler, animasyonlar, stiller, görseller, cardlar vb."`). Token mimarisi (primitives → semantic colors → `useTheme()`) zaten mevcuttu; bu iş yeni bir mimari kurmadı, mevcut katmanı yeniden doldurdu — Profile ekranının SIFIR kod değişikliğiyle doğru göründüğü doğrulandı, bu da token-cascade'in çalıştığını kanıtladı.
+
+**Sonuç:** ~22 ekran/bileşen dosyası tarandı, kart-konteyner deseni (`surface.default` arkaplan + `radius`) taşıyan 9 dosyada `radius.lg`'ye geçirildi; buton/input'lar kasıtlı olarak dokunulmadı. `pnpm typecheck`/`lint` temiz. Görsel QA `expo start --web` üzerinden Chrome ile ekran ekran doğrulandı (Bugün/Günlük/Kamera/Tarifler/Öğün ekle/Tarif oluştur/Ölçüler/Health/Kartları düzenle/Onboarding). Android monochrome icon ve gerçek cihazda ikon/splash görünümü henüz doğrulanmadı — sonraki EAS build'de kontrol edilmeli.
+
 ### MVP-12: Android minSdkVersion 24 → 26 (Health Connect zorunluluğu)
 **Karar tarihi:** 2026-07-19 · **Etki:** MVP-12, tüm Android kullanıcı tabanı · **PRD:** §17
 

@@ -6,7 +6,7 @@
     "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "primaryColor": "#84CC16",
+    "primaryColor": "#D8FF00",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -22,7 +22,7 @@
     "android": {
       "package": "com.calouch.app",
       "adaptiveIcon": {
-        "backgroundColor": "#84CC16",
+        "backgroundColor": "#D8FF00",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"

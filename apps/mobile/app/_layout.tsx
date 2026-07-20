@@ -1,4 +1,9 @@
+import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from '@expo-google-fonts/inter';
+import { SpaceGrotesk_600SemiBold, SpaceGrotesk_700Bold } from '@expo-google-fonts/space-grotesk';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -13,6 +18,10 @@ import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
 
 export { ErrorBoundary } from '@/components/ErrorBoundary';
 
+// Fontlar yüklenene kadar splash ekranı açık kalır — Space Grotesk/Inter
+// yerine bir an sistem fontu görünüp sonra değişmesin (görsel "zıplama").
+void SplashScreen.preventAutoHideAsync();
+
 /**
  * Kök yerleşim.
  *
@@ -22,6 +31,22 @@ export { ErrorBoundary } from '@/components/ErrorBoundary';
  * client'a erişir.
  */
 export default function RootLayout() {
+  const [fontsLoaded, fontError] = useFonts({
+    SpaceGrotesk_700Bold,
+    SpaceGrotesk_600SemiBold,
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded || fontError) void SplashScreen.hideAsync();
+  }, [fontsLoaded, fontError]);
+
+  // fontError'da da devam edilir — yazı tipi eksikliği uygulamayı asla
+  // kilitlemez (§00 "temel kullanım çalışır"), sistem fontuna düşer.
+  if (!fontsLoaded && !fontError) return null;
+
   return (
     <SafeAreaProvider>
       <ThemeProvider>

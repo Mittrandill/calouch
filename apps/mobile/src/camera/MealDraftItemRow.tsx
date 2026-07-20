@@ -44,7 +44,7 @@ export function MealDraftItemRow({ item, state, onChange }: Props) {
         {
           marginTop: theme.spacing.md,
           backgroundColor: theme.colors.surface.default,
-          borderRadius: theme.radius.md,
+          borderRadius: theme.radius.lg,
           borderColor: theme.colors.border.default,
           padding: theme.spacing.lg,
           opacity: state.included ? 1 : 0.6,

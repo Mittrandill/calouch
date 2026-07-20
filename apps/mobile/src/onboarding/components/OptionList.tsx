@@ -24,7 +24,7 @@ export function OptionList<T extends string>({ options, value, onChange }: Props
         styles.card,
         {
           backgroundColor: theme.colors.surface.default,
-          borderRadius: theme.radius.md,
+          borderRadius: theme.radius.lg,
           borderColor: theme.colors.border.default,
         },
       ]}

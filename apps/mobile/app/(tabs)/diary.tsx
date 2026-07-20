@@ -115,7 +115,7 @@ function SummaryCard({
         {
           marginTop: theme.spacing.lg,
           backgroundColor: theme.colors.surface.default,
-          borderRadius: theme.radius.md,
+          borderRadius: theme.radius.lg,
           borderColor: theme.colors.border.default,
           padding: theme.spacing.lg,
         },
@@ -205,7 +205,7 @@ function WaterCard({ date }: { date: Date }) {
         {
           marginTop: theme.spacing.md,
           backgroundColor: theme.colors.surface.default,
-          borderRadius: theme.radius.md,
+          borderRadius: theme.radius.lg,
           borderColor: theme.colors.border.default,
           padding: theme.spacing.lg,
         },
@@ -357,7 +357,7 @@ function MealCard({ meal }: { meal: LoggedMeal }) {
         {
           marginBottom: theme.spacing.md,
           backgroundColor: theme.colors.surface.default,
-          borderRadius: theme.radius.md,
+          borderRadius: theme.radius.lg,
           borderColor: theme.colors.border.default,
           padding: theme.spacing.lg,
         },

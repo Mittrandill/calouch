@@ -140,7 +140,7 @@ function CardRow({
         styles.row,
         {
           backgroundColor: theme.colors.surface.default,
-          borderRadius: theme.radius.md,
+          borderRadius: theme.radius.lg,
           borderColor: theme.colors.border.default,
           padding: theme.spacing.md,
           opacity: isHidden ? 0.6 : 1,

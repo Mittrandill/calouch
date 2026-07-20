@@ -124,7 +124,7 @@ export default function MeasurementsScreen() {
           {
             marginTop: theme.spacing.lg,
             backgroundColor: theme.colors.surface.default,
-            borderRadius: theme.radius.md,
+            borderRadius: theme.radius.lg,
             borderColor: theme.colors.border.default,
             padding: theme.spacing.lg,
           },

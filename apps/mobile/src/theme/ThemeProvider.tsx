@@ -43,9 +43,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // useColorScheme cihaz görünümü değiştiğinde yeniden render tetikler; §02
   // "yeniden başlatmadan değişir" şartı buna dayanır.
   const systemScheme = useColorScheme();
-  const [preference, setPreferenceState] = useState<ThemePreference>('system');
+  // Görsel dil kararı (2026-07-19): koyu tema birincil deneyim — chartreuse
+  // vurgusu neredeyse siyah zeminde en güçlü kontrastı taşır. Kullanıcı
+  // isterse açık temaya geçebilir (tercih hâlâ tam bir seçenek, yalnız
+  // varsayılan değişti).
+  const [preference, setPreferenceState] = useState<ThemePreference>('dark');
 
-  // Tercih diskten okunana kadar 'system' gösterilir. §02 tercihin kalıcı ve
+  // Tercih diskten okunana kadar 'dark' gösterilir. §02 tercihin kalıcı ve
   // cihazlar arası senkron olmasını istiyor; hesaba yazma MVP-02'de profile
   // tablosuna bağlanır, o zamana kadar yerel kalıcılık yeterli.
   useEffect(() => {
