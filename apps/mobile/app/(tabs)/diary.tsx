@@ -1,41 +1,84 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
+import type { ImageSourcePropType } from 'react-native';
 import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import mealBreakfastImage from '../../assets/decorative/meal-breakfast.png';
+import mealDinnerImage from '../../assets/decorative/meal-dinner.png';
+import mealLunchImage from '../../assets/decorative/meal-lunch.png';
+import mealSnackImage from '../../assets/decorative/meal-snack.png';
+import { Card } from '@/components/Card';
+import { ProgressBar } from '@/components/ProgressBar';
+import { RingGauge } from '@/components/RingGauge';
 import { Screen } from '@/components/Screen';
-import { useDailyNutritionSummary, useTodaysMeals, type LoggedMeal } from '@/data/meals';
+import { WaterDropGauge } from '@/components/WaterDropGauge';
+import { useDailyNutritionSummary, useTodaysMeals, type LoggedMeal, type MealType } from '@/data/meals';
 import { useProfile } from '@/data/profile';
+import { useSignedPhotoUrl } from '@/data/storage';
 import { useDailyWaterSummary, useLogWater } from '@/data/water';
-import { useTranslations } from '@/i18n/LocaleProvider';
+import { useLocale, useTranslations } from '@/i18n/LocaleProvider';
 import { useTheme } from '@/theme/ThemeProvider';
 
-/** §03 manuel öğün günlüğü — MVP-05/MVP-06. */
+/**
+ * §03 manuel öğün günlüğü — MVP-05/MVP-06.
+ *
+ * Tasarım dili yenilemesi (2026-07-20): Bugün ekranındaki fotoğraf kartı +
+ * `RingGauge`/ProgressBar dilini buraya taşır — iki ayrı görsel sistem
+ * yerine tek tutarlı dil (bkz. `Card`, `RingGauge`, `WaterDropGauge`).
+ */
 export default function DiaryScreen() {
   const theme = useTheme();
   const t = useTranslations();
+  const { locale } = useLocale();
   const today = new Date();
 
   const summary = useDailyNutritionSummary(today);
+  const profile = useProfile();
   const meals = useTodaysMeals(today);
+
+  const dateLabel = useMemo(
+    () => new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'long' }).format(today),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `today` her render'da yeni referans, gün içinde sabit kalması yeterli.
+    [locale],
+  );
 
   return (
     <Screen scrollable>
-      <Text
-        accessibilityRole="header"
-        style={[theme.typography.display, { color: theme.colors.text.primary }]}
-      >
-        {t.diary.title}
-      </Text>
+      <View>
+        <Text
+          accessibilityRole="header"
+          style={[theme.typography.display, { color: theme.colors.text.primary }]}
+        >
+          {t.diary.title}
+        </Text>
+        <Text
+          style={[
+            theme.typography.bodySm,
+            { color: theme.colors.text.tertiary, marginTop: theme.spacing.xxs },
+          ]}
+        >
+          {dateLabel}
+        </Text>
+      </View>
 
-      <SummaryCard
-        isLoading={summary.isPending}
-        totalEnergyKcal={summary.data?.totalEnergyKcal ?? null}
-        totalProteinG={summary.data?.totalProteinG ?? null}
-        totalCarbsG={summary.data?.totalCarbsG ?? null}
-        totalFatG={summary.data?.totalFatG ?? null}
-      />
+      <View style={{ marginTop: theme.spacing.lg }}>
+        <NutritionHeroCard
+          isLoading={summary.isPending || profile.isPending}
+          totalEnergyKcal={summary.data?.totalEnergyKcal ?? null}
+          totalProteinG={summary.data?.totalProteinG ?? null}
+          totalCarbsG={summary.data?.totalCarbsG ?? null}
+          totalFatG={summary.data?.totalFatG ?? null}
+          targetEnergyKcal={profile.data?.target_calories_kcal ?? null}
+          targetProteinG={profile.data?.protein_g ?? null}
+          targetCarbsG={profile.data?.carbs_g ?? null}
+          targetFatG={profile.data?.fat_g ?? null}
+        />
+      </View>
 
-      <WaterCard date={today} />
+      <View style={{ marginTop: theme.spacing.md }}>
+        <WaterCard date={today} />
+      </View>
 
       <Pressable
         onPress={() => router.push('/add-meal')}
@@ -51,8 +94,14 @@ export default function DiaryScreen() {
           },
         ]}
       >
-        <Text style={[theme.typography.label, { color: theme.colors.brand.onBrand }]}>
-          + {t.diary.addMeal}
+        <Ionicons name="add-circle" size={20} color={theme.colors.brand.onBrand} />
+        <Text
+          style={[
+            theme.typography.label,
+            { color: theme.colors.brand.onBrand, marginLeft: theme.spacing.xs },
+          ]}
+        >
+          {t.diary.addMeal}
         </Text>
       </Pressable>
 
@@ -60,12 +109,19 @@ export default function DiaryScreen() {
         onPress={() => router.push('/recipes')}
         accessibilityRole="button"
         accessibilityLabel={t.recipes.title}
-        style={{ minHeight: theme.minTouchTarget, marginTop: theme.spacing.sm, justifyContent: 'center' }}
+        style={{
+          minHeight: theme.minTouchTarget,
+          marginTop: theme.spacing.sm,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
       >
+        <Ionicons name="book-outline" size={16} color={theme.colors.text.secondary} />
         <Text
           style={[
             theme.typography.label,
-            { color: theme.colors.text.secondary, textAlign: 'center' },
+            { color: theme.colors.text.secondary, marginLeft: theme.spacing.xs },
           ]}
         >
           {t.recipes.title}
@@ -75,16 +131,7 @@ export default function DiaryScreen() {
       <View style={{ marginTop: theme.spacing.xl }}>
         {meals.isPending && <ActivityIndicator color={theme.colors.brand.text} />}
 
-        {meals.data !== undefined && meals.data.length === 0 && (
-          <Text
-            style={[
-              theme.typography.body,
-              { color: theme.colors.text.tertiary, textAlign: 'center', marginTop: theme.spacing.xl },
-            ]}
-          >
-            {t.diary.empty}
-          </Text>
-        )}
+        {meals.data !== undefined && meals.data.length === 0 && <EmptyMealsState />}
 
         {meals.data?.map((meal) => <MealCard key={meal.id} meal={meal} />)}
       </View>
@@ -92,77 +139,134 @@ export default function DiaryScreen() {
   );
 }
 
-function SummaryCard({
+function NutritionHeroCard({
   isLoading,
   totalEnergyKcal,
   totalProteinG,
   totalCarbsG,
   totalFatG,
+  targetEnergyKcal,
+  targetProteinG,
+  targetCarbsG,
+  targetFatG,
 }: {
   isLoading: boolean;
   totalEnergyKcal: number | null;
   totalProteinG: number | null;
   totalCarbsG: number | null;
   totalFatG: number | null;
+  targetEnergyKcal: number | null;
+  targetProteinG: number | null;
+  targetCarbsG: number | null;
+  targetFatG: number | null;
 }) {
   const theme = useTheme();
   const t = useTranslations();
 
+  const remaining =
+    targetEnergyKcal === null || totalEnergyKcal === null
+      ? null
+      : Math.round(targetEnergyKcal - totalEnergyKcal);
+  const label =
+    remaining === null || remaining < 0 ? t.today.cards.calorie.consumed : t.today.cards.calorie.remaining;
+  const displayValue =
+    totalEnergyKcal === null ? null : remaining === null ? Math.round(totalEnergyKcal) : Math.abs(remaining);
+
   return (
-    <View
-      style={[
-        styles.card,
-        {
-          marginTop: theme.spacing.lg,
-          backgroundColor: theme.colors.surface.default,
-          borderRadius: theme.radius.lg,
-          borderColor: theme.colors.border.default,
-          padding: theme.spacing.lg,
-        },
-      ]}
+    <Card
+      title={t.today.cards.calorie.title}
+      trailing={<Ionicons name="flame" size={20} color={theme.colors.brand.text} />}
+      size="expanded"
     >
       {isLoading ? (
         <ActivityIndicator color={theme.colors.brand.text} />
       ) : (
         <>
-          <Text style={[theme.typography.numericDisplay, { color: theme.colors.text.primary }]}>
-            {totalEnergyKcal === null ? '—' : Math.round(totalEnergyKcal)}{' '}
-            <Text style={[theme.typography.body, { color: theme.colors.text.secondary }]}>
-              {t.diary.calories}
-            </Text>
-          </Text>
-          <View style={[styles.macroRow, { marginTop: theme.spacing.md, gap: theme.spacing.lg }]}>
-            <MacroValue color={theme.colors.macro.protein} label="P" grams={totalProteinG} />
-            <MacroValue color={theme.colors.macro.carbs} label="K" grams={totalCarbsG} />
-            <MacroValue color={theme.colors.macro.fat} label="Y" grams={totalFatG} />
+          <View style={{ alignItems: 'center', paddingVertical: theme.spacing.sm }}>
+            <RingGauge
+              value={totalEnergyKcal ?? 0}
+              max={targetEnergyKcal}
+              size={180}
+              accessibilityLabel={`${Math.round(totalEnergyKcal ?? 0)} / ${targetEnergyKcal ?? '—'} ${t.diary.calories}`}
+            >
+              <Text style={[theme.typography.numericDisplay, { color: theme.colors.text.primary }]}>
+                {displayValue === null ? '—' : displayValue}
+              </Text>
+              <Text style={[theme.typography.bodySm, { color: theme.colors.text.secondary }]}>
+                {targetEnergyKcal === null ? t.diary.calories : label}
+              </Text>
+            </RingGauge>
+          </View>
+
+          <View style={{ marginTop: theme.spacing.lg, gap: theme.spacing.sm }}>
+            <MacroRow
+              label={t.today.cards.macros.protein}
+              color={theme.colors.macro.protein}
+              value={totalProteinG ?? 0}
+              target={targetProteinG}
+            />
+            <MacroRow
+              label={t.today.cards.macros.carbs}
+              color={theme.colors.macro.carbs}
+              value={totalCarbsG ?? 0}
+              target={targetCarbsG}
+            />
+            <MacroRow
+              label={t.today.cards.macros.fat}
+              color={theme.colors.macro.fat}
+              value={totalFatG ?? 0}
+              target={targetFatG}
+            />
           </View>
         </>
       )}
-    </View>
+    </Card>
   );
 }
 
-function MacroValue({ color, label, grams }: { color: string; label: string; grams: number | null }) {
+function MacroRow({
+  label,
+  color,
+  value,
+  target,
+}: {
+  label: string;
+  color: string;
+  value: number;
+  target: number | null;
+}) {
   const theme = useTheme();
   return (
-    <View style={styles.macroItem}>
-      {/* §02: makrolar yalnızca renkle ayrılmaz — harf etiketi taşır. */}
-      <View
-        style={[
-          styles.macroDot,
-          {
-            backgroundColor: color,
-            marginRight: theme.spacing.xs,
-            width: theme.spacing.sm,
-            height: theme.spacing.sm,
-            borderRadius: theme.radius.full,
-          },
-        ]}
-        accessibilityElementsHidden
+    <View>
+      <View style={[styles.rowBetween, { marginBottom: theme.spacing.xxs }]}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          {/* §02: makrolar yalnızca renkle ayrılmaz — harf/kelime etiketi taşır. */}
+          <View
+            style={[
+              styles.macroDot,
+              {
+                backgroundColor: color,
+                marginRight: theme.spacing.xs,
+                width: theme.spacing.sm,
+                height: theme.spacing.sm,
+                borderRadius: theme.radius.full,
+              },
+            ]}
+            accessibilityElementsHidden
+          />
+          <Text style={[theme.typography.bodySm, { color: theme.colors.text.primary }]}>{label}</Text>
+        </View>
+        <Text style={[theme.typography.numericSm, { color: theme.colors.text.secondary }]}>
+          {Math.round(value)}
+          {target !== null ? ` / ${target}` : ''}g
+        </Text>
+      </View>
+      <ProgressBar
+        value={value}
+        max={target}
+        color={color}
+        accessibilityLabel={`${label}: ${Math.round(value)}${target !== null ? ` / ${target}` : ''}g`}
       />
-      <Text style={[theme.typography.numericSm, { color: theme.colors.text.primary }]}>
-        {label}: {grams === null ? '—' : `${Math.round(grams)}g`}
-      </Text>
     </View>
   );
 }
@@ -199,34 +303,26 @@ function WaterCard({ date }: { date: Date }) {
   const canAddCustom = Number.isFinite(customAmountValue) && customAmountValue > 0;
 
   return (
-    <View
-      style={[
-        styles.card,
-        {
-          marginTop: theme.spacing.md,
-          backgroundColor: theme.colors.surface.default,
-          borderRadius: theme.radius.lg,
-          borderColor: theme.colors.border.default,
-          padding: theme.spacing.lg,
-        },
-      ]}
+    <Card
+      title={t.diary.water.title}
+      trailing={
+        <WaterDropGauge
+          value={consumedMl}
+          max={goalMl}
+          size={36}
+          accessibilityLabel={`${consumedMl} / ${goalMl ?? '—'} ${t.diary.water.unit}`}
+        />
+      }
+      size="expanded"
     >
-      <View style={styles.mealHeader}>
-        <Text style={[theme.typography.headingSm, { color: theme.colors.text.primary }]}>
-          {t.diary.water.title}
-        </Text>
-        <Text style={[theme.typography.numericSm, { color: theme.colors.text.secondary }]}>
-          {consumedMl}
+      <Text style={[theme.typography.numericDisplay, { color: theme.colors.text.primary }]}>
+        {consumedMl}
+        <Text style={[theme.typography.body, { color: theme.colors.text.secondary }]}>
           {goalMl !== null ? ` / ${goalMl}` : ''} {t.diary.water.unit}
         </Text>
-      </View>
+      </Text>
 
-      <View
-        style={[
-          styles.chipRow,
-          { marginTop: theme.spacing.md, gap: theme.spacing.sm },
-        ]}
-      >
+      <View style={[styles.chipRow, { marginTop: theme.spacing.md, gap: theme.spacing.sm }]}>
         {quickAmounts.map((amount) => (
           <Pressable
             key={amount}
@@ -241,16 +337,12 @@ function WaterCard({ date }: { date: Date }) {
                 paddingHorizontal: theme.spacing.md,
                 borderRadius: theme.radius.full,
                 borderColor: theme.colors.status.info,
-                backgroundColor: pressed
-                  ? theme.colors.surface.pressed
-                  : theme.colors.surface.default,
+                backgroundColor: pressed ? theme.colors.surface.pressed : theme.colors.surface.default,
                 opacity: logWater.isPending ? 0.5 : 1,
               },
             ]}
           >
-            <Text style={[theme.typography.bodySm, { color: theme.colors.status.info }]}>
-              +{amount}
-            </Text>
+            <Text style={[theme.typography.bodySm, { color: theme.colors.status.info }]}>+{amount}</Text>
           </Pressable>
         ))}
 
@@ -265,13 +357,17 @@ function WaterCard({ date }: { date: Date }) {
               paddingHorizontal: theme.spacing.md,
               borderRadius: theme.radius.full,
               borderColor: theme.colors.border.default,
-              backgroundColor: pressed
-                ? theme.colors.surface.pressed
-                : theme.colors.surface.default,
+              backgroundColor: pressed ? theme.colors.surface.pressed : theme.colors.surface.default,
             },
           ]}
         >
-          <Text style={[theme.typography.bodySm, { color: theme.colors.text.secondary }]}>
+          <Ionicons name="add" size={14} color={theme.colors.text.secondary} />
+          <Text
+            style={[
+              theme.typography.bodySm,
+              { color: theme.colors.text.secondary, marginLeft: theme.spacing.xxs },
+            ]}
+          >
             {t.diary.water.customAmount}
           </Text>
         </Pressable>
@@ -293,8 +389,8 @@ function WaterCard({ date }: { date: Date }) {
                 color: theme.colors.text.primary,
                 backgroundColor: theme.colors.surface.default,
                 borderColor: theme.colors.border.default,
-                borderRadius: theme.radius.md,
                 borderWidth: StyleSheet.hairlineWidth,
+                borderRadius: theme.radius.md,
                 minHeight: theme.minTouchTarget,
                 paddingHorizontal: theme.spacing.md,
               },
@@ -339,63 +435,169 @@ function WaterCard({ date }: { date: Date }) {
           {t.diary.water.error}
         </Text>
       )}
-    </View>
+    </Card>
   );
 }
+
+/**
+ * Öğün türüne göre dekoratif fallback — gerçek fotoğrafı olmayan (manuel
+ * öğün) veya henüz yüklenmemiş kayıtlarda kullanılır (bkz. `LastMealCard`,
+ * aynı desen — Bugün ekranı ile tutarlı olsun diye burada tekrarlanır).
+ */
+const MEAL_TYPE_FALLBACK_IMAGES: Record<MealType, ImageSourcePropType> = {
+  breakfast: mealBreakfastImage,
+  lunch: mealLunchImage,
+  dinner: mealDinnerImage,
+  snack: mealSnackImage,
+  pre_workout: mealSnackImage,
+  post_workout: mealSnackImage,
+  night: mealSnackImage,
+  custom: mealSnackImage,
+};
+
+const MEAL_TYPE_ICONS: Record<MealType, keyof typeof Ionicons.glyphMap> = {
+  breakfast: 'sunny-outline',
+  lunch: 'restaurant-outline',
+  dinner: 'moon-outline',
+  snack: 'cafe-outline',
+  pre_workout: 'barbell-outline',
+  post_workout: 'barbell-outline',
+  night: 'moon-outline',
+  custom: 'ellipsis-horizontal-circle-outline',
+};
 
 function MealCard({ meal }: { meal: LoggedMeal }) {
   const theme = useTheme();
   const t = useTranslations();
 
+  const signedPhoto = useSignedPhotoUrl('ai-meal-photos', meal.photoStoragePath);
+  // Gerçek fotoğraf varsa onu bekle (yüklenene kadar fallback'e ATLAMA —
+  // aksi hâlde fallback→gerçek foto arasında görsel flaş olur).
+  const backgroundImage: ImageSourcePropType | undefined =
+    signedPhoto.data !== undefined
+      ? { uri: signedPhoto.data }
+      : meal.photoStoragePath === null
+        ? MEAL_TYPE_FALLBACK_IMAGES[meal.mealType]
+        : undefined;
+
+  const onMedia = backgroundImage !== undefined;
   const totalKcal = meal.items.reduce((sum, item) => sum + item.energyKcal, 0);
   const title = meal.mealType === 'custom' ? (meal.customLabel ?? '') : t.diary.mealTypes[meal.mealType];
 
   return (
+    <View style={{ marginBottom: theme.spacing.md }}>
+      <Card
+        title={title}
+        backgroundImage={backgroundImage}
+        trailing={
+          <View
+            style={[
+              styles.mealTypeBadge,
+              {
+                width: theme.spacing.xl,
+                height: theme.spacing.xl,
+                borderRadius: theme.radius.full,
+                backgroundColor: onMedia ? 'rgba(0,0,0,0.35)' : theme.colors.surface.elevated,
+              },
+            ]}
+          >
+            <Ionicons
+              name={MEAL_TYPE_ICONS[meal.mealType]}
+              size={14}
+              color={onMedia ? theme.colors.text.onMedia : theme.colors.text.secondary}
+            />
+          </View>
+        }
+      >
+        <Text
+          style={[
+            theme.typography.numericSm,
+            { color: onMedia ? theme.colors.text.onMedia : theme.colors.text.secondary },
+          ]}
+        >
+          {Math.round(totalKcal)} {t.diary.calories}
+        </Text>
+        <View style={[styles.chipRow, { marginTop: theme.spacing.xs, gap: theme.spacing.xs }]}>
+          {meal.items.map((item) => (
+            <View
+              key={item.id}
+              style={[
+                {
+                  borderRadius: theme.radius.full,
+                  paddingHorizontal: theme.spacing.sm,
+                  paddingVertical: theme.spacing.xxs,
+                  backgroundColor: onMedia ? 'rgba(255,255,255,0.16)' : theme.colors.surface.elevated,
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  theme.typography.bodySm,
+                  { color: onMedia ? theme.colors.text.onMedia : theme.colors.text.secondary },
+                ]}
+              >
+                {item.kind === 'recipe'
+                  ? `${item.recipeName} × ${item.servings}`
+                  : (item.portionLabel ?? `${item.quantityGrams}g`)}
+              </Text>
+            </View>
+          ))}
+        </View>
+      </Card>
+    </View>
+  );
+}
+
+function EmptyMealsState() {
+  const theme = useTheme();
+  const t = useTranslations();
+
+  return (
     <View
       style={[
-        styles.card,
+        styles.emptyState,
         {
-          marginBottom: theme.spacing.md,
-          backgroundColor: theme.colors.surface.default,
+          marginTop: theme.spacing.md,
+          paddingVertical: theme.spacing.xxl,
           borderRadius: theme.radius.lg,
           borderColor: theme.colors.border.default,
-          padding: theme.spacing.lg,
         },
       ]}
     >
-      <View style={styles.mealHeader}>
-        <Text style={[theme.typography.headingSm, { color: theme.colors.text.primary }]}>
-          {title}
-        </Text>
-        <Text style={[theme.typography.numericSm, { color: theme.colors.text.secondary }]}>
-          {Math.round(totalKcal)} {t.diary.calories}
-        </Text>
+      <View
+        style={[
+          styles.emptyIconWrap,
+          {
+            width: 56,
+            height: 56,
+            borderRadius: theme.radius.full,
+            backgroundColor: theme.colors.brand.subtle,
+            marginBottom: theme.spacing.md,
+          },
+        ]}
+      >
+        <Ionicons name="restaurant-outline" size={26} color={theme.colors.brand.text} />
       </View>
-      {meal.items.map((item) => (
-        <View
-          key={item.id}
-          style={[styles.itemRow, { marginTop: theme.spacing.xs }]}
-        >
-          <Text style={[theme.typography.bodySm, { color: theme.colors.text.secondary }]}>
-            {item.kind === 'recipe'
-              ? `${item.recipeName} × ${item.servings}`
-              : (item.portionLabel ?? `${item.quantityGrams}g`)}
-          </Text>
-        </View>
-      ))}
+      <Text style={[theme.typography.body, { color: theme.colors.text.secondary, textAlign: 'center' }]}>
+        {t.diary.empty}
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { borderWidth: StyleSheet.hairlineWidth },
-  addButton: { alignItems: 'center', justifyContent: 'center' },
-  macroRow: { flexDirection: 'row' },
-  macroItem: { flexDirection: 'row', alignItems: 'center' },
+  addButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
+  rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   macroDot: {},
-  mealHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  itemRow: { flexDirection: 'row' },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' },
-  chip: { alignItems: 'center', justifyContent: 'center', borderWidth: StyleSheet.hairlineWidth },
+  chip: { alignItems: 'center', justifyContent: 'center', flexDirection: 'row', borderWidth: StyleSheet.hairlineWidth },
+  mealTypeBadge: { alignItems: 'center', justifyContent: 'center' },
   customAmountInput: { flex: 1 },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderStyle: 'dashed',
+  },
+  emptyIconWrap: { alignItems: 'center', justifyContent: 'center' },
 });
