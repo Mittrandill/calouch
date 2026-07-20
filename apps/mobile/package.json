@@ -14,6 +14,7 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@calouch/activity-engine": "workspace:*",
     "@calouch/analytics": "workspace:*",
     "@calouch/config": "workspace:*",
     "@calouch/design-tokens": "workspace:*",

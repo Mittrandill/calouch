@@ -102,3 +102,44 @@ export type DailyActivitySummaryRow =
  */
 export type ProgressPhoto = Database['public']['Tables']['progress_photos']['Row'];
 export type ProgressPhotoInsert = Database['public']['Tables']['progress_photos']['Insert'];
+
+/**
+ * Egzersiz kataloğu erişimi yalnız RPC üzerinden (`public.search_exercises`,
+ * `public.exercise_detail`) — `catalog` şeması burada da (foods gibi)
+ * bilinçli olarak Data API'ye açık değil.
+ */
+export type ExerciseSearchResult =
+  Database['public']['Functions']['search_exercises']['Returns'][number];
+export type ExerciseDetail = Database['public']['Functions']['exercise_detail']['Returns'][number];
+
+/**
+ * Antrenman programı. Yazma yolu `public.save_program`/`public.copy_program`
+ * RPC'leridir (§09 atomiklik) — `programs`/`program_versions`/
+ * `program_days`/`program_exercises` üzerinde Insert tipleri bilinçli
+ * olarak kullanılmaz.
+ */
+export type Program = Database['public']['Tables']['programs']['Row'];
+export type ProgramVersion = Database['public']['Tables']['program_versions']['Row'];
+export type ProgramDay = Database['public']['Tables']['program_days']['Row'];
+export type ProgramExerciseRow = Database['public']['Tables']['program_exercises']['Row'];
+export type ProgramSummary = Database['public']['Functions']['list_programs']['Returns'][number];
+export type ProgramDetail = Database['public']['Functions']['program_detail']['Returns'][number];
+
+/**
+ * Canlı antrenman session/set. Yazma yolu `start_workout_session`/
+ * `complete_set`/`update_set`/`delete_set`/`finish_workout_session`/
+ * `abandon_workout_session` RPC'leridir — meal_entries ile aynı gerekçeyle
+ * `workout_sessions`/`workout_sets`/`personal_records` üzerinde Insert/Update
+ * tipleri bilinçli olarak kullanılmaz (client bu tablolara hiç yazamaz).
+ */
+export type WorkoutSession = Database['public']['Tables']['workout_sessions']['Row'];
+export type WorkoutSet = Database['public']['Tables']['workout_sets']['Row'];
+export type PersonalRecord = Database['public']['Tables']['personal_records']['Row'];
+export type ActiveWorkoutSession =
+  Database['public']['Functions']['active_workout_session']['Returns'][number];
+export type WorkoutSessionSummary =
+  Database['public']['Functions']['list_workout_sessions']['Returns'][number];
+export type WorkoutSessionDetail =
+  Database['public']['Functions']['workout_session_detail']['Returns'][number];
+export type FinishWorkoutSessionResult =
+  Database['public']['Functions']['finish_workout_session']['Returns'][number];

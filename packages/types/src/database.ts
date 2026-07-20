@@ -2,9 +2,9 @@
  * Supabase MCP `generate_typescript_types` ile canlı şemadan üretildi.
  * ELLE DÜZENLENMEZ — migration eklendiğinde yeniden üretilir.
  *
- * Kaynak: proje aaufvndbagvkpbtqefee, migration 20260720150052 sonrası
- * (meal_entries.photo_storage_path + log_meal p_photo_storage_path — tasarım
- * dili yenilemesi, Son öğün kartı gerçek fotoğrafı — dahil).
+ * Kaynak: proje aaufvndbagvkpbtqefee, migration 20260720163500 sonrası
+ * (Antrenman v1 — egzersiz kataloğu, program builder, workout session/set,
+ * PR — dahil).
  *
  * `private.ai_jobs`/`ai_usage_ledger`/`ai_feature_flags` bilerek burada YOK —
  * Data API `private` şemasını yayınlamaz (bkz. supabase/config.toml
@@ -340,6 +340,50 @@ export type Database = {
           },
         ]
       }
+      personal_records: {
+        Row: {
+          achieved_at: string
+          created_at: string
+          exercise_id: string
+          id: string
+          record_type: string
+          updated_at: string
+          user_id: string
+          value: number
+          workout_set_id: string | null
+        }
+        Insert: {
+          achieved_at?: string
+          created_at?: string
+          exercise_id: string
+          id?: string
+          record_type: string
+          updated_at?: string
+          user_id: string
+          value: number
+          workout_set_id?: string | null
+        }
+        Update: {
+          achieved_at?: string
+          created_at?: string
+          exercise_id?: string
+          id?: string
+          record_type?: string
+          updated_at?: string
+          user_id?: string
+          value?: number
+          workout_set_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "personal_records_workout_set_id_fkey"
+            columns: ["workout_set_id"]
+            isOneToOne: false
+            referencedRelation: "workout_sets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           activity_level: string | null
@@ -444,6 +488,164 @@ export type Database = {
           weight_kg?: number | null
         }
         Relationships: []
+      }
+      program_days: {
+        Row: {
+          created_at: string
+          day_index: number
+          id: string
+          is_deload: boolean
+          name: string
+          program_version_id: string
+          week_number: number
+        }
+        Insert: {
+          created_at?: string
+          day_index: number
+          id?: string
+          is_deload?: boolean
+          name: string
+          program_version_id: string
+          week_number?: number
+        }
+        Update: {
+          created_at?: string
+          day_index?: number
+          id?: string
+          is_deload?: boolean
+          name?: string
+          program_version_id?: string
+          week_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "program_days_program_version_id_fkey"
+            columns: ["program_version_id"]
+            isOneToOne: false
+            referencedRelation: "program_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      program_exercises: {
+        Row: {
+          created_at: string
+          exercise_id: string
+          id: string
+          notes: string | null
+          order_index: number
+          program_day_id: string
+          superset_group: number | null
+          target_sets: Json
+        }
+        Insert: {
+          created_at?: string
+          exercise_id: string
+          id?: string
+          notes?: string | null
+          order_index: number
+          program_day_id: string
+          superset_group?: number | null
+          target_sets: Json
+        }
+        Update: {
+          created_at?: string
+          exercise_id?: string
+          id?: string
+          notes?: string | null
+          order_index?: number
+          program_day_id?: string
+          superset_group?: number | null
+          target_sets?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "program_exercises_program_day_id_fkey"
+            columns: ["program_day_id"]
+            isOneToOne: false
+            referencedRelation: "program_days"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      program_versions: {
+        Row: {
+          created_at: string
+          id: string
+          operation_id: string
+          program_id: string
+          version_number: number
+          weeks: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          operation_id: string
+          program_id: string
+          version_number: number
+          weeks?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          operation_id?: string
+          program_id?: string
+          version_number?: number
+          weeks?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "program_versions_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      programs: {
+        Row: {
+          created_at: string
+          current_version_id: string | null
+          deleted_at: string | null
+          id: string
+          is_template: boolean
+          name: string
+          owner_id: string | null
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          current_version_id?: string | null
+          deleted_at?: string | null
+          id?: string
+          is_template?: boolean
+          name: string
+          owner_id?: string | null
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          created_at?: string
+          current_version_id?: string | null
+          deleted_at?: string | null
+          id?: string
+          is_template?: boolean
+          name?: string
+          owner_id?: string | null
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "programs_current_version_id_fkey"
+            columns: ["current_version_id"]
+            isOneToOne: false
+            referencedRelation: "program_versions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       progress_photos: {
         Row: {
@@ -619,11 +821,154 @@ export type Database = {
         }
         Relationships: []
       }
+      workout_sessions: {
+        Row: {
+          created_at: string
+          ended_at: string | null
+          id: string
+          notes: string | null
+          operation_id: string
+          program_day_id: string | null
+          program_version_id: string | null
+          started_at: string
+          status: string
+          total_calories_kcal: number | null
+          total_volume_kg: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          notes?: string | null
+          operation_id: string
+          program_day_id?: string | null
+          program_version_id?: string | null
+          started_at?: string
+          status?: string
+          total_calories_kcal?: number | null
+          total_volume_kg?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          notes?: string | null
+          operation_id?: string
+          program_day_id?: string | null
+          program_version_id?: string | null
+          started_at?: string
+          status?: string
+          total_calories_kcal?: number | null
+          total_volume_kg?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workout_sessions_program_day_id_fkey"
+            columns: ["program_day_id"]
+            isOneToOne: false
+            referencedRelation: "program_days"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workout_sessions_program_version_id_fkey"
+            columns: ["program_version_id"]
+            isOneToOne: false
+            referencedRelation: "program_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workout_sets: {
+        Row: {
+          completed_at: string
+          created_at: string
+          exercise_id: string
+          id: string
+          is_bodyweight: boolean
+          is_dropset: boolean
+          is_warmup: boolean
+          operation_id: string
+          order_index: number
+          reps: number | null
+          rir: number | null
+          rpe: number | null
+          session_id: string
+          set_number: number
+          updated_at: string
+          weight_kg: number | null
+        }
+        Insert: {
+          completed_at?: string
+          created_at?: string
+          exercise_id: string
+          id?: string
+          is_bodyweight?: boolean
+          is_dropset?: boolean
+          is_warmup?: boolean
+          operation_id: string
+          order_index: number
+          reps?: number | null
+          rir?: number | null
+          rpe?: number | null
+          session_id: string
+          set_number: number
+          updated_at?: string
+          weight_kg?: number | null
+        }
+        Update: {
+          completed_at?: string
+          created_at?: string
+          exercise_id?: string
+          id?: string
+          is_bodyweight?: boolean
+          is_dropset?: boolean
+          is_warmup?: boolean
+          operation_id?: string
+          order_index?: number
+          reps?: number | null
+          rir?: number | null
+          rpe?: number | null
+          session_id?: string
+          set_number?: number
+          updated_at?: string
+          weight_kg?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workout_sets_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "workout_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      abandon_workout_session: {
+        Args: { p_session_id: string }
+        Returns: undefined
+      }
+      active_workout_session: {
+        Args: never
+        Returns: {
+          day_name: string
+          program_day_id: string
+          program_name: string
+          program_version_id: string
+          session_id: string
+          started_at: string
+        }[]
+      }
       complete_ai_job: {
         Args: {
           p_estimated_cost_usd: number
@@ -646,6 +991,27 @@ export type Database = {
           p_result_response: Json
         }
         Returns: undefined
+      }
+      complete_set: {
+        Args: {
+          p_exercise_id: string
+          p_is_bodyweight?: boolean
+          p_is_dropset?: boolean
+          p_is_warmup?: boolean
+          p_operation_id: string
+          p_order_index: number
+          p_reps?: number
+          p_rir?: number
+          p_rpe?: number
+          p_session_id: string
+          p_set_number: number
+          p_weight_kg?: number
+        }
+        Returns: string
+      }
+      copy_program: {
+        Args: { p_operation_id: string; p_source_program_id: string }
+        Returns: string
       }
       create_ai_job: {
         Args: { p_operation_id: string; p_storage_path: string }
@@ -685,6 +1051,27 @@ export type Database = {
           total_ml: number
         }[]
       }
+      delete_set: { Args: { p_set_id: string }; Returns: undefined }
+      exercise_detail: {
+        Args: { preferred_locale?: string; target_exercise_id: string }
+        Returns: {
+          common_mistakes: string[]
+          description: string
+          difficulty: string
+          equipment: string
+          exercise_id: string
+          is_bodyweight: boolean
+          is_custom: boolean
+          media_url: string
+          met_value: number
+          name: string
+          primary_muscle: string
+          safety_notes: string
+          secondary_muscles: string[]
+          steps: string[]
+          thumbnail_url: string
+        }[]
+      }
       fail_ai_job: {
         Args: {
           p_error_message: string
@@ -707,6 +1094,16 @@ export type Database = {
           p_output_tokens: number
         }
         Returns: undefined
+      }
+      finish_workout_session: {
+        Args: { p_session_id: string }
+        Returns: {
+          duration_seconds: number
+          new_personal_records: Json
+          session_id: string
+          total_calories_kcal: number
+          total_volume_kg: number
+        }[]
       }
       food_detail: {
         Args: { target_food_id: string }
@@ -757,6 +1154,18 @@ export type Database = {
           protein_g: number
         }[]
       }
+      list_programs: {
+        Args: never
+        Returns: {
+          day_count: number
+          is_own: boolean
+          is_template: boolean
+          name: string
+          program_id: string
+          updated_at: string
+          weeks: number
+        }[]
+      }
       list_recipes: {
         Args: never
         Returns: {
@@ -764,6 +1173,18 @@ export type Database = {
           per_serving_energy_kcal: number
           recipe_id: string
           servings: number
+        }[]
+      }
+      list_workout_sessions: {
+        Args: { limit_count?: number }
+        Returns: {
+          ended_at: string
+          program_name: string
+          session_id: string
+          started_at: string
+          status: string
+          total_calories_kcal: number
+          total_volume_kg: number
         }[]
       }
       log_meal: {
@@ -799,6 +1220,18 @@ export type Database = {
           sugar_g: number
         }[]
       }
+      program_detail: {
+        Args: { preferred_locale?: string; target_program_id: string }
+        Returns: {
+          days: Json
+          is_own: boolean
+          is_template: boolean
+          name: string
+          program_id: string
+          program_version_id: string
+          weeks: number
+        }[]
+      }
       recipe_detail: {
         Args: { target_recipe_id: string }
         Returns: {
@@ -813,6 +1246,16 @@ export type Database = {
           version_number: number
         }[]
       }
+      save_program: {
+        Args: {
+          p_days: Json
+          p_name: string
+          p_operation_id: string
+          p_program_id?: string
+          p_weeks: number
+        }
+        Returns: string
+      }
       save_recipe: {
         Args: {
           p_items: Json
@@ -822,6 +1265,27 @@ export type Database = {
           p_servings: number
         }
         Returns: string
+      }
+      search_exercises: {
+        Args: {
+          equipment_filter?: string
+          limit_count?: number
+          muscle_group?: string
+          only_locale?: string
+          query: string
+        }
+        Returns: {
+          difficulty: string
+          equipment: string
+          exercise_id: string
+          is_bodyweight: boolean
+          is_custom: boolean
+          match_score: number
+          matched_locale: string
+          matched_name: string
+          met_value: number
+          primary_muscle: string
+        }[]
       }
       search_foods: {
         Args: { limit_count?: number; only_locale?: string; query: string }
@@ -839,6 +1303,24 @@ export type Database = {
           protein_g: number
         }[]
       }
+      start_workout_session: {
+        Args: {
+          p_operation_id: string
+          p_program_day_id?: string
+          p_program_version_id?: string
+        }
+        Returns: string
+      }
+      update_set: {
+        Args: {
+          p_reps?: number
+          p_rir?: number
+          p_rpe?: number
+          p_set_id: string
+          p_weight_kg?: number
+        }
+        Returns: undefined
+      }
       weight_trend: {
         Args: { since_date?: string }
         Returns: {
@@ -846,6 +1328,20 @@ export type Database = {
           measured_at: string
           source: string
           weight_kg: number
+        }[]
+      }
+      workout_session_detail: {
+        Args: { preferred_locale?: string; target_session_id: string }
+        Returns: {
+          day_name: string
+          ended_at: string
+          program_name: string
+          session_id: string
+          sets: Json
+          started_at: string
+          status: string
+          total_calories_kcal: number
+          total_volume_kg: number
         }[]
       }
     }

@@ -76,6 +76,9 @@ export default function RootLayout() {
                     <Stack.Screen name="manage-dashboard-cards" options={{ presentation: 'modal' }} />
                     <Stack.Screen name="health-connection" options={{ presentation: 'modal' }} />
                     <Stack.Screen name="reset-password" options={{ presentation: 'modal' }} />
+                    <Stack.Screen name="program-builder" options={{ presentation: 'modal' }} />
+                    <Stack.Screen name="program-detail" options={{ presentation: 'modal' }} />
+                    <Stack.Screen name="workout-session" options={{ presentation: 'modal' }} />
                   </Stack>
                 </HealthConnectionProvider>
               </AuthProvider>
