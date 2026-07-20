@@ -104,6 +104,27 @@ MVP-05 (manuel öğün) yalnız **sunucu tarafı** idempotency'yi teslim etti: `
 
 **Sonuç:** ~22 ekran/bileşen dosyası tarandı, kart-konteyner deseni (`surface.default` arkaplan + `radius`) taşıyan 9 dosyada `radius.lg`'ye geçirildi; buton/input'lar kasıtlı olarak dokunulmadı. `pnpm typecheck`/`lint` temiz. Görsel QA `expo start --web` üzerinden Chrome ile ekran ekran doğrulandı (Bugün/Günlük/Kamera/Tarifler/Öğün ekle/Tarif oluştur/Ölçüler/Health/Kartları düzenle/Onboarding). Android monochrome icon ve gerçek cihazda ikon/splash görünümü henüz doğrulanmadı — sonraki EAS build'de kontrol edilmeli.
 
+### Tasarım dili yenilemesi: fotoğraf arkaplanlı kartlar + öğün fotoğrafı saklama davranışı değişikliği
+**Karar tarihi:** 2026-07-20 · **Etki:** `apps/mobile` (Card.tsx, dashboard kartları), `packages/design-tokens`, `supabase/functions/analyze-meal-photo`, `meal_entries` şeması · **PRD:** Yok — yukarıdaki tasarım dili yenilemesinin devamı, kullanıcı talebiyle.
+
+**Karar:** Kullanıcının kendi başka bir projesi ("fitpulsev1", aynı koyu/chartreuse-lime estetiği) referans alınarak kart arkaplanlarına fotoğraf + gradient overlay deseni eklendi. Kapsam: (1) "Yakında" kartları (antrenman/seri/challenge) dekoratif fotoğraf — `aiInsight` BİLİNÇLİ OLARAK hariç tutuldu (tutarsız olurdu); (2) Su kartı her zaman temalı arkaplan (gerçek veri, "yakında" değil); (3) Ölçü trendi kartı kullanıcının en yeni ilerleme fotoğrafını gösterir (fotoğraf yoksa fallback YOK — gerçek veri, uydurma görsel eklenmez); (4) Son öğün kartı GERÇEK öğün fotoğrafını gösterir (yoksa öğün türüne göre dekoratif fallback).
+
+- `packages/design-tokens/src/colors.ts`: yeni `text.onMedia` (dark/light/oled'de `neutral[0]`, `background.media`'nın eşleniği — fotoğraf/scrim üstünde her zaman okunur metin).
+- `apps/mobile/src/components/Card.tsx`: opsiyonel `backgroundImage` prop'u — `expo-linear-gradient` (yeni bağımlılık) ile alttan-karartan overlay, `ImageBackground` (RN core) ile fotoğraf. Additive: prop verilmezse eski davranış birebir korunur.
+- Dekoratif görseller fitpulsev1'in `public/images/{challenges,zones,meals}` klasöründen `apps/mobile/assets/decorative/`'a kopyalandı (statik `require`/import, network yok).
+
+**Kritik keşif ve davranış değişikliği:** Son öğün fotoğrafını göstermek, `analyze-meal-photo` edge function'ının `finally` bloğunda analiz biter bitmez (kullanıcı taslağı görmeden ÖNCE, başarı/başarısızlık ayrımı olmadan) fotoğrafı sildiğini ortaya çıkardı — bu, MVP-08'in "varsayılan HER ZAMAN analiz sonrası silme" kararının BİREBİR uygulanmış hâliydi. Bu karar burada TERSİNE ÇEVRİLDİ:
+
+- `analyze-meal-photo/index.ts`: fotoğraf artık yalnız BAŞARISIZ analizde silinir (`succeeded` bayrağı ile); başarılı analizde `ai-meal-photos`'ta kalır. v6 olarak deploy edildi.
+- Migration `20260720145844_meal_entries_photo.sql`: `meal_entries.photo_storage_path` (nullable) + `log_meal()`'a additive `p_photo_storage_path` parametresi. **Gerçek bir güvenlik regresyonu bu ortamda pgTAP ile yakalandı ve düzeltildi**: yeni parametreli imza Postgres'te yeni bir fonksiyon nesnesi yarattığı için önceki `revoke execute ... from anon` grant'i bu imzaya taşınmadı — anon tekrar `log_meal()` çalıştırabiliyordu (aynı sınıf hata: bkz. yukarıdaki "`anon` EXECUTE varsayılanı"). Migration içine açık `revoke ... from public/anon` + `grant ... to authenticated` eklendi, pgTAP 23/23 canlı şemada transaction+rollback ile doğrulandı.
+- Client: kullanıcı taslağı ONAYLAYIP KAYDEDERSE fotoğraf `log_meal()` üzerinden kalıcı referans alır; VAZGEÇERSE veya YENİDEN ANALİZ ile önceki fotoğraf geçersiz kalırsa `camera.tsx` fotoğrafı açıkça siler (`cleanupOrphanedPhoto`, eski edge-function davranışının client-side eşleniği).
+
+**Bilinen sınır (kapsam dışı):** Kullanıcı taslağı ne kaydeder ne vazgeçer (uygulamadan çıkar/sekme değiştirir) ise fotoğraf `ai-meal-photos`'ta öksüz kalır — otomatik temizlik (cron/storage lifecycle policy) bu işin kapsamı dışında bırakıldı, MVP-05/06'daki "tam offline outbox kapsam dışı" ile aynı gerekçe (ayrı, kendi başına bir iş). Manuel öğünlerde (kamera akışı dışında kaydedilen) `photo_storage_path` her zaman null kalır — bu tasarım gereği, manuel akışta hiç fotoğraf yoktur.
+
+**Gerekçe:** Kullanıcı Son öğün kartında gerçek fotoğraf istedi; bu, mevcut "analiz sonrası her zaman sil" gizlilik varsayılanıyla doğrudan çelişiyordu. Varsayılan "kullanıcı onaylayana/vazgeçene kadar sakla"ya çevrildi — bu hâlâ "AI yalnızca tahmin/taslak üretir, kullanıcı onayı olmadan kalıcılaşmaz" değişmez kuralıyla uyumlu (fotoğraf da onay olmadan meal_entries'e BAĞLANMAZ, yalnız geçici olarak bucket'ta durur).
+
+**Sonuç:** `pnpm typecheck`/`lint` temiz. Görsel QA `expo start --web` + Chrome ile Bugün ekranındaki tüm dokunulan kartlar (Su, 3× Yakında, Son öğün boş-durum, Ölçü trendi fotoğrafsız) doğrulandı. Gerçek fotoğrafla (AI kamera → onayla → kaydet → Son öğün kartı) ve "Vazgeç" akışının storage'dan gerçek silme yaptığı uçtan uca doğrulanmadı — bu ortamda kullanıcı hesabıyla gerçek bir fotoğraf çekimi/onayı gerekir, sonraki oturumda yapılmalı.
+
 ### MVP-12: Android minSdkVersion 24 → 26 (Health Connect zorunluluğu)
 **Karar tarihi:** 2026-07-19 · **Etki:** MVP-12, tüm Android kullanıcı tabanı · **PRD:** §17
 

@@ -1,6 +1,10 @@
 import type { ReactNode } from 'react';
+import type { ImageSourcePropType } from 'react-native';
 import { StyleSheet, Text, View } from 'react-native';
 
+import challengeImage from '../../../assets/decorative/challenge-plank.png';
+import streakImage from '../../../assets/decorative/streak-running.png';
+import workoutImage from '../../../assets/decorative/workout-chest.png';
 import { Card, type CardSize } from '@/components/Card';
 import { useTranslations } from '@/i18n/LocaleProvider';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -10,6 +14,17 @@ export type ComingSoonCardId = Exclude<
   DashboardCardId,
   'calorie' | 'macros' | 'water' | 'lastMeal' | 'measurementTrend' | 'activeEnergy' | 'steps'
 >;
+
+/**
+ * Dekoratif önizleme görselleri (tasarım dili yenilemesi, 2026-07-20).
+ * `aiInsight` BİLİNÇLİ OLARAK yok — rastgele bir antrenman/challenge
+ * fotoğrafının "AI değerlendirmesi" kartında görünmesi tutarsız olurdu.
+ */
+const COMING_SOON_IMAGES: Partial<Record<ComingSoonCardId, ImageSourcePropType>> = {
+  todayWorkout: workoutImage,
+  streak: streakImage,
+  challenge: challengeImage,
+};
 
 /**
  * Veri kaynağı henüz olmayan 4 kart için tek paylaşımlı gövde
@@ -33,11 +48,14 @@ export function ComingSoonCard({
   const theme = useTheme();
   const t = useTranslations();
   const card = t.today.cards[cardId];
+  const backgroundImage = COMING_SOON_IMAGES[cardId];
+  const descriptionColor = backgroundImage !== undefined ? theme.colors.text.onMedia : theme.colors.text.tertiary;
 
   return (
     <Card
       title={card.title}
       size={size}
+      backgroundImage={backgroundImage}
       trailing={
         <View style={[styles.trailing, { gap: theme.spacing.xs }]}>
           {focusBadge}
@@ -59,7 +77,7 @@ export function ComingSoonCard({
         </View>
       }
     >
-      <Text style={[theme.typography.bodySm, { color: theme.colors.text.tertiary }]}>
+      <Text style={[theme.typography.bodySm, { color: descriptionColor }]}>
         {card.description}
       </Text>
     </Card>

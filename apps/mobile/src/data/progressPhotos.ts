@@ -4,6 +4,7 @@ import * as Crypto from 'expo-crypto';
 
 import { useAuth } from '@/auth/AuthProvider';
 import { supabase } from '@/auth/supabase';
+import { getSignedPhotoUrl } from '@/data/storage';
 
 /**
  * İlerleme fotoğrafı veri katmanı. §05: "private bucket'ta tutulur; public
@@ -13,7 +14,6 @@ import { supabase } from '@/auth/supabase';
  */
 
 const BUCKET = 'progress-photos';
-const SIGNED_URL_TTL_SECONDS = 600;
 
 export type PhotoAngle = 'front' | 'side' | 'back';
 
@@ -31,13 +31,10 @@ export function useProgressPhotos() {
       if (error) throw error;
 
       return Promise.all(
-        data.map(async (photo) => {
-          const { data: signed, error: signError } = await supabase.storage
-            .from(BUCKET)
-            .createSignedUrl(photo.storage_path, SIGNED_URL_TTL_SECONDS);
-          if (signError) throw signError;
-          return { ...photo, signedUrl: signed.signedUrl };
-        }),
+        data.map(async (photo) => ({
+          ...photo,
+          signedUrl: await getSignedPhotoUrl(BUCKET, photo.storage_path),
+        })),
       );
     },
   });

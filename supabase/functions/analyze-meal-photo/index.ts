@@ -258,6 +258,12 @@ async function processJob(
   let inputTokens: number | null = null;
   let outputTokens: number | null = null;
   let estimatedCostUsd: number | null = null;
+  // Tasarım dili yenilemesi (2026-07-20, Son öğün kartı): başarılı analizde
+  // fotoğraf artık SİLİNMEZ — kullanıcı taslağı onaylayıp kaydedene kadar
+  // (veya vazgeçene kadar) `ai-meal-photos`'ta kalır, `log_meal()` ona
+  // kalıcı referans verir. Önceki davranış (her zaman sil) `finally`
+  // bloğundaydı; artık yalnız BAŞARISIZ analizde silinir.
+  let succeeded = false;
 
   try {
     const { data: imageBlob, error: downloadError } = await supabase.storage
@@ -381,6 +387,7 @@ async function processJob(
       unmatchedItemCount: draft.unmatchedItemCount,
       latencyMs: Date.now() - startedAt,
     }));
+    succeeded = true;
   } catch (error) {
     console.log(JSON.stringify({ correlationId, jobId, event: 'background_error', message: String(error) }));
     try {
@@ -397,9 +404,11 @@ async function processJob(
       console.log(JSON.stringify({ correlationId, jobId, event: 'fail_job_error', message: String(failError) }));
     }
   } finally {
-    const { error: removeError } = await supabase.storage.from('ai-meal-photos').remove([storagePath]);
-    if (removeError !== null) {
-      console.log(JSON.stringify({ correlationId, jobId, event: 'photo_cleanup_failed' }));
+    if (!succeeded) {
+      const { error: removeError } = await supabase.storage.from('ai-meal-photos').remove([storagePath]);
+      if (removeError !== null) {
+        console.log(JSON.stringify({ correlationId, jobId, event: 'photo_cleanup_failed' }));
+      }
     }
   }
 }

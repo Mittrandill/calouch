@@ -4,11 +4,28 @@ import { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useAuth } from '@/auth/AuthProvider';
+import { supabase } from '@/auth/supabase';
 import { MealDraftReview } from '@/camera/MealDraftReview';
 import { Screen } from '@/components/Screen';
 import { useAnalyzeMealPhoto, type AnalyzeMealPhotoResult } from '@/data/aiMealAnalysis';
 import { useTranslations } from '@/i18n/LocaleProvider';
+import { reportError } from '@/observability/reportError';
 import { useTheme } from '@/theme/ThemeProvider';
+
+/**
+ * `analyze-meal-photo` başarılı analizde fotoğrafı artık SİLMİYOR (tasarım
+ * dili yenilemesi, 2026-07-20 — Son öğün kartı gerçek fotoğraf gösterir).
+ * Bu yüzden kullanıcı taslağı kaydetmeden vazgeçerse/yeni bir analiz
+ * başlatırsa öksüz kalan fotoğrafı client açıkça temizler — eski edge
+ * function davranışının client-side eşleniği. Hata sessizce loglanır,
+ * kullanıcı akışını bloklamaz.
+ */
+async function cleanupOrphanedPhoto(storagePath: string) {
+  const { error } = await supabase.storage.from('ai-meal-photos').remove([storagePath]);
+  if (error !== null) {
+    reportError(error, { scope: 'storage' });
+  }
+}
 
 /**
  * AI Kamera — MVP-09 job pipeline'ını üretir, MVP-10 taslağı düzenlenebilir/
@@ -31,7 +48,12 @@ export default function CameraScreen() {
   // yalnız "yeniden analiz" butonu `isReanalyzing` ile pasifleşir. Yeni
   // fotoğraf seçiminde (`pick`) ise önce sıfırlanır (eski taslak kalıntısı
   // görünmesin).
+  // Bir önceki analizin (kaydedilmemiş/vazgeçilmemiş) fotoğrafı — yeni bir
+  // analiz onu geçersiz kılınca (reanalyze/yeni seçim) temizlenir.
+  const previousStoragePath = result?.ok ? result.storagePath : null;
+
   const analyze = async (uri: string) => {
+    if (previousStoragePath !== null) void cleanupOrphanedPhoto(previousStoragePath);
     try {
       const analysis = await analyzePhoto.mutateAsync({ uri });
       setResult(analysis);
@@ -68,9 +90,17 @@ export default function CameraScreen() {
     if (lastUri !== null) void analyze(lastUri);
   };
 
-  const discard = () => {
+  const resetDraftState = () => {
     setResult(null);
     setLastUri(null);
+  };
+
+  // "Vazgeç" — kullanıcı taslağı onaylamadan bıraktı, fotoğraf `log_meal()`'a
+  // asla bağlanmayacak, öksüz kalmasın. Kaydetme akışında (`onSaved`) BU
+  // ÇAĞRILMAZ — o fotoğraf artık kalıcı meal_entries referansı taşıyor.
+  const discard = () => {
+    if (previousStoragePath !== null) void cleanupOrphanedPhoto(previousStoragePath);
+    resetDraftState();
   };
 
   if (isRestoring) {
@@ -170,11 +200,13 @@ export default function CameraScreen() {
           // sıfırdan mount eder — düzenleme state'i eski taslağa ait kalmaz.
           key={result.jobId}
           draft={result.result}
+          photoStoragePath={result.storagePath}
           onReanalyze={reanalyze}
           isReanalyzing={analyzePhoto.isPending}
           onDiscard={discard}
           onSaved={() => {
-            discard();
+            // discard() DEĞİL: fotoğraf artık kaydedilen öğüne bağlı, silinmez.
+            resetDraftState();
             router.push('/(tabs)/diary');
           }}
         />

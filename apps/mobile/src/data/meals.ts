@@ -79,6 +79,8 @@ export type LogMealInput = {
   items: LogMealItem[];
   customLabel?: string;
   notes?: string;
+  /** AI kamera akışından gelen öğünün kalıcı fotoğraf referansı (varsa). */
+  photoStoragePath?: string;
 };
 
 export function useLogMeal() {
@@ -114,6 +116,7 @@ export function useLogMeal() {
         ),
         p_custom_label: input.customLabel,
         p_notes: input.notes,
+        p_photo_storage_path: input.photoStoragePath,
       });
 
       if (error) throw error;
@@ -182,6 +185,7 @@ export type LoggedMeal = {
   customLabel: string | null;
   loggedAt: string;
   items: LoggedMealItem[];
+  photoStoragePath: string | null;
 };
 
 export function useTodaysMeals(date: Date) {
@@ -200,7 +204,7 @@ export function useTodaysMeals(date: Date) {
       const { data, error } = await supabase
         .from('meal_entries')
         .select(
-          `id, meal_type, custom_label, logged_at,
+          `id, meal_type, custom_label, logged_at, photo_storage_path,
            meal_entry_items (
              id, food_id, quantity_grams, portion_label,
              recipe_id, recipe_servings, recipes ( name ),
@@ -219,6 +223,7 @@ export function useTodaysMeals(date: Date) {
         mealType: meal.meal_type as MealType,
         customLabel: meal.custom_label,
         loggedAt: meal.logged_at,
+        photoStoragePath: meal.photo_storage_path,
         items: meal.meal_entry_items.map((item): LoggedMealItem => {
           // isOneToOne ilişki: supabase-js bunu tekil (nullable) nesne
           // olarak tipler, dizi değil.

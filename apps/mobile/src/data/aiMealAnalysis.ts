@@ -22,7 +22,7 @@ const POLL_INTERVAL_MS = 1_000;
 const MAX_POLL_ATTEMPTS = 60;
 
 export type AnalyzeMealPhotoResult =
-  | { ok: true; jobId: string; status: 'needs_confirmation'; result: MealDraft }
+  | { ok: true; jobId: string; status: 'needs_confirmation'; result: MealDraft; storagePath: string }
   | { ok: false; code: string; message: string };
 
 const delay = (milliseconds: number) =>
@@ -48,7 +48,11 @@ async function getAiJob(jobId: string, accessToken: string): Promise<AIJob> {
   return validation.data;
 }
 
-async function waitForAiJob(jobId: string, accessToken: string): Promise<AnalyzeMealPhotoResult> {
+async function waitForAiJob(
+  jobId: string,
+  accessToken: string,
+  storagePath: string,
+): Promise<AnalyzeMealPhotoResult> {
   for (let attempt = 0; attempt < MAX_POLL_ATTEMPTS; attempt += 1) {
     const job = await getAiJob(jobId, accessToken);
     if (job.status === 'failed' || job.status === 'expired') {
@@ -61,7 +65,7 @@ async function waitForAiJob(jobId: string, accessToken: string): Promise<Analyze
     if (job.status === 'needs_confirmation') {
       const result = mealDraftSchema.safeParse(job.result);
       if (!result.success) throw new Error('Sunucudan geçersiz analiz taslağı geldi');
-      return { ok: true, jobId, status: 'needs_confirmation', result: result.data };
+      return { ok: true, jobId, status: 'needs_confirmation', result: result.data, storagePath };
     }
     await delay(POLL_INTERVAL_MS);
   }
@@ -142,6 +146,7 @@ export function useAnalyzeMealPhoto() {
           jobId: accepted.jobId,
           status: 'needs_confirmation',
           result: result.data,
+          storagePath,
         };
       }
       if (accepted.status === 'failed') {
@@ -151,7 +156,7 @@ export function useAnalyzeMealPhoto() {
           message: accepted.errorMessage ?? 'Analiz tamamlanamadı',
         };
       }
-      return waitForAiJob(accepted.jobId, accessToken);
+      return waitForAiJob(accepted.jobId, accessToken, storagePath);
     },
   });
 }

@@ -91,6 +91,11 @@ describe('WCAG kontrastı', () => {
     expect(contrastRatio(c.text.secondary, c.surface.default)).toBeGreaterThanOrEqual(AA_TEXT);
   });
 
+  it.each(themes)('%s: medya/fotoğraf scrim metni AA geçer', (theme) => {
+    const c = colorSchemes[theme];
+    expect(contrastRatio(c.text.onMedia, c.background.media)).toBeGreaterThanOrEqual(AA_TEXT);
+  });
+
   it.each(themes)('%s: marka dolgusu üstündeki metin AA geçer', (theme) => {
     const c = colorSchemes[theme];
     expect(contrastRatio(c.brand.onBrand, c.brand.default)).toBeGreaterThanOrEqual(AA_TEXT);

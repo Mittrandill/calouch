@@ -13,6 +13,7 @@ import { initialDraftItemState, previewNutrients, resolvedFoodId, type DraftItem
 
 type Props = {
   draft: MealDraft;
+  photoStoragePath: string;
   onReanalyze: () => void;
   isReanalyzing: boolean;
   onDiscard: () => void;
@@ -32,7 +33,14 @@ type Props = {
  * ile YENİDEN MOUNT eder — böylece aşağıdaki state yeni taslağa göre sıfırdan
  * başlar, elle senkronize etmeye gerek kalmaz.
  */
-export function MealDraftReview({ draft, onReanalyze, isReanalyzing, onDiscard, onSaved }: Props) {
+export function MealDraftReview({
+  draft,
+  photoStoragePath,
+  onReanalyze,
+  isReanalyzing,
+  onDiscard,
+  onSaved,
+}: Props) {
   const theme = useTheme();
   const t = useTranslations();
   const logMeal = useLogMeal();
@@ -77,7 +85,7 @@ export function MealDraftReview({ draft, onReanalyze, isReanalyzing, onDiscard, 
     if (!canSave) return;
     setSaveError(null);
     try {
-      await logMeal.mutateAsync({ mealType, loggedAt: new Date(), items: saveItems });
+      await logMeal.mutateAsync({ mealType, loggedAt: new Date(), items: saveItems, photoStoragePath });
       onSaved();
     } catch {
       setSaveError(t.diary.error.save);

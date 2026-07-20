@@ -214,7 +214,7 @@ Private media upload, provider adapter, request/response şeması, Zod validatio
 - Gerçek Gemini yanıtıyla E2E doğrulama — bu ortamda kullanıcı kendi API anahtarını Supabase secret olarak eklemeyi kabul etti; edge function deploy edildi ama gerçek bir fotoğrafla uçtan uca çalıştırılıp doğrulanması ayrı bir adım.
 - MVP-08'in özgün 17 pgTAP testi hâlâ topluca yeniden çalıştırılmadı (Docker yok); MVP-09'un yeni 18 pgTAP testi ise canlı şemada transaction+rollback ile geçti.
 - `storage.objects` RLS'i (ai-meal-photos) izole pgTAP testine sahip değil — yalnız metadata tablosuna erişim yok zaten (bu bucket'ın hiç metadata tablosu yok, doğrudan job'a bağlı).
-- Fotoğraf saklama tercihi (kullanıcının "AI/fotoğraf kullanımı" tercihi, §09 gizlilik merkezi) yok — varsayılan HER ZAMAN analiz sonrası silme (MVP-16/17 kapsamında gerçek tercih eklenebilir).
+- Fotoğraf saklama tercihi (kullanıcının "AI/fotoğraf kullanımı" tercihi, §09 gizlilik merkezi) yok — varsayılan artık "kullanıcı onaylayana/vazgeçene kadar sakla" (2026-07-20'de değişti, bkz. `14-open-decisions.md`); gerçek kullanıcı tercihi hâlâ MVP-16/17 kapsamında eklenebilir. Onaylanmadan vazgeçilen/yarım kalan taslakların fotoğrafı için otomatik temizlik (cron) yok — bilinen sınır, aynı yerde kayıtlı.
 
 #### MVP-09 — AI job pipeline
 **Durum:** `done` · **PRD:** §10–11 · **Bağımlılık:** MVP-08

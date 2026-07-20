@@ -30,6 +30,8 @@ export type ColorScheme = {
     /** Marka veya koyu dolgu üstünde. */
     inverse: string;
     disabled: string;
+    /** Fotoğraf/medya scrim'i üstünde — `background.media` gibi tema-bağımsız, her zaman okunur. */
+    onMedia: string;
   };
   brand: {
     /** Dolgu: birincil buton, seçili sekme. Metin rengi olarak KULLANILMAZ. */
@@ -81,6 +83,7 @@ export const darkColors: ColorScheme = {
     tertiary: '#7A7A7A',
     inverse: graphite.background,
     disabled: '#525252',
+    onMedia: neutral[0],
   },
   brand: {
     default: chartreuse[500],
@@ -127,6 +130,7 @@ export const lightColors: ColorScheme = {
     tertiary: neutral[500],
     inverse: neutral[0],
     disabled: neutral[400],
+    onMedia: neutral[0],
   },
   brand: {
     default: chartreuse[500],

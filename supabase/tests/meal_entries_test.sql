@@ -15,7 +15,7 @@
 --    biri eksikse NULL dön" semantiği eklendi.
 
 begin;
-select plan(21);
+select plan(23);
 
 insert into auth.users (id, instance_id, aud, role, email, encrypted_password, created_at, updated_at)
 values
@@ -239,6 +239,32 @@ select is(
 select is(
   (select total_energy_kcal from public.daily_nutrition_summary(current_date)),
   902.14, 'zorunlu alan (enerji) günün TÜM öğünleri için tam toplanır'
+);
+
+-- ---------------------------------------------------------------------------
+-- photo_storage_path — tasarım dili yenilemesi (2026-07-20, Son öğün kartı)
+-- daily_nutrition_summary testlerinden SONRA: yeni bir öğün eklemek yukarıdaki
+-- kesin toplam (902.14) varsayımını bozar.
+-- ---------------------------------------------------------------------------
+select is(
+  (select photo_storage_path from public.meal_entries where id = current_setting('test.meal_id')::uuid),
+  null, 'p_photo_storage_path verilmeyen çağrıda kolon NULL kalır (geriye uyumluluk)'
+);
+
+do $$
+declare v_meal_id uuid;
+begin
+  v_meal_id := public.log_meal(
+    'e3000000-0000-0000-0000-000000000001'::uuid, 'dinner', now(),
+    '[{"foodId":"10000000-0000-0000-0000-000000000001","quantityGrams":100}]'::jsonb,
+    null, null, 'b1111111-1111-1111-1111-111111111111/photo-test.jpg'
+  );
+  perform set_config('test.photo_meal_id', v_meal_id::text, true);
+end $$;
+
+select is(
+  (select photo_storage_path from public.meal_entries where id = current_setting('test.photo_meal_id')::uuid),
+  'b1111111-1111-1111-1111-111111111111/photo-test.jpg', 'p_photo_storage_path verilen çağrıda kolona yazılır'
 );
 
 reset role;
